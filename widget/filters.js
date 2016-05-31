@@ -109,9 +109,10 @@
         if (!imgArr || imgArr.length === 0) {
           return '';
         }
-        var img = imgArr[0]
-          , rex = /^<img[^>].*src=['"]([\/:a-zA-Z0-9\._-]+)['"].*$/i
-          , result = img.match(rex);
+        var img = imgArr[0];
+        img = img && img.replace(/"/g, '\'');
+        var regex = /<img.*?src='(.*?)'/
+          , result = regex.exec(img);
         return (result && result[1]) ? result[1] : '';
       };
     }])

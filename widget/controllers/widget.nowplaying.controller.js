@@ -6,7 +6,9 @@
                 console.log('----------------------------Now Playing controller loaded-------------------');
                 //$rootScope.blackBackground = true;
                 $rootScope.showFeed = false;
+
                 var NowPlaying = this;
+                NowPlaying.currentTime=0;
                 /**
                  * WidgetMedia.item used to hold item details object
                  * @type {object}
@@ -215,11 +217,17 @@
                 function Track(track) {
                     console.log('Track-----------------------------------------------------', track);
                     this.title = track && track.title;
-                    if(track && track['media:content'] && track['media:content'] && track['media:content']['@'] && track['media:content']['@'].url){
+                    if(track && track['media:content'] && track['media:content'] && track['media:content']['@'] && track['media:content']['@'].url && track['media:content']['@'].url.substring(track['media:content']['@'].url.length-4,track['media:content']['@'].url.length)=='.mp3'){
                         this.url = track && track['media:content'] && track['media:content'] && track['media:content']['@'] && track['media:content']['@'].url;
                     }
-                    else{
+                    else if(track && track.link && track.link.substring(track.link.length-4,track.link.length)=='.mp3'){
                         this.url=track && track.link;
+                    }
+                    else if(track && track.enclosures && track.enclosures[0] && track.enclosures[0].url && track.enclosures[0].url.substring(track.enclosures[0].url.length-4,track.enclosures[0].url.length)){
+                        this.url=track.enclosures[0].url;
+                    }
+                    else{
+                        console.error('**************************URL not found***********************');
                     }
                     this.image = track && track.imageSrcUrl;
                     this.album = '';
