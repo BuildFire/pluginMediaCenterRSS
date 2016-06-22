@@ -132,7 +132,7 @@
                     } else {
                         if (item['media:thumbnail'] && item['media:thumbnail']['@'] && item['media:thumbnail']['@'].url) {
                             return item['media:thumbnail']['@'].url;
-                        } else if (item['media:group'] && item['media:group']['media:content'] && item['media:group']['media:content']['media:thumbnail']['@'] && item['media:group']['media:content']['media:thumbnail']['@'].url) {
+                        } else if (item['media:group'] && item['media:group']['media:content'] && item['media:group']['media:content']['media:thumbnail'] && item['media:group']['media:content']['media:thumbnail']['@'] && item['media:group']['media:content']['media:thumbnail']['@'].url) {
                             return item['media:group']['media:content']['media:thumbnail']['@'].url;
                         } else if (item.description) {
                             return $filter('extractImgSrc')(item.description);

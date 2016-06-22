@@ -8,6 +8,7 @@
                 $rootScope.showFeed = false;
 
                 var NowPlaying = this;
+                NowPlaying.playing = false;
                 NowPlaying.currentTime=0;
                 /**
                  * WidgetMedia.item used to hold item details object

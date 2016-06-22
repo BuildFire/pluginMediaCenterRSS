@@ -93,7 +93,7 @@
         if (html) {
             var img = new RegExp('<img.*?src=\"' + src + '\".*?>');
             html = html.replace(/(<[^>]+) style=".*?"/i, '$1', "");
-            html = html.replace(/<iframe.+?<\/iframe>/g, '');
+            html = html.replace(/(<iframe[^>]+) height="([^"]*)"|width="([^"]*)"<\/iframe>/ig, '$1', "");
             html = html.replace(img, '');
             html = html.replace(/(<a\b[^><]*)>/ig, '$1 target="_blank">');
         }
