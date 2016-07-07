@@ -49,7 +49,8 @@
       <h4 class="margin-zero" style="font-size: 16px;"
           ng-bind-html="WidgetMedia.getTitle(WidgetMedia.item)"></h4>
 
-      <p>{{WidgetMedia.item.summary|truncate:100}}</p>
+      <p ng-if="WidgetMedia.item.author">By : {{WidgetMedia.item.author}}</p>
+      <p ng-if="WidgetMedia.getItemPublishDate(WidgetMedia.item)">{{WidgetMedia.getItemPublishDate(WidgetMedia.item)}}</p>
     </div>
     <div class="padded padding-top-zero">
       <hr class="small">

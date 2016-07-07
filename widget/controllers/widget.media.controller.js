@@ -552,6 +552,23 @@
                     callVimeoPlayer('ytPlayer');
                 });
 
+                /**
+                 * WidgetMedia.getItemPublishDate() method
+                 * Will used to extract item published date
+                 * @param item
+                 * @returns {*}
+                 */
+                WidgetMedia.getItemPublishDate = function (item) {
+                    if (item) {
+                        var dateStr = item.pubDate ? item.pubDate : '';
+                        if (dateStr) {
+                            return $filter('date')(dateStr, 'MMM dd, yyyy');
+                        } else {
+                            return dateStr;
+                        }
+                    }
+                };
+
             }]
     )
 })(window.angular);
