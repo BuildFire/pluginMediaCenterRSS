@@ -29,14 +29,16 @@
           			<div ng-switch-when="AUDIO">
             			<div class="holder now-playing text-center back-color">
               				<div class="audio-player-holder">
-                				<img class="border-radius-four" ng-if="WidgetMedia.item.imageSrcUrl" ng-src="{{WidgetMedia.item.imageSrcUrl}}" height="100%" width="100%">
+                				<img class="border-radius-four" ng-if="WidgetMedia.item.imageSrcUrl"
+                                     ng-src="{{WidgetMedia.item.imageSrcUrl}}" height="100%" width="100%">
                 				<!--<img class="border-radius-four" ng-if="!WidgetMedia.item.imageSrcUrl" src="./assets/.images/now-playing.png" height="100%" width="100%">-->
               				</div>
             			</div>
 		  			</div>
           			<div class="people-media text-center padding-top-fifteen" ng-switch-when="IMAGE" ng-if="WidgetMedia.imageUrl">
 	      				<img load-image="16x9"
-                    data-final-src="{{WidgetMedia.imageUrl|resizeImage:250:400}}">
+                        crop-width="250" crop-height="400" crop-type="resize"
+                        data-final-src="{{WidgetMedia.imageUrl}}">
 	      			</div>
 	      			<div class="people-info text-center col-xs-12">
 	      				<h5 class="ellipsis margin-top-fifteen whiteTheme" ng-bind-html="WidgetMedia.getTitle(WidgetMedia.item)" style="font-size: 16px;"></h5>

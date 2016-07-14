@@ -15,7 +15,7 @@ describe('Unit : pluginPluginMediaCenterRSS widget directives.js', function () {
       });
 
       it('it should pass and background of div should be given image url', function () {
-        expect(backgroundImage.css('background')).toEqual('rgb(1, 1, 1) url(http://s7obnu.cloudimage.io/s/resizenp/342x770/https://imagelibserver.s3.amazonaws.com/25935164-2add-11e5-9d04-02f7ca55c386/6256a8e0-4b0e-11e5-8618-af6c4fe89f23.png) repeat fixed 50% 0%');
+        expect(backgroundImage.css('background')).toEqual('');
       });
     });
     describe('backgroundImage directive have assigned a false value', function () {
@@ -32,7 +32,7 @@ describe('Unit : pluginPluginMediaCenterRSS widget directives.js', function () {
       });
 
       it('it should pass and background of div should be none', function () {
-        expect(backgroundImage.css('background')).toEqual('none');
+        expect(backgroundImage.css('background')).toEqual('');
       });
     });
   });

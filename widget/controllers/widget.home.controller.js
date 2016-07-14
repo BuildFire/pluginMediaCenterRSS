@@ -70,6 +70,7 @@
                  * @type {object}
                  */
                 WidgetHome.data = null;
+                WidgetHome.view=null;
 
                 /*
                  * WidgetHome.items is used to listing items.
@@ -186,6 +187,9 @@
                         $rootScope.backgroundImageItem = WidgetHome.data.design.itemDetailsBgImage;
                         console.log('$rootScope.backgroundImage', $rootScope.backgroundImage);
                         console.log('$rootScope.backgroundImageItem', $rootScope.backgroundImageItem);
+                        if (WidgetHome.view && event.data.content && event.data.content.carouselImages) {
+                            WidgetHome.view.loadItems(event.data.content.carouselImages);
+                        }
                         if (WidgetHome.data.content && WidgetHome.data.content.rssUrl) {
                             if (WidgetHome.data.content.rssUrl !== currentRssUrl) {
                                 currentRssUrl = WidgetHome.data.content.rssUrl;
@@ -217,6 +221,9 @@
                                 currentRssUrl = WidgetHome.data.content.rssUrl;
                                 getFeedData(WidgetHome.data.content.rssUrl);
                             }
+                            /*if (WidgetHome.data.content.carouselImages) {
+                                $rootScope.$emit("Carousel:LOADED");
+                            }*/
                         }
                         , error = function (err) {
                             console.error('Error while getting data', err);
@@ -348,6 +355,19 @@
                         WidgetHome.data.design = {};
                     WidgetHome.data.design.itemListLayout = itemListLayout;
                     DataStore.onUpdate().then(null, null, onUpdateCallback);
+                });
+
+                $rootScope.$on("Carousel:LOADED", function () {
+                    WidgetHome.view = null;
+                    if (!WidgetHome.view) {
+                        WidgetHome.view = new Buildfire.components.carousel.view("#carousel", [], "WideScreen");
+                    }
+                    if (WidgetHome.data && WidgetHome.data.content.carouselImages) {
+//                        WidgetHome.view = new Buildfire.components.carousel.view("#carousel", WidgetHome.data.content.carouselImages);
+                        WidgetHome.view.loadItems(WidgetHome.data.content.carouselImages, null, 'WideScreen');
+                    } else {
+                        WidgetHome.view.loadItems([]);
+                    }
                 });
 
                 /**

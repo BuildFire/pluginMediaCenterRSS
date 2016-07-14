@@ -10,17 +10,20 @@
 
   <!-- sdk scripts -->
   <script src="../../../scripts/jquery/jquery-1.11.2.min.js"></script>
+  <script src="../../../scripts/smartcrop.js"></script>
   <script src="../../../scripts/buildfire.js"></script>
+    <script src="../../../scripts/owlCarousel/owlCarousel.js"></script>
+    <script src="../../../scripts/buildfire/components/carousel/carousel.js"></script>
   <script src="../../../scripts/angular/angular.min.js"></script>
   <script src="../../../scripts/angular/angular-route.min.js"></script>
 
   <!--jquery truncate-->
   <script src="assets/js/jquery.truncate.js"></script>
   <!-- for touch-->
-  <script src="assets/js/angular-touch.js"></script>
+  <script src="../../../scripts/angular/angular-touch.js"></script>
 
   <!-- Owl Carousel -->
-  <script src="../../../scripts/owlCarousel/owlCarousel.js"></script>
+
   <link rel="stylesheet" href="../../../scripts/owlCarousel/owlCarousel.css">
 
   <script src="../../../scripts/angular/ui-bootstrap.min.js"></script>
@@ -42,7 +45,7 @@
       src="../../../scripts/buildfire/services/media/audioPlayer.js"></script>
 
   <!-- lodash and ng-infinite-scroll -->
-  <script src="assets/js/ng-infinite-scroll.custom.js"></script>
+  <script src="../../../scripts/angular/ng-infinite-scroll.custom.js"></script>
   <script src="assets/js/lodash.js"></script>
 
   <!--App scripts-->
@@ -59,7 +62,7 @@
   <link rel="stylesheet" href="../../../styles/transitionAnimation.css">
 
   <!--Buildfire Carousel-->
-  <script src="assets/js/buildfireCarousel.js"></script>
+
 
   <!-- Meta -->
   <meta charset="utf-8">
@@ -67,14 +70,14 @@
 </head>
 <body class="body-scroll">
 <div class="main_view">
-  <div ng-show="showFeed" data-ng-attr-style="background:url({{ backgroundImage | cropImage:deviceWidth:deviceHeight}}) !important; background-size:cover;" class="slide content infinite-scroll-parent">
+  <div ng-show="showFeed" data-back-img="{{backgroundImage}}" class="slide content infinite-scroll-parent">
     <div ng-controller="WidgetHomeCtrl as WidgetHome">
       <div ng-if="WidgetHome.data.design.itemListLayout"
            ng-include="'templates/' + WidgetHome.data.design.itemListLayout+ '.html'">
       </div>
     </div>
   </div>
-  <div data-ng-attr-style="background:url({{ backgroundImageItem | cropImage:deviceWidth:deviceHeight}}) !important; background-size:cover;" ng-view="" class="slide content" ng-hide="showFeed"></div>
+  <div data-back-img="{{backgroundImageItem}}" ng-view="" class="slide content" ng-hide="showFeed"></div>
 </div>
 </body>
 <script>

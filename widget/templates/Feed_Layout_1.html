@@ -35,13 +35,16 @@
         <div class="holder now-playing text-center back-color">
           <div class="audio-player-holder">
               <img ng-if="WidgetMedia.item.imageSrcUrl" class="border-radius-four"
-                 ng-src="{{WidgetMedia.item.imageSrcUrl | cropImage :deviceWidth:193}}">
+                 load-image="16x9" crop-width="deviceWidth" crop-height="193" crop-type="crop"
+                 ng-src="{{WidgetMedia.item.imageSrcUrl}}">
           </div>
         </div>
       </div>
       <div ng-switch-when="IMAGE" class="plugin-slider text-center">
         <div class="plugin-slide" ng-if="WidgetMedia.imageUrl">
-          <img load-image="16x9" data-final-src="{{WidgetMedia.imageUrl| cropImage: deviceWidth:193}}">
+          <img load-image="16x9"
+               crop-width="193" crop-height="" crop-type="crop"
+               data-final-src="{{WidgetMedia.imageUrl}}">
         </div>
       </div>
     </div>

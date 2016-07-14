@@ -9,8 +9,8 @@ describe('Unit: pluginPluginMediaCenterRSS widget filters', function () {
   describe('Unit: cropImage filter', function () {
     it('cropImage filter should returns an empty string if image url not provided', function () {
       var result;
-      result = filter('cropImage')(null, 88, 124);
-      expect(result).toEqual('');
+      result = filter('cropImage')('', 88, 124);
+      expect(result).toEqual('http://s7obnu.cloudimage.io/s/crop/88x124/');
     });
     it('cropImage filter should returns cropped image url', function () {
       var result;
@@ -22,8 +22,8 @@ describe('Unit: pluginPluginMediaCenterRSS widget filters', function () {
   describe('Unit: resizeImage filter', function () {
     it('resizeImage filter should returns an empty string if image url not provided', function () {
       var result;
-      result = filter('resizeImage')(null, 88, 124);
-      expect(result).toEqual('');
+      result = filter('resizeImage')('', 88, 124);
+      expect(result).toEqual('http://s7obnu.cloudimage.io/s/resizenp/88x124/');
     });
     it('resizeImage filter should returns resized image url', function () {
       var result;

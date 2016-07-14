@@ -13,18 +13,22 @@
    * @param width
    * @param height
    */
-    .filter('resizeImage', [function () {
-      return function (url, width, height) {
-        if (!url) {
-          return '';
-        } else {
-          return buildfire.imageLib.resizeImage(url, {
-            width: width,
-            height: height
-          });
-        }
-      };
-    }])
+      .filter('resizeImage', [function () {
+          filter.$stateful = true;
+          function filter(url, width, height) {
+              var _imgUrl;
+              if (!_imgUrl) {
+                  buildfire.imageLib.local.resizeImage(url, {
+                      width: width,
+                      height: height
+                  }, function (err, imgUrl) {
+                      _imgUrl = imgUrl;
+                  });
+              }
+              return _imgUrl;
+          }
+          return filter;
+      }])
 
   /**
    * A filter for retrieving re-sized image using buildfire.imageLib.resizeImage component.
@@ -32,18 +36,22 @@
    * @param width
    * @param height
    */
-    .filter('cropImage', [function () {
-      return function (url, width, height) {
-        if (!url) {
-          return '';
-        } else {
-          return buildfire.imageLib.cropImage(url, {
-            width: width,
-            height: height
-          });
-        }
-      };
-    }])
+      .filter('cropImage', [function () {
+          filter.$stateful = true;
+          function filter(url, width, height) {
+              var _imgUrl;
+              if (!_imgUrl) {
+                  buildfire.imageLib.local.cropImage(url, {
+                      width: width,
+                      height: height
+                  }, function (err, imgUrl) {
+                      _imgUrl = imgUrl;
+                  });
+              }
+              return _imgUrl;
+          }
+          return filter;
+      }])
 
   /**
    * A filter for retrieving trusty Html using angular $sce service.

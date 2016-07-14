@@ -21,7 +21,8 @@
         <div class="media-holder margin-top-fifteen">
             <div class="media-inner text-center">
                 <img ng-if="NowPlaying.currentTrack.image" class="border-radius-two"
-                     ng-src="{{NowPlaying.currentTrack.image | cropImage : 260:260}}">
+                     load-image="1x1" crop-width="260" crop-height="260" crop-type="crop"
+                     data-final-src="{{NowPlaying.currentTrack.image}}">
                 <img ng-if="!NowPlaying.currentTrack.image"
                      class="border-radius-two"
                      src="http://app.buildfire.com/app/media/now-playing.png">
@@ -101,7 +102,9 @@
                          ng-repeat="track in NowPlaying.playList">
                         <div class="list-item-media text-left" ng-class="{'edit' : track.swiped}">
                             <div class="list-media-holder square-icon pull-left">
-                                <img ng-if="track.image" ng-src="{{track.image | cropImage : 55 :22}}">
+                                <img ng-if="track.image"
+                                     load-image="2x1" crop-width="55" crop-height="22" crop-type="crop"
+                                     data-ng-src="{{track.image}}">
                             </div>
                             <div class="list-item-copy text-left padding-left-ten padding-right-ten">
                                 <p class="margin-bottom-zero ellipsis margin-top-twenty bodyTextTheme">

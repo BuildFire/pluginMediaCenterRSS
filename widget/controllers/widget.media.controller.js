@@ -336,7 +336,7 @@
                                 console.log('$rootScope.backgroundImage', $rootScope.backgroundImage);
                                 console.log('$rootScope.backgroundImageItem', $rootScope.backgroundImageItem);
                             }
-                            currentRssUrl = WidgetMedia.data.content.rssUrl;
+                            currentRssUrl = WidgetMedia.data && WidgetMedia.data.content && WidgetMedia.data.content.rssUrl;
                         }
                         , error = function (err) {
                             $rootScope.showFeed = false;

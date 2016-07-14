@@ -1,8 +1,7 @@
 <div class="holder padding-zero "><!-- customBackground minHeightWidget-->
   <div class="media-center-plugin layout1">
     <div class="media-center-banner clearfix">
-      <buildfire-carousel
-          images="WidgetHome.data.content.carouselImages"></buildfire-carousel>
+        <div id="carousel" ng-if="WidgetHome.data.content.carouselImages.length" build-fire-carousel="" ng-style="WidgetHome.data.content.carouselImages.length > 0 ? {'min-height': (9 * deviceWidth / 16) + 'px' } : {}"></div>
     </div>
     <div class="text-left padded padding-bottom-zero clearfix">
       <p style="word-break: break-word"
@@ -27,7 +26,8 @@
               <div class="list-media-holder" style="cursor: pointer">
                 <img
                     ng-if="WidgetHome.items[$index].imageSrcUrl" load-image="16x9"
-                    data-final-src="{{WidgetHome.items[$index].imageSrcUrl| getImageUrl:240:135}}">
+                    crop-width="240" crop-height="135" crop-type="crop"
+                    data-final-src="{{WidgetHome.items[$index].imageSrcUrl}}">
                 <img ng-if="!WidgetHome.items[$index].imageSrcUrl"
                      src='../../../styles/media/holder-16x9.png'>
               </div>
@@ -50,7 +50,8 @@
               <div class="list-media-holder" style="cursor: pointer">
                 <img
                     ng-if="WidgetHome.items[$index+1].imageSrcUrl" load-image="16x9"
-                    data-final-src="{{WidgetHome.items[$index+1].imageSrcUrl| getImageUrl:240:135}}">
+                    crop-width="240" crop-height="135" crop-type="crop"
+                    data-final-src="{{WidgetHome.items[$index+1].imageSrcUrl}}">
                 <img ng-if="!WidgetHome.items[$index+1].imageSrcUrl"
                      src='../../../styles/media/holder-16x9.png'>
               </div>
