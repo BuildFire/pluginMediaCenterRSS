@@ -48,5 +48,10 @@
         {name: "Feed_Layout_1"},
         {name: "Feed_Layout_2"}
       ]
-    });
+    })
+
+  .constant('FEED_IMAGES', {
+    YES: 'Yes',
+    NO: 'No'
+  })
 })(window.angular);

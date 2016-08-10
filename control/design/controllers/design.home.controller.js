@@ -3,8 +3,8 @@
 (function (angular) {
   angular
     .module('mediaCenterRSSPluginDesign')
-    .controller('DesignHomeCtrl', ['$scope', 'DataStore', 'ImageLibrary', 'TAG_NAMES', 'LAYOUTS', '$timeout',
-      function ($scope, DataStore, ImageLibrary, TAG_NAMES, LAYOUTS, $timeout) {
+    .controller('DesignHomeCtrl', ['$scope', 'DataStore', 'ImageLibrary', 'TAG_NAMES', 'LAYOUTS', '$timeout','FEED_IMAGES',
+      function ($scope, DataStore, ImageLibrary, TAG_NAMES, LAYOUTS, $timeout,FEED_IMAGES) {
         /*
          * Private variables
          *
@@ -31,6 +31,8 @@
             }
           }
           , tmrDelay = null;
+
+        DesignHome.FEED_IMAGES = FEED_IMAGES;
 
         /*
          * DesignHome.isSaved is used to show/hide Success alert message when data saved successfully. Its default value is false.
@@ -127,9 +129,12 @@
               if (DesignHome.data && DesignHome.data.design && !DesignHome.data.design.itemDetailsLayout) {
                 DesignHome.data.design.itemDetailsLayout = DesignHome.layouts.itemDetailsLayouts[0].name;
               }
-              updateMasterItem(DesignHome.data);
+              if (!DesignHome.data.design.showImages)
+              DesignHome.data.design.showImages = FEED_IMAGES.YES;
+
+                updateMasterItem(DesignHome.data);
               if (tmrDelay)clearTimeout(tmrDelay);
-            }
+          }
             , error = function (err) {
               console.error('Error while getting data', err);
               if (tmrDelay)clearTimeout(tmrDelay);

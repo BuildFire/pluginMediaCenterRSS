@@ -18,7 +18,7 @@
                      ng-repeat="item in  WidgetHome.items" trigger-ng-repeat-render=""
                      ng-click="WidgetHome.goToItem($index)" style="cursor: pointer">
                     <div class="list-item-media text-left overflow-hidden">
-                      <div ng-if="item.imageSrcUrl" class="list-media-holder pull-left">
+                      <div ng-if="item.imageSrcUrl && WidgetHome.data.design.showImages == 'Yes'" class="list-media-holder pull-left">
                         <img load-image="16x9"
                              crop-width="220" crop-height="120" crop-type="crop"
                              data-final-src="{{item.imageSrcUrl}}">

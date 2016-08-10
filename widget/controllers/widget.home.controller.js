@@ -3,8 +3,8 @@
 (function (angular) {
     angular
         .module('mediaCenterRSSPluginWidget')
-        .controller('WidgetHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope',
-            function ($scope, DataStore, Buildfire, FeedParseService, TAG_NAMES, ItemDetailsService, Location, $filter, Underscore, $rootScope) {
+        .controller('WidgetHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope','FEED_IMAGES',
+            function ($scope, DataStore, Buildfire, FeedParseService, TAG_NAMES, ItemDetailsService, Location, $filter, Underscore, $rootScope,FEED_IMAGES) {
 
                 $rootScope.deviceHeight = window.innerHeight;
                 $rootScope.deviceWidth = window.innerWidth || 320;
@@ -187,9 +187,14 @@
                         $rootScope.backgroundImageItem = WidgetHome.data.design.itemDetailsBgImage;
                         console.log('$rootScope.backgroundImage', $rootScope.backgroundImage);
                         console.log('$rootScope.backgroundImageItem', $rootScope.backgroundImageItem);
+                        console.log('--------------', WidgetHome.data.design.showImages);
                         if (WidgetHome.view && event.data.content && event.data.content.carouselImages) {
                             WidgetHome.view.loadItems(event.data.content.carouselImages);
                         }
+                        if(!WidgetHome.data.design)
+                            WidgetHome.data.design = {};
+                        if(!WidgetHome.data.design.showImages)
+                        WidgetHome.data.design.showImages = FEED_IMAGES.YES;
                         if (WidgetHome.data.content && WidgetHome.data.content.rssUrl) {
                             if (WidgetHome.data.content.rssUrl !== currentRssUrl) {
                                 currentRssUrl = WidgetHome.data.content.rssUrl;
@@ -221,10 +226,12 @@
                                 currentRssUrl = WidgetHome.data.content.rssUrl;
                                 getFeedData(WidgetHome.data.content.rssUrl);
                             }
-                            /*if (WidgetHome.data.content.carouselImages) {
-                                $rootScope.$emit("Carousel:LOADED");
-                            }*/
-                        }
+                        if(!WidgetHome.data.design)
+                            WidgetHome.data.design = {};
+
+                            if (!WidgetHome.data.design.showImages)
+                                WidgetHome.data.design.showImages = FEED_IMAGES.YES;
+                            }
                         , error = function (err) {
                             console.error('Error while getting data', err);
                         };

@@ -14,7 +14,7 @@
              data-infinite-container=".infinite-scroll-parent">
             <div ng-show="WidgetHome.isItems" ng-repeat="item in  WidgetHome.items"
                  trigger-ng-repeat-render="" ng-click="WidgetHome.goToItem($index)" style="cursor: pointer">
-                <div class="plugin-banner clearfix border-bottom-grey">
+                <div class="plugin-banner clearfix border-bottom-grey" ng-if="WidgetHome.data.design.showImages == 'Yes'">
                   <div class="plugin-slide text-center" ng-if="item.imageSrcUrl">
                     <img load-image="16x9"
                          crop-width="340" crop-height="192" crop-type="crop"

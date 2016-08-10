@@ -37,5 +37,10 @@
       AUDIO: 'AUDIO',
       IMAGE: 'IMAGE',
       OTHER: 'OTHER'
-    });
+    })
+
+    .constant('FEED_IMAGES', {
+      YES: 'Yes',
+      NO: 'No'
+    })
 })(window.angular);
