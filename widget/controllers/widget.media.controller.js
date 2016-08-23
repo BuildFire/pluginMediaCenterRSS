@@ -26,6 +26,20 @@
                     , audioPlayer = Buildfire.services.media.audioPlayer;
                 WidgetMedia.loadingVideo = false;
 
+                var _data = {
+                    "content": {
+                        "carouselImages": [],
+                        "description": "",
+                        "rssUrl": "http://rss.cnn.com/rss/cnn_topstories.rss"
+                    },
+                    "design": {
+                        "itemListLayout": 'List_Layout_1',
+                        "itemDetailsLayout": 'Feed_Layout_1',
+                        "itemListBgImage": "",
+                        "itemDetailsBgImage": ""
+                    }
+                };
+
                 /**
                  * WidgetMedia.slider used to show the slider on now-playing page
                  * @type {*|jQuery|HTMLElement}
@@ -329,7 +343,11 @@
                 var init = function () {
                     var success = function (result) {
                             $rootScope.showFeed = false;
-                            WidgetMedia.data = result.data;
+                            if (Object.keys(result.data).length > 0)
+                                WidgetMedia.data = result.data;
+                            else
+                                WidgetMedia.data = _data;
+
                             if (WidgetMedia.data.design) {
                                 $rootScope.backgroundImage = WidgetMedia.data.design.itemListBgImage;
                                 $rootScope.backgroundImageItem = WidgetMedia.data.design.itemDetailsBgImage;
