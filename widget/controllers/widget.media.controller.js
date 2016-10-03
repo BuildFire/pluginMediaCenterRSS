@@ -331,6 +331,7 @@
                             resetDefaults();
                             currentRssUrl = WidgetMedia.data.content.rssUrl;
                             $rootScope.showFeed = true;
+                            Buildfire.history.pop();
                             Location.goTo('#/');
                         }
                     }
@@ -550,6 +551,7 @@
                     DataStore.clearListener();
                     onRefresh.clear();
                     Buildfire.datastore.onRefresh(function () {
+                        Buildfire.history.pop();
                         Location.goToHome();
                     });
                     WidgetMedia.pause();

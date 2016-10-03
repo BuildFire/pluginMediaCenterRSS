@@ -48,14 +48,14 @@
                 .otherwise('/');
         }])
         .run(['Location', '$location', '$rootScope', '$timeout', function (Location, $location, $rootScope, $timeout) {
-            buildfire.navigation.onBackButtonClick = function () {
+            buildfire.history.onPop(function () {
                 var reg = /^\/item/;
                 var reg1 = /^\/nowplaying/;
                 if (reg.test($location.path())) {
                     $timeout(function(){
                         $rootScope.showFeed = true;
                     },200);
-                    Location.goTo('#/');
+					Location.goTo('#/');
                 }
                 else if (reg1.test($location.path())) {
                     if($rootScope.playlist){
@@ -63,13 +63,10 @@
                     }
                     else{
                         $rootScope.showFeed = false;
-                        Location.goTo('#/item');
+						Location.goTo('#/item');
                     }
                 }
-                else {
-                    buildfire.navigation._goBackOne();
-                }
-            };
+            });
             buildfire.device.onAppBackgrounded(function () {
                 $rootScope.$emit('deviceLocked', {});
             });

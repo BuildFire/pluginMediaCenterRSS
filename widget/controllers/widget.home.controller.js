@@ -324,6 +324,7 @@
         WidgetHome.goToItem = function (index) {
           ItemDetailsService.setData(WidgetHome.items[index]);
           $rootScope.showFeed=false;
+		  Buildfire.history.push(WidgetHome.items[index].title, {});
           Location.goTo('#/item');
         };
 
@@ -381,6 +382,7 @@
                  * Implementation of pull down to refresh
                  */
                 var onRefresh = Buildfire.datastore.onRefresh(function () {
+                    Buildfire.history.pop();
                     Location.goToHome();
                 });
 
