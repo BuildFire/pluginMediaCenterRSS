@@ -41,6 +41,7 @@ describe('Unit : pluginPluginMediaCenterRSS widget.home.controller.js', function
     });
     DataStore = {};
     DataStore = jasmine.createSpyObj('DataStore', ['get', 'onUpdate', 'clearListener','onRefresh']);
+	Buildfire.history = jasmine.createSpyObj('history', ['push', 'pop', 'onPop']);
     ItemDetailsService = {};
     ItemDetailsService = jasmine.createSpyObj('ItemDetailsService', ['getData', 'setData']);
     ItemDetailsService.setData.and.callFake(function (data) {

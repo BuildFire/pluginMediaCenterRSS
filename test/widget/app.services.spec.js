@@ -32,12 +32,6 @@ describe('Unit : pluginPluginMediaCenterRSS content services', function () {
           }
         });
 		this.history = jasmine.createSpyObj('history', ['push', 'pop', 'onPop']);
-		this.history.push.and.callFake(function (title, metadata) {
-        });
-		this.history.pop.and.callFake(function (title, metadata) {
-        });
-		this.datastore.onPop.and.callFake(function () {
-        });
       });
     }));
     beforeEach(inject(function (_$rootScope_, _DataStore_, _Buildfire_, _TAG_NAMES_, _STATUS_CODE_, _STATUS_MESSAGES_) {
