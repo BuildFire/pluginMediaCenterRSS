@@ -21,7 +21,7 @@
             "content": {
               "carouselImages": [],
               "description": "",
-              "rssUrl": "http://rss.cnn.com/rss/cnn_topstories.rss"
+              "rssUrl": "http://blog.ted.com/feed"
             },
             "design": {
               "itemListLayout": LAYOUTS.itemListLayouts[0].name,
