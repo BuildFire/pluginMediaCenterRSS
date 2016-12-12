@@ -121,7 +121,7 @@ describe('Unit : pluginPluginMediaCenterRSS content services', function () {
     });
     describe('Unit : FeedParseService.validateFeedUrl Success', function () {
       beforeEach(function () {
-        $httpBackend.expectPOST("http://proxy.buildfire.com/validatefeedurl").respond({
+        $httpBackend.expectPOST("https://proxy.buildfire.com/validatefeedurl").respond({
           data: {
             isValidFeedUrl: true
           },
@@ -146,7 +146,7 @@ describe('Unit : pluginPluginMediaCenterRSS content services', function () {
     });
     describe('Unit : FeedParseService.validateFeedUrl Error', function () {
       beforeEach(function () {
-        $httpBackend.expectPOST("http://proxy.buildfire.com/validatefeedurl").respond({
+        $httpBackend.expectPOST("https://proxy.buildfire.com/validatefeedurl").respond({
           data: {
             isValidFeedUrl: false
           },
