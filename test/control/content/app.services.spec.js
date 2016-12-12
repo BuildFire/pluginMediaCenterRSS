@@ -171,7 +171,7 @@ describe('Unit : pluginPluginMediaCenterRSS content services', function () {
     });
     describe('Unit : FeedParseService.validateFeedUrl Error when Undefined feed url provided', function () {
       beforeEach(function () {
-        $httpBackend.expectPOST("http://proxy.buildfire.com/validatefeedurl").respond({
+        $httpBackend.expectPOST("https://proxy.buildfire.com/validatefeedurl").respond({
           data: {
             isValidFeedUrl: false
           },
@@ -196,7 +196,7 @@ describe('Unit : pluginPluginMediaCenterRSS content services', function () {
     });
     describe('Unit : FeedParseService.validateFeedUrl Server Error', function () {
       beforeEach(function () {
-        $httpBackend.expectPOST("http://proxy.buildfire.com/validatefeedurl").respond(500, 'internal server error');
+        $httpBackend.expectPOST("https://proxy.buildfire.com/validatefeedurl").respond(500, 'internal server error');
       });
       it('FeedParseService.validateFeedUrl should return server error', function () {
         var url = 'http://feeds.reuters.com/reuters/USVideoBreakingviews'
