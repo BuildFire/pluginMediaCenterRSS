@@ -65,7 +65,7 @@
         if (!_feedUrl) {
           deferred.reject(new Error('Undefined feed url'));
         }
-        $http.post('http://proxy.buildfire.com/validatefeedurl', {
+        $http.post('https://proxy.buildfire.com/validatefeedurl', {
           feedUrl: _feedUrl
         })
           .success(function (response) {
