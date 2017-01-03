@@ -554,7 +554,7 @@
                         Buildfire.history.pop();
                         Location.goToHome();
                     });
-                    WidgetMedia.pause();
+                    //WidgetMedia.pause();
                     //ItemDetailsService.setData(null);
                     if (WidgetMedia.data && WidgetMedia.data.design)
                         $rootScope.$broadcast('ROUTE_CHANGED', WidgetMedia.data.design.itemListLayout);
