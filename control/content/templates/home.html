@@ -12,13 +12,13 @@
     <div class="col-md-4 pull-right">
       <a class="btn btn-primary pull-right stretch"
          ng-disabled="!ContentHome.rssFeedUrl || ContentHome.isValidateButtonClicked"
-         ng-click="ContentHome.validateFeedUrl()">Validate</a>
+         ng-click="ContentHome.validateFeedUrl()">Submit</a>
     </div>
   </div>
 </div>
 <div class="item clearfix row">
   <div class="main pull-right col-md-9">
-    <div class="alert alert-success alert-sm text-center margin-top-ten" ng-show="ContentHome.isValidUrl">Feed successfully validated
+    <div class="alert alert-success alert-sm text-center margin-top-ten" ng-show="ContentHome.isValidUrl">Feed URL submitted, but validation may be required.
     </div>
     <div class="alert alert-danger alert-sm text-center margin-top-ten" ng-show="ContentHome.isInValidUrl">Error. Please check and try again
     </div>
