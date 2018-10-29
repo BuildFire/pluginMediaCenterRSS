@@ -294,7 +294,7 @@
               Buildfire.spinner.hide();
               $timeout(function () {
                 ContentHome.isValidUrl = false;
-                  ContentHome.urlValidationError="no response from host";
+                  ContentHome.urlValidationError="Timeout. Please try again.";
                   ContentHome.isValidateButtonClicked = false;
               }, 3000);
             }
@@ -303,13 +303,14 @@
               ContentHome.urlValidationError= "Unable to access feed URL";
               if (response && response.data && response.data.error) {
                   console.error(response.data.error);
-                  console.error(response.statusCode); 
+                  console.error('pluginMediaCenterRSS status code', response.statusCode); 
+                  console.error('pluginMediaCenterRSS error', response.data.error);
               }
               ContentHome.isValidateButtonClicked = true;
               Buildfire.spinner.hide();
               $timeout(function () {
                 ContentHome.isInValidUrl = false;
-                  ContentHome.urlValidationError="no response from host";
+                  ContentHome.urlValidationError="Timeout. Please try again.";
                   ContentHome.isValidateButtonClicked = false;
               }, 3000);
             };
