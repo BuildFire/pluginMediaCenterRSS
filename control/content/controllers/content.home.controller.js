@@ -302,8 +302,7 @@
               ContentHome.isInValidUrl = true;
               ContentHome.urlValidationError= "Unable to access feed URL";
               if (response && response.data && response.data.error) {
-                  console.error(response.data.error);
-                  console.error('pluginMediaCenterRSS status code', response.statusCode); 
+                  console.error('pluginMediaCenterRSS status code', response.statusCode);
                   console.error('pluginMediaCenterRSS error', response.data.error);
               }
               ContentHome.isValidateButtonClicked = true;
