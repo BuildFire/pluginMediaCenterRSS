@@ -155,6 +155,7 @@
                     var success = function (result) {
                             console.info('Feed data: ', result);
                             Buildfire.spinner.hide();
+                            debugger
                             if (result.data && result.data.items.length > 0) {
                                 result.data.items.forEach(function (item) {
                                     item.imageSrcUrl = getImageUrl(item);

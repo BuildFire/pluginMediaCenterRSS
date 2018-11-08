@@ -51,7 +51,9 @@
                     crop-width="240" crop-height="135" crop-type="crop"
                     data-final-src="{{WidgetHome.items[$index+1].imageSrcUrl}}">
                 <img ng-if="!WidgetHome.items[$index+1].imageSrcUrl"
+                
                      src='../../../styles/media/holder-16x9.png'>
+                     {{ console.warn(WidgetHome.items[$index+1]) }}
               </div>
             </div>
             <div class="list-item-copy text-left" style="cursor: pointer">
