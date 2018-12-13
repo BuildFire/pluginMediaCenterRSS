@@ -20,7 +20,13 @@
   <div class="main pull-right col-md-9">
     <div class="alert alert-success alert-sm text-center margin-top-ten" ng-show="ContentHome.isValidUrl">Feed URL submitted, but validation may be required.
     </div>
-    <div class="alert alert-danger alert-sm text-center margin-top-ten" ng-show="ContentHome.isInValidUrl">Error. Please check and try again
+    <div class="alert alert-danger alert-sm text-center margin-top-ten" ng-show="ContentHome.isInValidUrl">
+      <p ng-if="ContentHome.errorMessage">
+        {{ ContentHome.errorMessage}}
+      </p>
+      <p ng-if="!ContentHome.errorMessage">
+          Error. Please check and try again
+      </p>
     </div>
   </div>
 </div>

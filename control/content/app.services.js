@@ -61,21 +61,28 @@
    */
     .factory("FeedParseService", ['$q', '$http', function ($q, $http) {
       var validateFeedUrl = function (_feedUrl) {
+        console.warn(_feedUrl);
+        
         var deferred = $q.defer();
         if (!_feedUrl) {
           deferred.reject(new Error('Undefined feed url'));
         }
-        $http.post('https://proxy.buildfire.com/validatefeedurl', {
-          feedUrl: _feedUrl
-        })
+        // $http.post('https://54.197.5.7/validatefeedurl', 
+        // $http.post('https://proxy.buildfire.com/validatefeedurl', 
+        $http.post('https://obscure-lowlands-85124.herokuapp.com/validatefeedurl', 
+        { feedUrl: _feedUrl })
           .success(function (response) {
+            console.log(response);
+            
             if (response.data && response.data.isValidFeedUrl) {
               deferred.resolve(response);
             } else {
-              deferred.reject(new Error('Not a feed url'));
+              deferred.reject(response.data.error);
             }
           })
           .error(function (error) {
+            console.log(error);
+            
             deferred.reject(error);
           });
         return deferred.promise;
