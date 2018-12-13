@@ -298,20 +298,31 @@
               }, 3000);
             }
             , error = function (err) {
-              console.log('Error message', err.message);
-              // ContentHome.errorMessage = err;
+              console.log(err);
+              
               switch (err.code) {
-                case 'ETIMEDOUT':
-                  ContentHome.errorMessage = 'No response from the RSS server.'
+                case 'ETIMEDOUT': {
+                  ContentHome.errorMessage = "No response from the RSS server."
                   break;
-                case 'ENOTFOUND':
-                ContentHome.errorMessage = "Can't find the requested resource. Check the URL."
+                }
+                case 'ENOTFOUND': {
+                  ContentHome.errorMessage = "Can't find the requested resource. Check the URL."
                   break;
-                case 500: 
-                ContentHome.errorMessage = 'Something went wrong in the RSS server.'
-                break;
-                default:
+                }
+                case 500: {
+                  ContentHome.errorMessage = "Something went wrong in the RSS server."
                   break;
+                }
+                case 200: {
+                  if (err.message === "Invalid RSS feeds format") {
+                    ContentHome.errorMessage = "Feed format is invalid."
+                  }
+                  break;
+                }
+                default: {
+                  ContentHome.errorMessage = "Not a valid feed URL. Try again."
+                  break;
+                }
               }
               ContentHome.isInValidUrl = true;
               ContentHome.isValidateButtonClicked = false;
