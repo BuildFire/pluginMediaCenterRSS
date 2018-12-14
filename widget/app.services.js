@@ -71,9 +71,7 @@
         if (!_feedUrl) {
           deferred.reject(new Error('Undefined feed url'));
         }
-        // $http.post('https://proxy.buildfire.com/parsefeedurl', {
-          // $http.post('http://54.197.5.7/parsefeedurl', {
-            $http.post('https://obscure-lowlands-85124.herokuapp.com/parsefeedurl', {
+        $http.post('https://proxy.buildfire.com/parsefeedurl', {
           feedUrl: _feedUrl
         })
           .success(function (response) {

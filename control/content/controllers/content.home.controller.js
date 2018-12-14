@@ -286,9 +286,7 @@
          */
         ContentHome.validateFeedUrl = function () {
           Buildfire.spinner.show();
-          var success = function (data) {
-            console.log(data);
-            
+          var success = function () {
               ContentHome.isValidUrl = true;
               ContentHome.isValidateButtonClicked = false;
               ContentHome.data.content.rssUrl = ContentHome.rssFeedUrl;
@@ -298,8 +296,6 @@
               }, 3000);
             }
             , error = function (err) {
-              console.log(err);
-              
               switch (err.code) {
                 case 'ETIMEDOUT': {
                   ContentHome.errorMessage = "No response from the RSS server."
