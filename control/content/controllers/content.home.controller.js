@@ -285,22 +285,32 @@
          * ContentHome.validateFeedUrl function will called when you click validate button to check Rss feed url is either valid or not.
          */
         ContentHome.validateFeedUrl = function () {
+            ContentHome.isInValidUrl="";
           Buildfire.spinner.show();
-          var success = function () {
+          var success = function (response) {
               ContentHome.isValidUrl = true;
               ContentHome.isValidateButtonClicked = false;
               ContentHome.data.content.rssUrl = ContentHome.rssFeedUrl;
               Buildfire.spinner.hide();
               $timeout(function () {
                 ContentHome.isValidUrl = false;
+                  ContentHome.urlValidationError="Timeout. Please try again.";
+                  ContentHome.isValidateButtonClicked = false;
               }, 3000);
             }
-            , error = function () {
+            , error = function (response) {
               ContentHome.isInValidUrl = true;
-              ContentHome.isValidateButtonClicked = false;
+              ContentHome.urlValidationError= "Unable to access feed URL";
+              if (response && response.data && response.data.error) {
+                  console.error('pluginMediaCenterRSS status code', response.statusCode);
+                  console.error('pluginMediaCenterRSS error', response.data.error);
+              }
+              ContentHome.isValidateButtonClicked = true;
               Buildfire.spinner.hide();
               $timeout(function () {
                 ContentHome.isInValidUrl = false;
+                  ContentHome.urlValidationError="Timeout. Please try again.";
+                  ContentHome.isValidateButtonClicked = false;
               }, 3000);
             };
           ContentHome.isValidateButtonClicked = true;

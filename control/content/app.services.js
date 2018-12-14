@@ -72,7 +72,7 @@
             if (response.data && response.data.isValidFeedUrl) {
               deferred.resolve(response);
             } else {
-              deferred.reject(new Error('Not a feed url'));
+              deferred.reject(response);
             }
           })
           .error(function (error) {
