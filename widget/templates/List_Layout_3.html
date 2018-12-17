@@ -18,8 +18,11 @@
                         <img src='../../../styles/media/holder-16x9.png'>
                     </div>
                 </div>
-                <div class="padded text-left ellipsis">
-                    <a class="text-primary">{{WidgetHome.getTitle(item)}}</a>
+                <div class="list-item-copy padded text-left ">
+                    <div class="li-actions">
+                        <a class="bookmark unmarked" role="button"><i class="icon icon-star"></i></a>
+                    </div>
+                    <a class="text-primary ellipsis">{{WidgetHome.getTitle(item)}}</a>
 
                     <p class="summary ellipsis margin-zero" ng-bind-html="WidgetHome.getItemSummary(item)|safeHtml"></p>
                     <span class="list-item-date">{{WidgetHome.getItemPublishDate(item)}}</span>
