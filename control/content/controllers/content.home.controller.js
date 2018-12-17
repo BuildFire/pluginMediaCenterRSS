@@ -32,7 +32,7 @@
             "default": true
           }
           , tmrDelay = null;
-
+          ContentHome.errorMessage = false;
         /*
          * ContentHome.editor used to add, edit and delete images from your carousel.It will create a new instance of the buildfire carousel editor component.
          */
@@ -295,11 +295,36 @@
                 ContentHome.isValidUrl = false;
               }, 3000);
             }
-            , error = function () {
+            , error = function (err) {
+              switch (err.code) {
+                case 'ETIMEDOUT': {
+                  ContentHome.errorMessage = "No response from the RSS server."
+                  break;
+                }
+                case 'ENOTFOUND': {
+                  ContentHome.errorMessage = "Can't find the requested resource. Check the URL."
+                  break;
+                }
+                case 500: {
+                  ContentHome.errorMessage = "Something went wrong in the RSS server."
+                  break;
+                }
+                case 200: {
+                  if (err.message === "Invalid RSS feeds format") {
+                    ContentHome.errorMessage = "Feed format is invalid."
+                  }
+                  break;
+                }
+                default: {
+                  ContentHome.errorMessage = "Not a valid feed URL. Try again."
+                  break;
+                }
+              }
               ContentHome.isInValidUrl = true;
               ContentHome.isValidateButtonClicked = false;
               Buildfire.spinner.hide();
               $timeout(function () {
+                ContentHome.errorMessage = false;
                 ContentHome.isInValidUrl = false;
               }, 3000);
             };
