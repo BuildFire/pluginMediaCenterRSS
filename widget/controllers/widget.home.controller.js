@@ -9,7 +9,7 @@
                 $rootScope.deviceHeight = window.innerHeight;
                 $rootScope.deviceWidth = window.innerWidth || 320;
 
-                /*
+                /** 
                  * Private variables
                  *
                  * _items used to hold RSS feed items and helps in lazy loading.
@@ -153,25 +153,26 @@
                     resetDefaults();
                     Buildfire.spinner.show();
                     var success = function (result) {
-                            console.info('Feed data: ', result);
-                            Buildfire.spinner.hide();
-                            if (result.data && result.data.items.length > 0) {
-                                result.data.items.forEach(function (item) {
-                                    item.imageSrcUrl = getImageUrl(item);
-                                });
-                                _items = result.data.items;
-                                WidgetHome.isItems = true;
-                            } else {
-                                WidgetHome.isItems = false;
-                            }
-                            chunkData = Underscore.chunk(_items, limit);
-                            totalChunks = chunkData.length;
-                            WidgetHome.loadMore();
+                        console.info('Feed data: ', result);
+                        Buildfire.spinner.hide();
+                        if (result.data && result.data.items.length > 0) {
+                            result.data.items.forEach(function (item) {
+                                item.imageSrcUrl = getImageUrl(item);
+                            });
+                            _items = result.data.items;
+                            WidgetHome.isItems = true;
+                        } else {
+                            WidgetHome.isItems = false;
                         }
-                        , error = function (err) {
-                            Buildfire.spinner.hide();
-                            console.error('Error while getting feed data', err);
-                        };
+                        chunkData = Underscore.chunk(_items, limit);
+                        totalChunks = chunkData.length;
+                        WidgetHome.loadMore();
+                        viewedItems.findAndMarkViewed(WidgetHome.items)       
+                    }
+                    , error = function (err) {
+                        Buildfire.spinner.hide();
+                        console.error('Error while getting feed data', err);
+                    };
                     FeedParseService.getFeedData(rssUrl).then(success, error);
                 };
 
@@ -211,30 +212,34 @@
                  * It is used to fetch previously saved user's data
                  */
                 var init = function () {
+                    viewedItems.init();
                     var success = function (result) {
-
-                            if (Object.keys(result.data).length > 0)
-                                WidgetHome.data = result.data;
-                            else
-                                WidgetHome.data = _data;
-
-                            if (WidgetHome.data.design) {
-                                $rootScope.backgroundImage = WidgetHome.data.design.itemListBgImage;
-                                $rootScope.backgroundImageItem = WidgetHome.data.design.itemDetailsBgImage;
-                            }
-                            if (WidgetHome.data.content && WidgetHome.data.content.rssUrl) {
-                                currentRssUrl = WidgetHome.data.content.rssUrl;
-                                getFeedData(WidgetHome.data.content.rssUrl);
-                            }
-                        if(!WidgetHome.data.design)
+                        
+                        if (Object.keys(result.data).length > 0) {
+                            WidgetHome.data = result.data;
+                        }
+                        else {
+                            WidgetHome.data = _data;
+                        }
+                        if (WidgetHome.data.design) {
+                            $rootScope.backgroundImage = WidgetHome.data.design.itemListBgImage;
+                            $rootScope.backgroundImageItem = WidgetHome.data.design.itemDetailsBgImage;
+                        }
+                        if (WidgetHome.data.content && WidgetHome.data.content.rssUrl) {
+                            currentRssUrl = WidgetHome.data.content.rssUrl;
+                            getFeedData(WidgetHome.data.content.rssUrl);
+                        }
+                        if(!WidgetHome.data.design) {
                             WidgetHome.data.design = {};
-
-                            if (!WidgetHome.data.design.showImages)
-                                WidgetHome.data.design.showImages = FEED_IMAGES.YES;
-                            }
-                        , error = function (err) {
-                            console.error('Error while getting data', err);
-                        };
+                        }
+                        if (!WidgetHome.data.design.showImages) {
+                            WidgetHome.data.design.showImages = FEED_IMAGES.YES;
+                        }
+                        viewedItems.findAndMarkViewed(WidgetHome.items);
+                    }
+                    , error = function (err) {
+                        console.error('Error while getting data', err);
+                    };
                     DataStore.get(TAG_NAMES.RSS_FEED_INFO).then(success, error);
                 };
 
@@ -316,17 +321,29 @@
                     }
                 };
 
-        /**
-         * WidgetHome.goToItem() method
-         * will used to redirect on details page
-         * @param index
-         */
-        WidgetHome.goToItem = function (index) {
-          ItemDetailsService.setData(WidgetHome.items[index]);
-          $rootScope.showFeed=false;
-		  Buildfire.history.push(WidgetHome.items[index].title, {});
-          Location.goTo('#/item');
-        };
+                /**
+                 * WidgetHome.goToItem() method
+                 * will used to redirect on details page
+                 * @param index
+                 */
+                WidgetHome.goToItem = function (index, item) {
+                    viewedItems.markViewed($scope, item.link)
+                    ItemDetailsService.setData(WidgetHome.items[index]);
+                    $rootScope.showFeed=false;
+                    Buildfire.history.push(WidgetHome.items[index].title, {});
+                    Location.goTo('#/item');
+                };
+
+
+                buildfire.auth.onLogin(user => {
+                    console.log(user);
+                    init();
+                });
+
+                buildfire.auth.onLogout(err => {
+                    console.log(err)
+                    init();
+                });
 
                 /**
                  * WidgetHome.loadMore() function
