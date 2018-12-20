@@ -542,9 +542,9 @@
                     console.log(isBookmarked);
                     
                     if (isBookmarked) {
-                      bookmarks.delete($scope, [WidgetMedia.item]);
+                      bookmarks.delete($scope, WidgetMedia.item);
                     } else {
-                      bookmarks.add($scope, [WidgetMedia.item]);
+                      bookmarks.add($scope, WidgetMedia.item);
                     }
                 };
 
