@@ -1184,7 +1184,7 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	width: 100%;
 	background: #fff;
 	height: 100%;
-	position: fixed;
+	position: absolute;
 	top: 0;
 	opacity: .5;
 }
