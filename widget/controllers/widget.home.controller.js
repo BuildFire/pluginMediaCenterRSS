@@ -334,6 +334,18 @@
                     Location.goTo('#/item');
                 };
 
+                WidgetHome.bookmark = function (item) {
+                    console.log(video.bookmarked);
+                    const isBookmarked = video.bookmarked ? true : false;
+                    console.log(isBookmarked);
+                    
+                    if (isBookmarked) {
+                    //   bookmarks.delete($scope, video);
+                    } else {
+                    //   bookmarks.add($scope, video);
+                    }
+                };
+
 
                 buildfire.auth.onLogin(user => {
                     console.log(user);

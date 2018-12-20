@@ -10,7 +10,7 @@
       <div class="padded padding-zero">
         <div class="list-layout" ng-if="WidgetHome.data" infinite-scroll="WidgetHome.loadMore()" infinite-scroll-distance="1"
           infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
-          <div ng-show="WidgetHome.isItems" ng-click="WidgetHome.goToItem($index)" class="list-item col-xs-6 pull-left"
+          <div ng-show="WidgetHome.isItems" ng-click="WidgetHome.goToItem($index, item)" class="list-item col-xs-6 pull-left" ng-class="{'viewed' : item.viewed }"
             ng-repeat="item in WidgetHome.items" ng-class-even="list-item-even" ng-class-odd="list-item-odd"
             trigger-ng-repeat-render="">
             <div class="list-item-media text-center overflow-hidden" ng-if="WidgetHome.data.design.showImages == 'Yes'">

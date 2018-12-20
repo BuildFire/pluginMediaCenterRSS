@@ -9,7 +9,7 @@
             <div ng-if="WidgetHome.data" infinite-scroll="WidgetHome.loadMore()" infinite-scroll-distance="1"
                 infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
                 <div ng-show="WidgetHome.isItems" ng-repeat="item in  WidgetHome.items" trigger-ng-repeat-render=""
-                    ng-click="WidgetHome.goToItem($index)" style="cursor: pointer" class="list-item">
+                    ng-click="WidgetHome.goToItem($index, item)" style="cursor: pointer" class="list-item" ng-class="{'viewed' : item.viewed }">
                     <div class="plugin-banner clearfix border-bottom-grey" ng-if="WidgetHome.data.design.showImages == 'Yes'">
                         <div class="plugin-slide text-center" ng-if="item.imageSrcUrl">
                             <img load-image="16x9" crop-width="340" crop-height="192" crop-type="crop" data-final-src="{{item.imageSrcUrl}}">

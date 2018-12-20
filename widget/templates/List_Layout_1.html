@@ -16,8 +16,8 @@
               <div ng-if="WidgetHome.data.design.showImages == 'Yes'" class="list-item-media text-center border-radius-three overflow-hidden">
                 <div class="list-media-holder" style="cursor: pointer">
                   <div class="li-actions">
-                    <a class="bookmark unmarked" ng-click="WidgetHome.addBookmark($event, item)" role="button">
-                      <i class="icon icon-star" style="pointer-events: none"></i>
+                    <a class="bookmark" ng-class="{'unmarked' : !video.bookmarked}" ng-click="WidgetFeed.bookmark(video)" role="button">
+                      <i class="icon icon-star"></i>
                     </a>
                   </div>
                   <img ng-if="WidgetHome.items[$index].imageSrcUrl" load-image="16x9" crop-width="240" crop-height="135"

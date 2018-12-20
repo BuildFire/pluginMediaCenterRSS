@@ -57,7 +57,6 @@ const viewedItems = {
 	 * @param {Object} video
 	 */
 	markViewed($scope, id) {
-		debugger
 		const viewedItems = this.get();
 		const isViewed = viewedItems.includes(id);
 

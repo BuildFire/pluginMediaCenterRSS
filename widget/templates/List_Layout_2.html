@@ -9,8 +9,8 @@
             <div>
                 <div class="list-layout" ng-if="WidgetHome.data" infinite-scroll="WidgetHome.loadMore()"
                     infinite-scroll-distance="1" infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
-                    <div ng-show="WidgetHome.isItems" class="list-item" ng-repeat="item in  WidgetHome.items"
-                        trigger-ng-repeat-render="" ng-click="WidgetHome.goToItem($index)" style="cursor: pointer">
+                    <div ng-show="WidgetHome.isItems" class="list-item" ng-class="{'viewed' : item.viewed }" ng-repeat="item in  WidgetHome.items"
+                        trigger-ng-repeat-render="" ng-click="WidgetHome.goToItem($index, item)" style="cursor: pointer">
                         <div class="list-item-media text-left overflow-hidden">
                             <div ng-if="item.imageSrcUrl && WidgetHome.data.design.showImages == 'Yes'" class="list-media-holder pull-left">
                                 <img load-image="16x9" crop-width="220" crop-height="120" crop-type="crop" data-final-src="{{item.imageSrcUrl}}">
