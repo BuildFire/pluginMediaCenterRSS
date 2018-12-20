@@ -536,12 +536,26 @@
                     WidgetMedia.loadingVideo = false;
                 };
 
+                WidgetMedia.bookmark = function ($event) {
+                    $event.stopImmediatePropagation();
+                    const isBookmarked = WidgetMedia.item.bookmarked ? true : false;
+                    console.log(isBookmarked);
+                    
+                    if (isBookmarked) {
+                      bookmarks.delete($scope, [WidgetMedia.item]);
+                    } else {
+                      bookmarks.add($scope, [WidgetMedia.item]);
+                    }
+                };
+
 
                 /**
                  * Implementation of pull down to refresh
                  */
                 var onRefresh = Buildfire.datastore.onRefresh(function () {
                 });
+
+                $scope.$watch("WidgetMedia.imageUrl", () => console.log(WidgetMedia.imageUrl), true);
 
 
                 /**

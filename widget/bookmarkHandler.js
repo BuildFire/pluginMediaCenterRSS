@@ -7,32 +7,40 @@ const bookmarks = {
 			icon: item.imageSrcUrl
 		};
 		let callback = (err, data) => {
-			if (err) throw err;
-			$scope.WidgetHome.items.map(i => {
-                const isBookmarked = i.link === item.link;
-                if (isBookmarked) {
-                    i.bookmarked = true;
-                }
-            });
-
-            if (!$scope.$$phase) {
-                $scope.$apply();
+            if (err) throw err;
+            if ($scope.WidgetHome) {
+                $scope.WidgetHome.items.map(i => {
+                    const isBookmarked = i.link === item.link;
+                    if (isBookmarked) {
+                        i.bookmarked = true;
+                    }
+                });
+            } else if ($scope.WidgetMedia) {
+                $scope.WidgetMedia.item.bookmarked = true;
             }
+			if (!$scope.$$phase) {
+                $scope.$apply();
+            } 
+
 		};
 		buildfire.bookmarks.add(options, callback);
     },
     delete($scope, item) {
         const callback = () => {
-            $scope.WidgetHome.items.map(i => {
-                const isBookmarked = i.link === item.link;
-                if (isBookmarked) {
-                    i.bookmarked = false;
-                }
-            });
-
-            if (!$scope.$$phase) {
-                $scope.$apply();
+            if ($scope.WidgetHome) {
+                $scope.WidgetHome.items.map(i => {
+                    const isBookmarked = i.link === item.link;
+                    if (isBookmarked) {
+                        i.bookmarked = false;
+                    }
+                });
+            } else if ($scope.WidgetMedia) {
+                $scope.WidgetMedia.item.bookmarked = false;
             }
+			if (!$scope.$$phase) {
+                $scope.$apply();
+            } 
+
         };
         buildfire.bookmarks.delete(item.link, callback);
     },
