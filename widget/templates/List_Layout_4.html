@@ -1,42 +1,47 @@
 <div class="holder padding-zero customBackground">
-  <div class="media-center-plugin list-layout layout4">
-    <div class="media-center-banner clearfix">
+    <div class="media-center-plugin list-layout layout4">
+      <div class="media-center-banner clearfix">
         <div id="carousel" ng-if="WidgetHome.data.content.carouselImages.length" build-fire-carousel="" ng-style="WidgetHome.data.content.carouselImages.length > 0 ? {'min-height': (9 * deviceWidth / 16) + 'px' } : {}"></div>
-    </div>
-    <div
-         class="text-left padded padding-bottom-zero clearfix">
-      <p ng-if="WidgetHome.showDescription(WidgetHome.data.content.description)" style="word-break: break-word" ng-bind-html='WidgetHome.data.content.description | safeHtml'></p>
-    </div>
-    <div class="padded padding-zero">
-      <div class="list-layout" ng-if="WidgetHome.data"
-           infinite-scroll="WidgetHome.loadMore()"
-           infinite-scroll-distance="1"
-           infinite-scroll-disabled="WidgetHome.busy"
-           data-infinite-container=".infinite-scroll-parent">
-        <div ng-show="WidgetHome.isItems" ng-click="WidgetHome.goToItem($index)" class="list-item col-xs-6 pull-left"
-             ng-repeat="item in WidgetHome.items"
-             ng-class-even="list-item-even" ng-class-odd="list-item-odd" trigger-ng-repeat-render="">
-          <div class="list-item-media text-center overflow-hidden" ng-if="WidgetHome.data.design.showImages == 'Yes'">
-            <div class="list-media-holder" style="cursor: pointer">
-              <img ng-if="item.imageSrcUrl" load-image="1x1"
-                   crop-width="200" crop-height="200" crop-type="crop"
-                   data-final-src="{{item.imageSrcUrl}}">
-              <img ng-if="!item.imageSrcUrl"
-                   src='../../../styles/media/holder-1x1.png'>
+      </div>
+      <div class="text-left padded padding-bottom-zero clearfix">
+        <p ng-if="WidgetHome.showDescription(WidgetHome.data.content.description)" style="word-break: break-word"
+          ng-bind-html='WidgetHome.data.content.description | safeHtml'></p>
+      </div>
+      <div class="padded padding-zero">
+        <div class="list-layout" ng-if="WidgetHome.data" infinite-scroll="WidgetHome.loadMore()" infinite-scroll-distance="1"
+          infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
+          <div ng-show="WidgetHome.isItems" ng-click="WidgetHome.goToItem($index, item)" class="list-item col-xs-6 pull-left" ng-class="{'viewed' : item.viewed }"
+            ng-repeat="item in WidgetHome.items" ng-class-even="list-item-even" ng-class-odd="list-item-odd"
+            trigger-ng-repeat-render="">
+            <div class="list-item-media text-center overflow-hidden" ng-if="WidgetHome.data.design.showImages == 'Yes'">
+              <div class="list-media-holder" style="cursor: pointer">
+                <div class="li-actions">
+                  <a class="bookmark" ng-class="{ 'unmarked' : !item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button">
+                    <i class="bookmark-icon"></i>
+                  </a>
+                </div>
+                <img ng-if="item.imageSrcUrl" load-image="1x1" crop-width="200" crop-height="200" crop-type="crop"
+                  data-final-src="{{item.imageSrcUrl}}">
+                <img ng-if="!item.imageSrcUrl" src='../../../styles/media/holder-1x1.png'>
+              </div>
+            </div>
+            <div class="list-item-copy text-left" style="cursor: pointer">
+              <p class="ellipsis margin-zero text-primary">{{WidgetHome.getTitle(item)}}</p>
+  
+              <p class="summary ellipsis margin-zero" ng-bind-html="WidgetHome.getItemSummary(item)|safeHtml"></p>
+              <span class="list-item-date">{{WidgetHome.getItemPublishDate(item)}}</span>
             </div>
           </div>
-          <div class="list-item-copy text-left" style="cursor: pointer">
-            <p class="ellipsis margin-zero text-primary">{{WidgetHome.getTitle(item)}}</p>
-
-            <p class="summary ellipsis margin-zero" ng-bind-html="WidgetHome.getItemSummary(item)|safeHtml"></p>
-            <span class="list-item-date">{{WidgetHome.getItemPublishDate(item)}}</span>
+          <div ng-hide="WidgetHome.isItems" class="items-info">
+            <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>
+            <label class="pull-left">RSS Feed doesn't have any items.</label>
           </div>
-        </div>
-        <div ng-hide="WidgetHome.isItems" class="items-info">
-          <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>
-          <label class="pull-left">RSS Feed doesn't have any items.</label>
         </div>
       </div>
     </div>
+<<<<<<< HEAD
+  </div>
+=======
   </div>
 </div>
+>>>>>>> master
