@@ -11,11 +11,14 @@
       <div class="list-layout" ng-if="WidgetHome.data" infinite-scroll="WidgetHome.loadMore()" infinite-scroll-distance="1"
         infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
         <div ng-show="WidgetHome.isItems" class="row" ng-repeat="item in WidgetHome.items" ng-if="$index % 2 == 0">
-          <div class="list-item col-xs-6 pull-left" ng-click="WidgetHome.goToItem($index)">
+
+          <div class="list-item col-xs-6 pull-left" ng-class="{ 'viewed' : item.viewed }" ng-click="WidgetHome.goToItem($index, item)">
             <div ng-if="WidgetHome.data.design.showImages == 'Yes'" class="list-item-media text-center border-radius-three overflow-hidden">
               <div class="list-media-holder" style="cursor: pointer">
                 <div class="li-actions">
-                  <a class="bookmark unmarked" role="button"><i class="bookmark-icon"></i></a>
+                  <a class="bookmark" ng-class="{ 'unmarked' : !item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button">
+                    <i class="bookmark-icon"></i>
+                  </a>
                 </div>
                 <img ng-if="WidgetHome.items[$index].imageSrcUrl" load-image="16x9" crop-width="240" crop-height="135"
                   crop-type="crop" data-final-src="{{WidgetHome.items[$index].imageSrcUrl}}">
@@ -23,18 +26,30 @@
               </div>
             </div>
             <div class="list-item-copy text-left" style="cursor: pointer">
-              <p class="ellipsis margin-zero text-primary"><a class="text-primary">{{WidgetHome.getTitle(WidgetHome.items[$index])}}</a>
+              <p class="ellipsis margin-zero text-primary">
+                <a class="text-primary">{{WidgetHome.getTitle(WidgetHome.items[$index])}}</a>
               </p>
 
               <p style="max-width:240px" class="summary ellipsis margin-zero" ng-bind-html="WidgetHome.getItemSummary(WidgetHome.items[$index])|safeHtml"></p>
               <span class="list-item-date">{{WidgetHome.getItemPublishDate(WidgetHome.items[$index])}}</span>
             </div>
           </div>
+<<<<<<< HEAD
           <div class="list-item col-xs-6 pull-left" ng-click="WidgetHome.goToItem($index+1)">
             <div ng-if="WidgetHome.data.design.showImages == 'Yes'" class="list-item-media text-center border-radius-three overflow-hidden">
               <div class="list-media-holder" style="cursor: pointer">
                 <div class="li-actions">
                   <a class="bookmark unmarked" role="button"><i class="bookmark-icon"></i></a>
+=======
+
+          <div class="list-item col-xs-6 pull-left" ng-class="{ 'viewed' : WidgetHome.items[$index + 1].viewed }" ng-click="WidgetHome.goToItem($index+1, WidgetHome.items[$index + 1])">
+            <div ng-if="WidgetHome.data.design.showImages == 'Yes'" class="list-item-media text-center border-radius-three overflow-hidden">
+              <div class="list-media-holder" style="cursor: pointer">
+                <div class="li-actions">
+                  <a class="bookmark" ng-class="{ 'unmarked' : !WidgetHome.items[$index + 1].bookmarked }" ng-click="WidgetHome.bookmark($event, WidgetHome.items[$index + 1])" role="button">
+                    <i class="bookmark-icon"></i>
+                  </a>
+>>>>>>> 8732a594d28399752658a947a9c26db2055f0e88
                 </div>
                 <img ng-if="WidgetHome.items[$index+1].imageSrcUrl" load-image="16x9" crop-width="240" crop-height="135"
                   crop-type="crop" data-final-src="{{WidgetHome.items[$index+1].imageSrcUrl}}">
@@ -48,6 +63,11 @@
               <p style="max-width: 240px" class="summary ellipsis margin-zero" ng-bind-html="WidgetHome.getItemSummary(WidgetHome.items[$index+1])|safeHtml"></p>
               <span class="list-item-date">{{WidgetHome.getItemPublishDate(WidgetHome.items[$index+1])}}</span>
             </div>
+            
+          </div>
+          <div ng-hide="WidgetHome.isItems" class="items-info">
+            <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>
+            <label class="pull-left">RSS Feed doesn't have any items</label>.
           </div>
 
         </div>
@@ -58,4 +78,8 @@
       </div>
     </div>
   </div>
+<<<<<<< HEAD
 </div>
+=======
+</div>
+>>>>>>> 8732a594d28399752658a947a9c26db2055f0e88

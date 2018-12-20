@@ -1,37 +1,39 @@
 <div class="holder padding-zero customBackground">
-    <div class="media-center-plugin layout3">
-        <div class="plugin-banner clearfix">
-            <div id="carousel" ng-if="WidgetHome.data.content.carouselImages.length" build-fire-carousel="" ng-style="WidgetHome.data.content.carouselImages.length > 0 ? {'min-height': (9 * deviceWidth / 16) + 'px' } : {}"></div>
-        </div>
-        <div ng-if="WidgetHome.showDescription(WidgetHome.data.content.description)" class="text-left padded padding-bottom-zero clearfix">
-            <p style="word-break: break-word" ng-bind-html='WidgetHome.data.content.description | safeHtml'></p>
-        </div>
-        <div ng-if="WidgetHome.data" infinite-scroll="WidgetHome.loadMore()" infinite-scroll-distance="1"
-            infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
-            <div ng-show="WidgetHome.isItems" ng-repeat="item in  WidgetHome.items" trigger-ng-repeat-render=""
-                ng-click="WidgetHome.goToItem($index)" style="cursor: pointer" class="list-item">
-                <div class="plugin-banner clearfix border-bottom-grey" ng-if="WidgetHome.data.design.showImages == 'Yes'">
-                    <div class="plugin-slide text-center" ng-if="item.imageSrcUrl">
-                        <img load-image="16x9" crop-width="340" crop-height="192" crop-type="crop" data-final-src="{{item.imageSrcUrl}}">
-                    </div>
-                    <div class="plugin-slide text-center" ng-if="!item.imageSrcUrl">
-                        <img src='../../../styles/media/holder-16x9.png'>
-                    </div>
-                </div>
-                <div class="list-item-copy padded text-left ">
-                    <div class="li-actions">
-                        <a class="bookmark unmarked" role="button"><i class="bookmark-icon"></i></a>
-                    </div>
-                    <a class="text-primary ellipsis">{{WidgetHome.getTitle(item)}}</a>
-
-                    <p class="summary ellipsis margin-zero" ng-bind-html="WidgetHome.getItemSummary(item)|safeHtml"></p>
-                    <span class="list-item-date">{{WidgetHome.getItemPublishDate(item)}}</span>
-                </div>
+        <div class="media-center-plugin layout3">
+            <div class="plugin-banner clearfix">
+                <div id="carousel" ng-if="WidgetHome.data.content.carouselImages.length" build-fire-carousel="" ng-style="WidgetHome.data.content.carouselImages.length > 0 ? {'min-height': (9 * deviceWidth / 16) + 'px' } : {}"></div>
             </div>
-            <div ng-hide="WidgetHome.isItems" class="items-info">
-                <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>
-                <label class="pull-left">RSS Feed doesn't have any items.</label>
+            <div ng-if="WidgetHome.showDescription(WidgetHome.data.content.description)" class="text-left padded padding-bottom-zero clearfix">
+                <p style="word-break: break-word" ng-bind-html='WidgetHome.data.content.description | safeHtml'></p>
+            </div>
+            <div ng-if="WidgetHome.data" infinite-scroll="WidgetHome.loadMore()" infinite-scroll-distance="1"
+                infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
+                <div ng-show="WidgetHome.isItems" ng-repeat="item in  WidgetHome.items" trigger-ng-repeat-render=""
+                    ng-click="WidgetHome.goToItem($index, item)" style="cursor: pointer" class="list-item" ng-class="{'viewed' : item.viewed }">
+                    <div class="plugin-banner clearfix border-bottom-grey" ng-if="WidgetHome.data.design.showImages == 'Yes'">
+                        <div class="plugin-slide text-center" ng-if="item.imageSrcUrl">
+                            <img load-image="16x9" crop-width="340" crop-height="192" crop-type="crop" data-final-src="{{item.imageSrcUrl}}">
+                        </div>
+                        <div class="plugin-slide text-center" ng-if="!item.imageSrcUrl">
+                            <img src='../../../styles/media/holder-16x9.png'>
+                        </div>
+                    </div>
+                    <div class="list-item-copy padded text-left ">
+                        <div class="li-actions">
+                            <a class="bookmark" ng-class="{ 'unmarked' : !item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button">
+                                <i class="bookmark-icon"></i>
+                            </a>
+                        </div>
+                        <a class="text-primary ellipsis">{{WidgetHome.getTitle(item)}}</a>
+    
+                        <p class="summary ellipsis margin-zero" ng-bind-html="WidgetHome.getItemSummary(item)|safeHtml"></p>
+                        <span class="list-item-date">{{WidgetHome.getItemPublishDate(item)}}</span>
+                    </div>
+                </div>
+                <div ng-hide="WidgetHome.isItems" class="items-info">
+                    <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>
+                    <label class="pull-left">RSS Feed doesn't have any items.</label>
+                </div>
             </div>
         </div>
     </div>
-</div>

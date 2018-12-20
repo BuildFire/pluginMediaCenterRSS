@@ -47,7 +47,9 @@
 			</div>
 		</div>
 		<div class="item-actions padded padding-bottom-zero">
-			<a class="bookmark unmarked" role="button"><i class="bookmark-icon"></i></a>
+			<a class="bookmark" ng-class="{ 'unmarked' : !WidgetMedia.item.bookmarked }" ng-click="WidgetMedia.bookmark($event)" role="button">
+                <i class="bookmark-icon"></i>
+            </a>
 		</div>
 		<div class="padded">
 			<div class="link-list">
