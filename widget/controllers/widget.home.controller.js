@@ -167,7 +167,8 @@
                         chunkData = Underscore.chunk(_items, limit);
                         totalChunks = chunkData.length;
                         WidgetHome.loadMore();
-                        viewedItems.findAndMarkViewed(WidgetHome.items)       
+                        viewedItems.findAndMarkViewed(WidgetHome.items);
+                        bookmarks.findAndMarkAll($scope);
                     }
                     , error = function (err) {
                         Buildfire.spinner.hide();
@@ -334,15 +335,16 @@
                     Location.goTo('#/item');
                 };
 
-                WidgetHome.bookmark = function (item) {
-                    console.log(video.bookmarked);
-                    const isBookmarked = video.bookmarked ? true : false;
+                WidgetHome.bookmark = function ($event, item) {
+                    $event.stopImmediatePropagation();
+                    console.log(item);
+                    const isBookmarked = item.bookmarked ? true : false;
                     console.log(isBookmarked);
                     
                     if (isBookmarked) {
-                    //   bookmarks.delete($scope, video);
+                      bookmarks.delete($scope, item);
                     } else {
-                    //   bookmarks.add($scope, video);
+                      bookmarks.add($scope, item);
                     }
                 };
 
@@ -379,6 +381,8 @@
                         Buildfire.spinner.hide();
                     }
                 };
+
+                $scope.$watch('WidgetHome.items', () => console.log(WidgetHome.items), true);
 
                 /**
                  * will called when controller scope has been destroyed.

@@ -1175,10 +1175,6 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 .list-item.viewed .list-media-holder{
 	position: relative;
 }
-.list-item.viewed span{
-	position: relative;
-	display: block;
-}
 .layout1 .list-item.viewed .list-media-holder::after,
 .layout2 .list-item.viewed .list-media-holder::after,
 .layout3 .list-item.viewed .plugin-slide::after,
@@ -1198,13 +1194,43 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	font-family: icomoon;
 	opacity: 1;
 	font-style: normal;
-	display: block;
 	position: absolute;
-	right: 0;
-	top: 0;
 	color: #14cb5d;
+	margin-left: 16px;
 }
 /*///////////////// Bookmark Icon /////////////////*/
+.li-actions a{
+	display: block;
+}
+.item-actions a{
+	display: inline-block;
+}
+.list-item.viewed .li-actions a{
+	opacity: 1;
+}
+.bookmark .bookmark-icon{
+	width: 24px;
+	height: 24px;
+	display: block;
+}
+.layout2 .bookmark.unmarked .bookmark-icon,
+.layout3 .bookmark.unmarked .bookmark-icon,
+.layout1-detail .bookmark.unmarked .bookmark-icon{
+	background-image: url(../icons/ic_star_border_g.svg);
+}
+.layout2 .bookmark .bookmark-icon,
+.layout3 .bookmark .bookmark-icon,
+.layout1-detail .bookmark .bookmark-icon{
+	background-image: url(../icons/ic_star_full_g.svg);
+}
+.layout1 .bookmark.unmarked .bookmark-icon,
+.layout4 .bookmark.unmarked .bookmark-icon{
+	background-image: url(../icons/ic_star_border.svg);
+}
+.layout1 .bookmark .bookmark-icon,
+.layout4 .bookmark .bookmark-icon{
+	background-image: url(../icons/ic_star_full.svg);
+}
 .layout1 .list-item .list-media-holder::before,
 .layout2 .list-item .list-media-holder::before,
 .layout4 .list-item .list-media-holder::before{
@@ -1225,19 +1251,9 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	z-index: 2;
 	position: absolute;
 	font-size: 2rem;
-	right: 0;
+	right: 4px;
 	top: 4px;
 	border-radius: 40px;
-}
-.layout1 .li-actions a,
-.layout4 .li-actions a{
-	padding: 4px;
-}
-.layout1 .bookmark .icon,
-.layout4 .bookmark .icon,
-.layout1 .bookmark.unmarked .icon,
-.layout4 .bookmark.unmarked .icon{
-	color: #fff;
 }
 .layout3 .list-item .list-item-copy{
 	width: calc(100% - 30px);
@@ -1248,9 +1264,6 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	position: absolute;
 	right: -20px;
 	font-size: 2rem;
-}
-.layout3 .bookmark.unmarked .icon{
-	color: #777777;
 }
 .ellipsis{
 	display: block;

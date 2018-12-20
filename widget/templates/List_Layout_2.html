@@ -20,7 +20,9 @@
                           </div> commented on Nathans change request-->
                             <div class="list-item-copy text-left padding-left-ten padding-right-ten">
                                 <div class="li-actions">
-                                    <a class="bookmark unmarked" role="button"><i class="icon icon-star"></i></a>
+                                    <a class="bookmark" ng-class="{ 'unmarked' : !item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button">
+                                        <i class="bookmark-icon"></i>
+                                    </a>
                                 </div>
                                 <p class="ellipsis margin-zero text-primary"><a class="text-primary">{{WidgetHome.getTitle(item)}}</a>
                                 </p>
