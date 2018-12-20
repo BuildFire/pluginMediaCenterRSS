@@ -34,13 +34,6 @@
               <span class="list-item-date">{{WidgetHome.getItemPublishDate(WidgetHome.items[$index])}}</span>
             </div>
           </div>
-<<<<<<< HEAD
-          <div class="list-item col-xs-6 pull-left" ng-click="WidgetHome.goToItem($index+1)">
-            <div ng-if="WidgetHome.data.design.showImages == 'Yes'" class="list-item-media text-center border-radius-three overflow-hidden">
-              <div class="list-media-holder" style="cursor: pointer">
-                <div class="li-actions">
-                  <a class="bookmark unmarked" role="button"><i class="bookmark-icon"></i></a>
-=======
 
           <div class="list-item col-xs-6 pull-left" ng-class="{ 'viewed' : WidgetHome.items[$index + 1].viewed }" ng-click="WidgetHome.goToItem($index+1, WidgetHome.items[$index + 1])">
             <div ng-if="WidgetHome.data.design.showImages == 'Yes'" class="list-item-media text-center border-radius-three overflow-hidden">
@@ -49,7 +42,6 @@
                   <a class="bookmark" ng-class="{ 'unmarked' : !WidgetHome.items[$index + 1].bookmarked }" ng-click="WidgetHome.bookmark($event, WidgetHome.items[$index + 1])" role="button">
                     <i class="bookmark-icon"></i>
                   </a>
->>>>>>> 8732a594d28399752658a947a9c26db2055f0e88
                 </div>
                 <img ng-if="WidgetHome.items[$index+1].imageSrcUrl" load-image="16x9" crop-width="240" crop-height="135"
                   crop-type="crop" data-final-src="{{WidgetHome.items[$index+1].imageSrcUrl}}">
@@ -78,8 +70,4 @@
       </div>
     </div>
   </div>
-<<<<<<< HEAD
 </div>
-=======
-</div>
->>>>>>> 8732a594d28399752658a947a9c26db2055f0e88
