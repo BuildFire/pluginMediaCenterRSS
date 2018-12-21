@@ -3,11 +3,22 @@
 (function (angular) {
     angular
         .module('mediaCenterRSSPluginWidget')
-        .controller('WidgetHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope','FEED_IMAGES',
-            function ($scope, DataStore, Buildfire, FeedParseService, TAG_NAMES, ItemDetailsService, Location, $filter, Underscore, $rootScope,FEED_IMAGES) {
+        .controller('WidgetHomeCtrl', ['$location', '$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope','FEED_IMAGES',
+            function ($location, $scope, DataStore, Buildfire, FeedParseService, TAG_NAMES, ItemDetailsService, Location, $filter, Underscore, $rootScope,FEED_IMAGES) {
 
                 $rootScope.deviceHeight = window.innerHeight;
                 $rootScope.deviceWidth = window.innerWidth || 320;
+                
+                const _path = $location.path();
+
+                const handleBookmarkNav = () => {
+                    const reg = /^\/item\/goto/;
+
+                    if (reg.test(_path)) {
+                        let index = _path[_path.lastIndexOf('/') + 1];
+                        WidgetHome.goToItem(index, WidgetHome.items[index]);
+                    }
+                }   
                 
                 /** 
                  * Private variables
@@ -169,6 +180,8 @@
                         WidgetHome.loadMore();
                         viewedItems.findAndMarkViewed(WidgetHome.items);
                         bookmarks.findAndMarkAll($scope);
+
+                        handleBookmarkNav();
                     }
                     , error = function (err) {
                         Buildfire.spinner.hide();
