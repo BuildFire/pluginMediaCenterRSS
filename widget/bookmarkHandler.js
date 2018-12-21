@@ -3,7 +3,7 @@ const bookmarks = {
 		let options = {
 			id: item.link,
 			title: item.title,
-			payload: item,
+			payload: $scope.WidgetHome ? `#/item/goto/${$scope.WidgetHome.items.indexOf(item)}` : `#/item/goto/${$scope.WidgetMedia.index}`,
 			icon: item.imageSrcUrl
 		};
 		let callback = (err, data) => {
@@ -23,7 +23,7 @@ const bookmarks = {
             } 
 
 		};
-		buildfire.bookmarks.add(options, callback);
+		buildfire.bookmarks ? buildfire.bookmarks.add(options, callback) : null;
     },
     delete($scope, item) {
         const callback = () => {
@@ -42,14 +42,14 @@ const bookmarks = {
             } 
 
         };
-        buildfire.bookmarks.delete(item.link, callback);
+        buildfire.bookmarks ? buildfire.bookmarks.delete(item.link, callback) : null;
     },
     _getAll(callback) {
         const cb = (err, bookmarks) => {
             if (err) throw err;
             callback(bookmarks);
         };
-        buildfire.bookmarks.getAll(cb);
+        buildfire.bookmarks ? buildfire.bookmarks.getAll(cb) : cb(null, []);
     },
     findAndMarkAll($scope) {
         this._getAll(bookmarks => {

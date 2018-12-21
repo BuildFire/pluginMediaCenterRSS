@@ -8,7 +8,7 @@
 
                 $rootScope.deviceHeight = window.innerHeight;
                 $rootScope.deviceWidth = window.innerWidth || 320;
-
+                
                 /** 
                  * Private variables
                  *
@@ -329,6 +329,7 @@
                  */
                 WidgetHome.goToItem = function (index, item) {
                     viewedItems.markViewed($scope, item.link)
+                    WidgetHome.items[index].index = index;
                     ItemDetailsService.setData(WidgetHome.items[index]);
                     $rootScope.showFeed=false;
                     Buildfire.history.push(WidgetHome.items[index].title, {});
