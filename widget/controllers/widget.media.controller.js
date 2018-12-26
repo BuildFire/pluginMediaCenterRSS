@@ -3,8 +3,8 @@
 (function (angular) {
     angular
         .module('mediaCenterRSSPluginWidget')
-        .controller('WidgetMediaCtrl', ['$scope', '$sce', 'DataStore', 'TAG_NAMES', 'ItemDetailsService', '$filter', 'Location', 'MEDIUM_TYPES', '$rootScope',
-            function ($scope, $sce, DataStore, TAG_NAMES, ItemDetailsService, $filter, Location, MEDIUM_TYPES, $rootScope) {
+        .controller('WidgetMediaCtrl', ['$scope', '$sce', 'DataStore', 'Buildfire', 'TAG_NAMES', 'ItemDetailsService', '$filter', 'Location', 'MEDIUM_TYPES', '$rootScope',
+            function ($scope, $sce, DataStore, Buildfire, TAG_NAMES, ItemDetailsService, $filter, Location, MEDIUM_TYPES, $rootScope) {
 
                 console.log('Widget.media.controller loaded successfully------------------------------------------->>>>>>>>>>>>>>>>>>>.');
                 $rootScope.deviceHeight = window.innerHeight;
@@ -17,13 +17,13 @@
                  * @type {string}
                  * @private
                  *
-                 * audioPlayer is an instance of buildfire.services.media.audioPlayer component
+                 * audioPlayer is an instance of Buildfire.services.media.audioPlayer component
                  *  @private
                  *
                  */
                 var WidgetMedia = this
                     , currentRssUrl = null
-                    , audioPlayer = buildfire.services.media.audioPlayer;
+                    , audioPlayer = Buildfire.services.media.audioPlayer;
                 WidgetMedia.loadingVideo = false;
 
                 var _data = {
@@ -331,7 +331,7 @@
                             resetDefaults();
                             currentRssUrl = WidgetMedia.data.content.rssUrl;
                             $rootScope.showFeed = true;
-                            buildfire.history.pop();
+                            Buildfire.history.pop();
                             Location.goTo('#/');
                         }
                     }
@@ -512,7 +512,7 @@
                 };
 
                 WidgetMedia.openLink = function (link) {
-                    buildfire.navigation.openWindow(link, '_system');
+                    Buildfire.navigation.openWindow(link, '_system');
                 };
 
                 WidgetMedia.videoLoaded = function () {
@@ -535,7 +535,7 @@
                 /**
                  * Implementation of pull down to refresh
                  */
-                var onRefresh = buildfire.datastore.onRefresh(function () {
+                var onRefresh = Buildfire.datastore.onRefresh(function () {
                 });
 
 
@@ -546,8 +546,8 @@
                 $scope.$on("$destroy", function () {
                     DataStore.clearListener();
                     onRefresh.clear();
-                    buildfire.datastore.onRefresh(function () {
-                        buildfire.history.pop();
+                    Buildfire.datastore.onRefresh(function () {
+                        Buildfire.history.pop();
                         Location.goToHome();
                     });
                     //WidgetMedia.pause();

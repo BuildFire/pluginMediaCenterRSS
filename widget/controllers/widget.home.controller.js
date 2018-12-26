@@ -1,6 +1,6 @@
 'use strict';
 
-(function (angular, Buildfire) {
+(function (angular) {
     angular
         .module('mediaCenterRSSPluginWidget')
         .controller('WidgetHomeCtrl', ['$location', '$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope','FEED_IMAGES',
@@ -434,4 +434,4 @@
                 });
 
             }]);
-})(window.angular, window.Buildfire);
+})(window.angular);
