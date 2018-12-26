@@ -352,10 +352,7 @@
 
                 WidgetHome.bookmark = function ($event, item) {
                     $event.stopImmediatePropagation();
-                    console.log(item);
-                    const isBookmarked = item.bookmarked ? true : false;
-                    console.log(isBookmarked);
-                    
+                    const isBookmarked = item.bookmarked ? true : false;            
                     if (isBookmarked) {
                       bookmarks.delete($scope, item);
                     } else {
@@ -364,13 +361,11 @@
                 };
 
 
-                Buildfire.auth.onLogin(user => {
-                    console.log(user);
+                Buildfire.auth.onLogin(() => {
                     init();
                 });
 
-                Buildfire.auth.onLogout(err => {
-                    console.log(err)
+                Buildfire.auth.onLogout(() => {
                     init();
                 });
 
@@ -379,8 +374,6 @@
                  * will used to load more items on scroll to implement lazy loading
                  */
                 WidgetHome.loadMore = function () {
-                    console.log('loadmore');
-                    
                     if (WidgetHome.busy || totalChunks === 0) {
                         return;
                     }

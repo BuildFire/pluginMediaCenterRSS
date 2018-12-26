@@ -521,9 +521,7 @@
 
                 WidgetMedia.bookmark = function ($event) {
                     $event.stopImmediatePropagation();
-                    const isBookmarked = WidgetMedia.item.bookmarked ? true : false;
-                    console.log(isBookmarked);
-                    
+                    const isBookmarked = WidgetMedia.item.bookmarked ? true : false;            
                     if (isBookmarked) {
                       bookmarks.delete($scope, WidgetMedia.item);
                     } else {
