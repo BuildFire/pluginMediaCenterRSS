@@ -551,7 +551,7 @@
                     //WidgetMedia.pause();
                     //ItemDetailsService.setData(null);
                     if (WidgetMedia.data && WidgetMedia.data.design)
-                        $rootScope.$broadcast('ROUTE_CHANGED', WidgetMedia.data.design.itemListLayout);
+                        $rootScope.$broadcast('ROUTE_CHANGED', $rootScope.data.design.itemListLayout);
                 });
 
                 $rootScope.$on('deviceLocked', function () {
