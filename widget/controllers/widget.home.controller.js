@@ -1,6 +1,6 @@
 'use strict';
 
-(function (angular) {
+(function (angular, Buildfire) {
     angular
         .module('mediaCenterRSSPluginWidget')
         .controller('WidgetHomeCtrl', ['$location', '$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope','FEED_IMAGES',
@@ -60,7 +60,8 @@
                     , nextChunk = null
                     , totalChunks = 0
                     , currentRssUrl = null
-                    , WidgetHome = this;
+                    , WidgetHome = this,
+                    isInit = true;
 
                 var _data = {
                     "content": {
@@ -165,7 +166,6 @@
                     Buildfire.spinner.show();
                     var success = function (result) {
                         console.info('Feed data: ', result);
-                        Buildfire.spinner.hide();
                         if (result.data && result.data.items.length > 0) {
                             result.data.items.forEach(function (item) {
                                 item.imageSrcUrl = getImageUrl(item);
@@ -180,8 +180,9 @@
                         WidgetHome.loadMore();
                         viewedItems.findAndMarkViewed(WidgetHome.items);
                         bookmarks.findAndMarkAll($scope);
-
                         handleBookmarkNav();
+                        Buildfire.spinner.hide();
+                        isInit = false;
                     }
                     , error = function (err) {
                         Buildfire.spinner.hide();
@@ -231,6 +232,7 @@
                         
                         if (Object.keys(result.data).length > 0) {
                             WidgetHome.data = result.data;
+                            $rootScope.data = result.data;
                         }
                         else {
                             WidgetHome.data = _data;
@@ -344,7 +346,6 @@
                     viewedItems.markViewed($scope, item.link)
                     WidgetHome.items[index].index = index;
                     ItemDetailsService.setData(WidgetHome.items[index]);
-                    $rootScope.showFeed=false;
                     Buildfire.history.push(WidgetHome.items[index].title, {});
                     Location.goTo('#/item');
                 };
@@ -363,12 +364,12 @@
                 };
 
 
-                buildfire.auth.onLogin(user => {
+                Buildfire.auth.onLogin(user => {
                     console.log(user);
                     init();
                 });
 
-                buildfire.auth.onLogout(err => {
+                Buildfire.auth.onLogout(err => {
                     console.log(err)
                     init();
                 });
@@ -378,25 +379,24 @@
                  * will used to load more items on scroll to implement lazy loading
                  */
                 WidgetHome.loadMore = function () {
-
+                    console.log('loadmore');
+                    
                     if (WidgetHome.busy || totalChunks === 0) {
                         return;
                     }
                     WidgetHome.busy = true;
-                    Buildfire.spinner.show();
+                    if (!isInit) Buildfire.spinner.show();
                     if (nextChunkDataIndex < totalChunks) {
                         nextChunk = chunkData[nextChunkDataIndex];
                         WidgetHome.items.push.apply(WidgetHome.items, nextChunk);
                         nextChunkDataIndex = nextChunkDataIndex + 1;
                         nextChunk = null;
                         WidgetHome.busy = false;
-                        Buildfire.spinner.hide();
+                        if (!isInit) Buildfire.spinner.hide();
                     } else {
-                        Buildfire.spinner.hide();
+                        if (!isInit) Buildfire.spinner.hide();
                     }
                 };
-
-                $scope.$watch('WidgetHome.items', () => console.log(WidgetHome.items), true);
 
                 /**
                  * will called when controller scope has been destroyed.
@@ -434,4 +434,4 @@
                 });
 
             }]);
-})(window.angular);
+})(window.angular, window.Buildfire);

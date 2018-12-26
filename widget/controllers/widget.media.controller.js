@@ -3,8 +3,8 @@
 (function (angular) {
     angular
         .module('mediaCenterRSSPluginWidget')
-        .controller('WidgetMediaCtrl', ['$scope', '$sce', 'DataStore', 'Buildfire', 'TAG_NAMES', 'ItemDetailsService', '$filter', 'Location', 'MEDIUM_TYPES', '$rootScope',
-            function ($scope, $sce, DataStore, Buildfire, TAG_NAMES, ItemDetailsService, $filter, Location, MEDIUM_TYPES, $rootScope) {
+        .controller('WidgetMediaCtrl', ['$scope', '$sce', 'DataStore', 'TAG_NAMES', 'ItemDetailsService', '$filter', 'Location', 'MEDIUM_TYPES', '$rootScope',
+            function ($scope, $sce, DataStore, TAG_NAMES, ItemDetailsService, $filter, Location, MEDIUM_TYPES, $rootScope) {
 
                 console.log('Widget.media.controller loaded successfully------------------------------------------->>>>>>>>>>>>>>>>>>>.');
                 $rootScope.deviceHeight = window.innerHeight;
@@ -23,7 +23,7 @@
                  */
                 var WidgetMedia = this
                     , currentRssUrl = null
-                    , audioPlayer = Buildfire.services.media.audioPlayer;
+                    , audioPlayer = buildfire.services.media.audioPlayer;
                 WidgetMedia.loadingVideo = false;
 
                 var _data = {
@@ -331,7 +331,7 @@
                             resetDefaults();
                             currentRssUrl = WidgetMedia.data.content.rssUrl;
                             $rootScope.showFeed = true;
-                            Buildfire.history.pop();
+                            buildfire.history.pop();
                             Location.goTo('#/');
                         }
                     }
@@ -342,26 +342,9 @@
                  * It is used to fetch previously saved user's data
                  */
                 var init = function () {
-                    var success = function (result) {
-                            $rootScope.showFeed = false;
-                            if (Object.keys(result.data).length > 0)
-                                WidgetMedia.data = result.data;
-                            else
-                                WidgetMedia.data = _data;
-
-                            if (WidgetMedia.data.design) {
-                                $rootScope.backgroundImage = WidgetMedia.data.design.itemListBgImage;
-                                $rootScope.backgroundImageItem = WidgetMedia.data.design.itemDetailsBgImage;
-                                console.log('$rootScope.backgroundImage', $rootScope.backgroundImage);
-                                console.log('$rootScope.backgroundImageItem', $rootScope.backgroundImageItem);
-                            }
-                            currentRssUrl = WidgetMedia.data && WidgetMedia.data.content && WidgetMedia.data.content.rssUrl;
-                        }
-                        , error = function (err) {
-                            $rootScope.showFeed = false;
-                            console.error('Error while getting data', err);
-                        };
-                    DataStore.get(TAG_NAMES.RSS_FEED_INFO).then(success, error);
+                    WidgetMedia.data = $rootScope.data;
+                    currentRssUrl = $rootScope.data.currentRssUrl;
+                    $rootScope.showFeed = false;
                 };
 
                 /**
@@ -529,7 +512,7 @@
                 };
 
                 WidgetMedia.openLink = function (link) {
-                    Buildfire.navigation.openWindow(link, '_system');
+                    buildfire.navigation.openWindow(link, '_system');
                 };
 
                 WidgetMedia.videoLoaded = function () {
@@ -552,10 +535,9 @@
                 /**
                  * Implementation of pull down to refresh
                  */
-                var onRefresh = Buildfire.datastore.onRefresh(function () {
+                var onRefresh = buildfire.datastore.onRefresh(function () {
                 });
 
-                $scope.$watch("WidgetMedia.imageUrl", () => console.log(WidgetMedia.imageUrl), true);
 
 
                 /**
@@ -564,8 +546,8 @@
                 $scope.$on("$destroy", function () {
                     DataStore.clearListener();
                     onRefresh.clear();
-                    Buildfire.datastore.onRefresh(function () {
-                        Buildfire.history.pop();
+                    buildfire.datastore.onRefresh(function () {
+                        buildfire.history.pop();
                         Location.goToHome();
                     });
                     //WidgetMedia.pause();

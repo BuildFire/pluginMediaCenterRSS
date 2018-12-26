@@ -16,9 +16,9 @@
             <div ng-if="WidgetHome.data.design.showImages == 'Yes'" class="list-item-media text-center border-radius-three overflow-hidden">
               <div class="list-media-holder" style="cursor: pointer">
                 <div class="li-actions">
-                  <a class="bookmark" ng-class="{ 'unmarked' : !item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button">
-                    <i class="bookmark-icon"></i>
-                  </a>
+                  <div>
+                    <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
+                  </div>
                 </div>
                 <img ng-if="WidgetHome.items[$index].imageSrcUrl" load-image="16x9" crop-width="240" crop-height="135"
                   crop-type="crop" data-final-src="{{WidgetHome.items[$index].imageSrcUrl}}">
@@ -39,9 +39,9 @@
             <div ng-if="WidgetHome.data.design.showImages == 'Yes'" class="list-item-media text-center border-radius-three overflow-hidden">
               <div class="list-media-holder" style="cursor: pointer">
                 <div class="li-actions">
-                  <a class="bookmark" ng-class="{ 'unmarked' : !WidgetHome.items[$index + 1].bookmarked }" ng-click="WidgetHome.bookmark($event, WidgetHome.items[$index + 1])" role="button">
-                    <i class="bookmark-icon"></i>
-                  </a>
+                  <div>
+                    <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !WidgetHome.items[$index + 1].bookmarked, 'glyphicon-star' : WidgetHome.items[$index + 1].bookmarked }" ng-click="WidgetHome.bookmark($event, WidgetHome.items[$index + 1])" role="button"></i>
+                  </div>
                 </div>
                 <img ng-if="WidgetHome.items[$index+1].imageSrcUrl" load-image="16x9" crop-width="240" crop-height="135"
                   crop-type="crop" data-final-src="{{WidgetHome.items[$index+1].imageSrcUrl}}">

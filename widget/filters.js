@@ -16,6 +16,7 @@
       .filter('resizeImage', [function () {
           filter.$stateful = true;
           function filter(url, width, height) {
+            if(!url || url === "") return "";
               var _imgUrl;
               if (!_imgUrl) {
                   buildfire.imageLib.local.resizeImage(url, {

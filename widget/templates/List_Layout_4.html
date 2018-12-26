@@ -12,9 +12,9 @@
 					<div class="list-item-media text-center overflow-hidden" ng-if="WidgetHome.data.design.showImages == 'Yes'">
 						<div class="list-media-holder" style="cursor: pointer">
 							<div class="li-actions">
-								<a class="bookmark" ng-class="{ 'unmarked' : !item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button">
-                  <i class="bookmark-icon"></i>
-                </a>
+								<div>
+									<i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
+								</div>
 							</div>
               <img ng-if="item.imageSrcUrl" load-image="1x1" crop-width="200" crop-height="200" crop-type="crop" data-final-src="{{ item.imageSrcUrl }}" />
               <img ng-if="!item.imageSrcUrl" src="../../../styles/media/holder-1x1.png" />

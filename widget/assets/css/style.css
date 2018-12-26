@@ -356,7 +356,12 @@ html[browser="Firefox"] .layout3 .list-layout .list-item-media .list-media-holde
 }
 /* End of audio player style*/
 
-.audio-player-holder {
+.layout1-detail .audio-player-holder {
+    display: table;
+    text-align: center;
+    margin: 0 auto;
+}
+.layout2 .audio-player-holder {
     display: table;
     text-align: center;
     max-width: 260px;
@@ -672,12 +677,19 @@ html[browser="Firefox"] .layout3 .list-layout .list-item-media .list-media-holde
 	padding:6px 10px 5px;
 }
 
-.holder.now-playing{
+.layout1-detail .holder.now-playing{
 	margin-top:0;
 	height:100%;
-	padding:50px 0 0 !important;
 	color:#fff;
 }
+
+.layout2 .holder.now-playing{
+	margin-top:0;
+	height:100%;
+	padding: 50px 0 0 !important;
+	color:#fff;
+}
+
 .holder.now-playing .blurred-image{
 	-o-filter:blur(10px) brightness(0.2);
 	-moz-filter:blur(10px) brightness(0.2);
@@ -1217,27 +1229,42 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	height: 24px;
 	display: block;
 }
+.bookmark {
+	padding: 5px;
+	margin: -5px;
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings' !important;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.layout1-detail .item-actions, .layout2 .item-actions {
+    font-size: 2rem;
+    border-radius: 40px;
+}
 .layout2 .bookmark.unmarked .bookmark-icon,
 .layout3 .bookmark.unmarked .bookmark-icon,
-.layout1-detail .bookmark.unmarked .bookmark-icon{
-	background-image: url(../icons/ic_star_border_g.svg);
+.layout1-detail .bookmark.unmarked .bookmark-icon {
+	color: #999;
 }
-.layout2 .bookmark .bookmark-icon,
-.layout3 .bookmark .bookmark-icon,
-.layout1-detail .bookmark .bookmark-icon{
-	background-image: url(../icons/ic_star_full_g.svg);
+.layout3 .bookmark {
+	color: #999;
 }
 .layout1 .bookmark.unmarked .bookmark-icon,
-.layout4 .bookmark.unmarked .bookmark-icon{
-	background-image: url(../icons/ic_star_border.svg);
+.layout4 .bookmark.unmarked .bookmark-icon {
+	color: #fff;
 }
-.layout1 .bookmark .bookmark-icon,
-.layout4 .bookmark .bookmark-icon{
-	background-image: url(../icons/ic_star_full.svg);
+.layout1 .bookmark,
+.layout4 .bookmark {
+	color: #fff;	
 }
 .layout1 .list-item .list-media-holder::before,
 .layout2 .list-item .list-media-holder::before,
-.layout4 .list-item .list-media-holder::before{
+.layout4 .list-item .list-media-holder::before {
 	display: block;
 	position: absolute;
 	top: 0;

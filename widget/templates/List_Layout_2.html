@@ -15,14 +15,11 @@
                             <div ng-if="item.imageSrcUrl && WidgetHome.data.design.showImages == 'Yes'" class="list-media-holder pull-left">
                                 <img load-image="16x9" crop-width="220" crop-height="120" crop-type="crop" data-final-src="{{item.imageSrcUrl}}">
                             </div>
-                            <!-- <div ng-if="!item.imageSrcUrl" class="list-media-holder pull-left">
-                            <img src='../../../styles/media/holder-16x9.png'>
-                          </div> commented on Nathans change request-->
                             <div class="list-item-copy text-left padding-left-ten padding-right-ten">
                                 <div class="li-actions">
-                                    <a class="bookmark" ng-class="{ 'unmarked' : !item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button">
-                                        <i class="bookmark-icon"></i>
-                                    </a>
+                                    <div>
+                                        <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
+                                      </div>
                                 </div>
                                 <p class="ellipsis margin-zero text-primary"><a class="text-primary">{{WidgetHome.getTitle(item)}}</a>
                                 </p>

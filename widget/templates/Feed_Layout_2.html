@@ -47,9 +47,9 @@
 			</div>
 		</div>
 		<div class="item-actions padded padding-bottom-zero">
-			<a class="bookmark" ng-class="{ 'unmarked' : !WidgetMedia.item.bookmarked }" ng-click="WidgetMedia.bookmark($event)" role="button">
-                <i class="bookmark-icon"></i>
-            </a>
+			<div>
+				<i class="icon bookmark" style="font-family: 'Glyphicons Halflings' !important;" ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }" ng-click="WidgetMedia.bookmark($event)" role="button"></i>
+			  </div>
 		</div>
 		<div class="padded">
 			<div class="link-list">

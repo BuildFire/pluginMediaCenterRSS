@@ -47,9 +47,12 @@
       <p ng-if="WidgetMedia.item.author">By : {{WidgetMedia.item.author}}</p>
       <p ng-if="WidgetMedia.getItemPublishDate(WidgetMedia.item)">{{WidgetMedia.getItemPublishDate(WidgetMedia.item)}}</p>
       <div class="item-actions">
-        <a class="bookmark" ng-class="{ 'unmarked' : !WidgetMedia.item.bookmarked }" ng-click="WidgetMedia.bookmark($event)" role="button">
+        <!-- <a class="bookmark" ng-class="{ 'unmarked' : !WidgetMedia.item.bookmarked }" ng-click="WidgetMedia.bookmark($event)" role="button">
             <i class="bookmark-icon"></i>
-        </a>
+        </a> -->
+        <div>
+          <i class="icon bookmark" style="font-family: 'Glyphicons Halflings' !important;" ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }" ng-click="WidgetMedia.bookmark($event)" role="button"></i>
+        </div>
       </div>
     </div>
     <div class="padded padding-top-zero">
