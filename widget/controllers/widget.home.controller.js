@@ -199,6 +199,7 @@
                 var onUpdateCallback = function (event) {
                     if (event && event.tag === TAG_NAMES.RSS_FEED_INFO) {
                         WidgetHome.data = event.data;
+                        $rootScope.data = event.data;
                         $rootScope.backgroundImage = WidgetHome.data.design.itemListBgImage;
                         $rootScope.backgroundImageItem = WidgetHome.data.design.itemDetailsBgImage;
                         console.log('$rootScope.backgroundImage', $rootScope.backgroundImage);
