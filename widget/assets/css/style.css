@@ -1,4 +1,7 @@
 /* Plugin CSS */
+.plugin-slide img, .plugin-slide  {
+	max-height: none !important;
+}
 .media-center-plugin.layout2 .people-banner .people-bg{
 	background:rgba(0,0,0,0.8);
 }
@@ -140,6 +143,7 @@
 }
 .list-layout .list-item-media .list-media-holder{
 	margin:0 auto;
+	position: relative;
 	max-width:240px;
 }
 .layout4 .list-layout .list-item-media .list-media-holder{
