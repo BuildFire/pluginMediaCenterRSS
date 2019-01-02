@@ -666,7 +666,7 @@ html[browser="Firefox"] .layout3 .list-layout .list-item-media .list-media-holde
 .layout2 .holder.now-playing{
 	margin-top:0;
 	height:100%;
-	padding: 50px 0 0 !important;
+	padding: 24px 0 !important;
 	color:#fff;
 }
 
@@ -1222,10 +1222,6 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
-.layout1-detail .item-actions, .layout2 .item-actions {
-	font-size: 2rem;
-	border-radius: 40px;
-}
 .layout2 .bookmark.unmarked .bookmark-icon,
 .layout3 .bookmark.unmarked .bookmark-icon,
 .layout1-detail .bookmark.unmarked .bookmark-icon {
@@ -1360,7 +1356,58 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 .layout4 .list-item-container{
 	padding: 0 8px;
 }
-
+/*///////////////// Item Detail View /////////////////*/
+.layout1-detail .main-title,
+.layout2-detail .main-title{
+	font-size: 18px;
+	font-weight: bolder;
+	line-height: 1.25em;
+	margin-bottom: 8px;
+}
+.layout1-detail .item-author,
+.layout2-detail .item-author{
+	margin-bottom: 8px;
+}
+.layout1-detail .item-date,
+.layout2-detail .item-date{
+	font-size: .8em; 
+	margin-bottom: 0;
+}
+.layout1-detail .li-actions,
+.layout2-detail .li-actions{
+	position: relative;
+}
+.item-actions{
+	margin: 16px 0;
+	padding: 8px 16px;
+	border-top: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	position: relative;
+}
+.layout2-detail .item-actions{
+	margin: 0;
+	border-top: 0;
+}
+.layout1-detail .li-actions i,
+.layout2-detail .li-actions i{
+	flex-shrink: 0;
+	position: relative;
+	display: inline-block;
+	margin-left: 8px;
+}
+.layout2-detail .li-actions .share,
+.layout2-detail .li-actions .bookmark{
+	color: #999 !important;
+}
+.plugin-slider img, .plugin-slider  {
+	max-height: none !important;
+}
+.layout1-detail .audio-player-holder img{
+	max-height: 400px;
+}
 /* Hide share button until functionality is ready*/
 .share{
 	/* display: none !important; */

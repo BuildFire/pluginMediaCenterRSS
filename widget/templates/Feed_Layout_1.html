@@ -42,21 +42,12 @@
       </div>
     </div>
     <div class="text-left padded padding-bottom-zero clearfix ">
-      <h4 class="margin-zero" style="font-size: 16px;" ng-bind-html="WidgetMedia.getTitle(WidgetMedia.item)"></h4>
+      <h4 class="main-title margin-top-zero" style="font-size: 16px;" ng-bind-html="WidgetMedia.getTitle(WidgetMedia.item)"></h4>
 
-      <p ng-if="WidgetMedia.item.author">By : {{WidgetMedia.item.author}}</p>
-      <p ng-if="WidgetMedia.getItemPublishDate(WidgetMedia.item)">{{WidgetMedia.getItemPublishDate(WidgetMedia.item)}}</p>
-      <div class="item-actions">
-        <!-- <a class="bookmark" ng-class="{ 'unmarked' : !WidgetMedia.item.bookmarked }" ng-click="WidgetMedia.bookmark($event)" role="button">
-            <i class="bookmark-icon"></i>
-        </a> -->
-        <div>
-          <i class="icon bookmark" style="font-family: 'Glyphicons Halflings' !important;" ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }" ng-click="WidgetMedia.bookmark($event)" role="button"></i>
-        </div>
-      </div>
+      <p class="item-author" ng-if="WidgetMedia.item.author">By : {{WidgetMedia.item.author}}</p>
+      <p class="item-date" ng-if="WidgetMedia.getItemPublishDate(WidgetMedia.item)">{{WidgetMedia.getItemPublishDate(WidgetMedia.item)}}</p>
     </div>
-    <div class="padded padding-top-zero">
-      <hr class="small">
+    <div class="item-actions">
       <div class="link-list">
         <a class="text-primary" ng-click="WidgetMedia.playAudio()" ng-if="WidgetMedia.medium == 'AUDIO'">Listen</a>
         <a class="text-primary" ng-click="WidgetMedia.API.play()" ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">Watch</a>
@@ -65,7 +56,13 @@
           Source</a>
         <!--<a class="text-primary">Share</a>-->
       </div>
-      <hr class="small">
+      <div class="li-actions">
+        <i class="share glyphicon glyphicon-share-alt" role="button"></i>
+        <i class="icon bookmark" style="font-family: 'Glyphicons Halflings' !important;" ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }"
+          ng-click="WidgetMedia.bookmark($event)" role="button"></i>
+      </div>
+    </div>
+    <div class="padded padding-top-zero">
       <p id="description" ng-bind-html="WidgetMedia.item.description|removeHtmlStyle:WidgetMedia.imageUrl|safeHtml"></p>
     </div>
   </div>
