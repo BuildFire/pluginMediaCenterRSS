@@ -1,5 +1,5 @@
 <div class="holder padding-zero customBackground">
-	<div class="media-center-plugin layout2">
+	<div class="media-center-plugin layout2 layout2-detail">
 		<div class="people-banner" style="background:url('{{WidgetMedia.imageUrl|resizeImage:340:190}}') no-repeat; background-position:center center; background-size:cover !important;">
 			<div class="people-bg padding-bottom-fifteen clearfix">
 				<div ng-switch="WidgetMedia.medium" class="people-holder clearfix">
@@ -39,27 +39,27 @@
 						<img load-image="16x9" crop-width="250" crop-height="400" crop-type="resize" data-final-src="{{WidgetMedia.imageUrl}}">
 					</div>
 					<div class="people-info text-center col-xs-12">
-						<h5 class="ellipsis margin-top-fifteen whiteTheme" ng-bind-html="WidgetMedia.getTitle(WidgetMedia.item)" style="font-size: 16px;"></h5>
+						<h5 class="main-title margin-top-fifteen whiteTheme" ng-bind-html="WidgetMedia.getTitle(WidgetMedia.item)" style="font-size: 16px;"></h5>
 						<h5 class="margin-bottom-zero whiteTheme" ng-if="WidgetMedia.item.author">By : {{WidgetMedia.item.author}}</h5>
 						<h5 class="margin-bottom-zero whiteTheme" ng-if="WidgetMedia.getItemPublishDate(WidgetMedia.item)">{{WidgetMedia.getItemPublishDate(WidgetMedia.item)}}</h5>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="item-actions padded padding-bottom-zero">
-			<div>
-				<i class="icon bookmark" style="font-family: 'Glyphicons Halflings' !important;" ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }" ng-click="WidgetMedia.bookmark($event)" role="button"></i>
-			  </div>
-		</div>
-		<div class="padded">
+		<div class="item-actions">
 			<div class="link-list">
 				<a class="text-primary" ng-click="WidgetMedia.playAudio()" ng-if="WidgetMedia.medium == 'AUDIO'">Listen</a>
 				<a class="text-primary" ng-click="WidgetMedia.API.play()" ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">Watch</a>
 				<a class="text-primary" ng-if="WidgetMedia.item.link" ng-click="WidgetMedia.openLink(WidgetMedia.item.link)" target="_blank">View
 					Source</a>
-				<!--<a class="text-primary">Share</a>-->
 			</div>
-			<hr class="small">
+			<div class="li-actions">
+				<i class="share glyphicon glyphicon-share-alt" role="button"></i>
+				<i class="icon bookmark" style="font-family: 'Glyphicons Halflings' !important;" ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }"
+				 ng-click="WidgetMedia.bookmark($event)" role="button"></i>
+			</div>
+		</div>
+		<div class="padded">
 			<p ng-bind-html="WidgetMedia.item.description|removeHtmlStyle:WidgetMedia.imageUrl|safeHtml"></p>
 		</div>
 	</div>
