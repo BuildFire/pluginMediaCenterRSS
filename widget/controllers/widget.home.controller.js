@@ -419,6 +419,7 @@
                     }
                 });
 
+                $scope.$watch('WidgetHome.items', () => console.log(WidgetHome.items), true);
                 /**
                  * Implementation of pull down to refresh
                  */
