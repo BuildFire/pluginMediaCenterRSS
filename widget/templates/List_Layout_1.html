@@ -12,12 +12,14 @@
         infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
         <div ng-show="WidgetHome.isItems" class="row" ng-repeat="item in WidgetHome.items" ng-if="$index % 2 == 0">
 
-          <div class="list-item col-xs-6 pull-left" ng-class="{ 'viewed' : item.viewed }" ng-click="WidgetHome.goToItem($index, item)">
+          <div class="list-item col-xs-6 col-md-4 pull-left" ng-class="{ 'viewed' : item.viewed }" ng-click="WidgetHome.goToItem($index, item)">
             <div ng-if="WidgetHome.data.design.showImages == 'Yes'" class="list-item-media text-center border-radius-three overflow-hidden">
               <div class="list-media-holder" style="cursor: pointer">
                 <div class="li-actions">
                   <div>
-                    <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
+                    <i class="share glyphicon glyphicon-share-alt" role="button"></i>
+                    <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }"
+                      ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
                   </div>
                 </div>
                 <img ng-if="WidgetHome.items[$index].imageSrcUrl" load-image="16x9" crop-width="240" crop-height="135"
@@ -30,17 +32,20 @@
                 <a class="text-primary">{{WidgetHome.getTitle(WidgetHome.items[$index])}}</a>
               </p>
 
-              <p style="max-width:240px" class="summary ellipsis margin-zero" ng-bind-html="WidgetHome.getItemSummary(WidgetHome.items[$index])|safeHtml"></p>
+              <!-- <p class="summary ellipsis margin-zero" ng-bind-html="WidgetHome.getItemSummary(WidgetHome.items[$index])|safeHtml"></p> -->
               <span class="list-item-date">{{WidgetHome.getItemPublishDate(WidgetHome.items[$index])}}</span>
             </div>
           </div>
 
-          <div class="list-item col-xs-6 pull-left" ng-class="{ 'viewed' : WidgetHome.items[$index + 1].viewed }" ng-click="WidgetHome.goToItem($index+1, WidgetHome.items[$index + 1])">
+          <div class="list-item col-xs-6 col-md-4 pull-left" ng-class="{ 'viewed' : WidgetHome.items[$index + 1].viewed }"
+            ng-click="WidgetHome.goToItem($index+1, WidgetHome.items[$index + 1])">
             <div ng-if="WidgetHome.data.design.showImages == 'Yes'" class="list-item-media text-center border-radius-three overflow-hidden">
               <div class="list-media-holder" style="cursor: pointer">
                 <div class="li-actions">
                   <div>
-                    <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !WidgetHome.items[$index + 1].bookmarked, 'glyphicon-star' : WidgetHome.items[$index + 1].bookmarked }" ng-click="WidgetHome.bookmark($event, WidgetHome.items[$index + 1])" role="button"></i>
+                    <i class="share glyphicon glyphicon-share-alt" role="button"></i>
+                    <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !WidgetHome.items[$index + 1].bookmarked, 'glyphicon-star' : WidgetHome.items[$index + 1].bookmarked }"
+                      ng-click="WidgetHome.bookmark($event, WidgetHome.items[$index + 1])" role="button"></i>
                   </div>
                 </div>
                 <img ng-if="WidgetHome.items[$index+1].imageSrcUrl" load-image="16x9" crop-width="240" crop-height="135"
@@ -52,10 +57,10 @@
               <p class="ellipsis margin-zero text-primary"><a class="text-primary">{{WidgetHome.getTitle(WidgetHome.items[$index+1])}}</a>
               </p>
 
-              <p style="max-width: 240px" class="summary ellipsis margin-zero" ng-bind-html="WidgetHome.getItemSummary(WidgetHome.items[$index+1])|safeHtml"></p>
+              <!-- <p class="summary ellipsis margin-zero" ng-bind-html="WidgetHome.getItemSummary(WidgetHome.items[$index+1])|safeHtml"></p> -->
               <span class="list-item-date">{{WidgetHome.getItemPublishDate(WidgetHome.items[$index+1])}}</span>
             </div>
-            
+
           </div>
           <div ng-hide="WidgetHome.isItems" class="items-info">
             <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>
