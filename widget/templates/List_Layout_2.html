@@ -9,25 +9,35 @@
         <div>
             <div class="list-layout" ng-if="WidgetHome.data" infinite-scroll="WidgetHome.loadMore()"
                 infinite-scroll-distance="1" infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
-                <div ng-show="WidgetHome.isItems" class="list-item" ng-class="{'viewed' : item.viewed }" ng-repeat="item in  WidgetHome.items"
-                    trigger-ng-repeat-render="" ng-click="WidgetHome.goToItem($index, item)" style="cursor: pointer">
+                <div ng-show="WidgetHome.isItems" class="list-item" ng-class="{'viewed' : item.viewed }" ng-repeat="item in  WidgetHome.items" trigger-ng-repeat-render="" ng-click="WidgetHome.goToItem($index, item)" style="cursor: pointer">
+
                     <div ng-if="item.imageSrcUrl && WidgetHome.data.design.showImages == 'Yes'" class="list-media-holder">
                         <div class="li-actions">
-                            <i class="share glyphicon glyphicon-share-alt" role="button"></i>
+                            <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetHome.share($event, item)" role="button"></i>
                         </div>
                         <img load-image="16x9" crop-width="220" crop-height="120" crop-type="crop" data-final-src="{{item.imageSrcUrl}}">
                     </div>
-                    <div class="list-item-copy ellipsis">
-                        <p class="ellipsis text-primary"><a class="text-primary">{{WidgetHome.getTitle(item)}}</a>
-                        </p>
 
-                        <!-- <p class="summary ellipsis margin-zero" ng-bind-html="WidgetHome.getItemSummary(item)|safeHtml">></p> -->
-                        <span class="list-item-date">{{WidgetHome.getItemPublishDate(item)}}</span>
+                    <div ng-style="{ 'min-width': deviceWidth - 128}">
+
+                        <div class="list-item-copy ellipsis">
+                            <p class="ellipsis text-primary">
+                                <a class="text-primary">{{item.title}}</a>
+                            </p>
+                        </div>
+
+                        <div class="info-group">
+
+                            <span class="list-item-date">{{WidgetHome.getItemPublishDate(item)}}</span>
+
+                            <div class="li-actions">
+                                <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
+                            </div>
+
+                        </div>
+
                     </div>
-                    <div class="li-actions">
-                        <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }"
-                            ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
-                    </div>
+
                 </div>
                 <div ng-hide="WidgetHome.isItems" class="items-info">
                     <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>

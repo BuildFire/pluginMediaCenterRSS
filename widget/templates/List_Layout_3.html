@@ -25,7 +25,7 @@
                     <div class="li-footer">
                         <span class="list-item-date">{{WidgetHome.getItemPublishDate(item)}}</span>
                         <div class="li-actions">
-                            <i class="share glyphicon glyphicon-share-alt" role="button"></i>
+                            <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetHome.share($event, item)" role="button"></i>
                             <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }"
                                 ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
                         </div>

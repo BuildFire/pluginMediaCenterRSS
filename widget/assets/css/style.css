@@ -1321,6 +1321,13 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	left: 0;
 	z-index: 2;
 }
+.layout2 .info-group {
+	display: flex;
+	align-items: center;
+}
+.layout2 .list-item-date {
+	flex: 1;
+}
 .layout2 .li-actions i{
 	margin-left: 8px;
 	position: relative;
@@ -1329,7 +1336,7 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	margin-left: 0;
 }
 /* Layout 3 */
-.layout3 .li-footer{
+.layout3 .li-footer {
 	display: flex;
 	align-items: center;
 	justify-content: space-between; 

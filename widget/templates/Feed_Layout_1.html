@@ -57,7 +57,7 @@
         <!--<a class="text-primary">Share</a>-->
       </div>
       <div class="li-actions">
-        <i class="share glyphicon glyphicon-share-alt" role="button"></i>
+        <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetMedia.share()" role="button"></i>
         <i class="icon bookmark" style="font-family: 'Glyphicons Halflings' !important;" ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }"
           ng-click="WidgetMedia.bookmark($event)" role="button"></i>
       </div>

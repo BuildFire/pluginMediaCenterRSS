@@ -529,6 +529,23 @@
                     }
                 };
 
+                WidgetMedia.share = function () {
+
+                    const options = {
+                        subject: WidgetMedia.item.title,
+                        text: `${WidgetMedia.item.title}, by ${WidgetMedia.item.author}`,
+                        // image: WidgetMedia.item.image.url,
+                        link: WidgetMedia.item.link
+                    };
+
+                    const callback = err => {
+                        if (err) {
+                            console.warn(err);
+                        }
+                    };
+
+                    buildfire.device.share(options, callback);
+                };
 
                 /**
                  * Implementation of pull down to refresh

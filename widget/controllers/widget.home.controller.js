@@ -361,6 +361,25 @@
                     }
                 };
 
+                WidgetHome.share = function ($event, item) {
+                    $event.stopImmediatePropagation();
+
+                    const options = {
+                        subject: item.title,
+                        text: `${item.title}, by ${item.author}`,
+                        // image: item.image.url,
+                        link: item.link
+                    };
+
+                    const callback = err => {
+                        if (err) {
+                            console.warn(err);
+                        }
+                    };
+
+                    buildfire.device.share(options, callback);
+                };
+
 
                 Buildfire.auth.onLogin(() => {
                     init();
@@ -419,7 +438,6 @@
                     }
                 });
 
-                $scope.$watch('WidgetHome.items', () => console.log(WidgetHome.items), true);
                 /**
                  * Implementation of pull down to refresh
                  */
