@@ -12,101 +12,37 @@
     <!------------ CONTAINER ----------->    
     <div class="padded padding-top-zero">
       <div class="list-layout row" ng-if="WidgetHome.data" infinite-scroll="WidgetHome.loadMore()" infinite-scroll-distance="1" infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
-      
         <!--------- LIST ITEM REPEAT -------> 
-        <!--
-        <div ng-show="WidgetHome.isItems" class="row" ng-repeat="item in WidgetHome.items" ng-if="$index % 2 == 0">
-
-          <div class="list-item col-xs-6 col-md-4 pull-left" ng-class="{ 'viewed' : item.viewed }" ng-click="WidgetHome.goToItem($index, item)">
-            <div ng-if="WidgetHome.data.design.showImages == 'Yes'" class="list-item-media text-center border-radius-three overflow-hidden">
-              <div class="list-media-holder" style="cursor: pointer">
-                <div class="li-actions">
-                  <div>
-                    <i class="share glyphicon glyphicon-share-alt" role="button"></i>
-                    <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }"
-                      ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
-                  </div>
-                </div>
-                <img ng-if="WidgetHome.items[$index].imageSrcUrl" load-image="16x9" crop-width="240" crop-height="135"
-                  crop-type="crop" data-final-src="{{WidgetHome.items[$index].imageSrcUrl}}">
-                <img ng-if="!WidgetHome.items[$index].imageSrcUrl" src='../../../styles/media/holder-16x9.png'>
+        <div ng-show="WidgetHome.isItems" ng-click="WidgetHome.goToItem($index, item)" class="list-item col-xs-6 col-md-4 pull-left" ng-class="{'viewed' : item.viewed }" ng-repeat="item in WidgetHome.items" ng-class-even="list-item-even" ng-class-odd="list-item-odd" trigger-ng-repeat-render="">
+          <div class="list-item-media border-radius-three text-center overflow-hidden" ng-if="WidgetHome.data.design.showImages == 'Yes'">
+            <div class="list-media-holder" style="cursor: pointer">
+              <!-- ACTIONS -->
+              <div class="li-actions">
+                <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetHome.share($event, item)" role="button"></i>
+                <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
               </div>
-            </div>
-            <div class="list-item-copy text-left" style="cursor: pointer">
-              <p class="ellipsis margin-zero text-primary">
-                <a class="text-primary">{{WidgetHome.getTitle(WidgetHome.items[$index])}}</a>
-              </p>
-
-              <span class="list-item-date">{{WidgetHome.getItemPublishDate(WidgetHome.items[$index])}}</span>
+              <!-- IMAGE -->
+              <img ng-if="item.imageSrcUrl" load-image="16x9" crop-width="{{ (deviceWidth - 30 ) / 2 }}" crop-height="{{ ((deviceWidth - 30) / 2) * .5625  }}" crop-type="crop" data-final-src="{{ item.imageSrcUrl }}" />
+              <img ng-if="!item.imageSrcUrl" src='../../../styles/media/holder-16x9.png' />
             </div>
           </div>
-          
-          <div class="list-item col-xs-6 col-md-4 pull-left" ng-class="{ 'viewed' : WidgetHome.items[$index + 1].viewed }"
-            ng-click="WidgetHome.goToItem($index+1, WidgetHome.items[$index + 1])">
-            <div ng-if="WidgetHome.data.design.showImages == 'Yes'" class="list-item-media text-center border-radius-three overflow-hidden">
-              <div class="list-media-holder" style="cursor: pointer">
-                <div class="li-actions">
-                  <div>
-                    <i class="share glyphicon glyphicon-share-alt" role="button"></i>
-                    <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !WidgetHome.items[$index + 1].bookmarked, 'glyphicon-star' : WidgetHome.items[$index + 1].bookmarked }"
-                      ng-click="WidgetHome.bookmark($event, WidgetHome.items[$index + 1])" role="button"></i>
-                  </div>
-                </div>
-                <img ng-if="WidgetHome.items[$index+1].imageSrcUrl" load-image="16x9" crop-width="240" crop-height="135"
-                  crop-type="crop" data-final-src="{{WidgetHome.items[$index+1].imageSrcUrl}}">
-                <img ng-if="!WidgetHome.items[$index+1].imageSrcUrl" src='../../../styles/media/holder-16x9.png'>
-              </div>
-            </div>
-            <div class="list-item-copy text-left" style="cursor: pointer">
-              <p class="ellipsis margin-zero text-primary"><a class="text-primary">{{WidgetHome.getTitle(WidgetHome.items[$index+1])}}</a>
-              </p>
-
-              <span class="list-item-date">{{WidgetHome.getItemPublishDate(WidgetHome.items[$index+1])}}</span>
-            </div>
-          -->
-
-            <div ng-show="WidgetHome.isItems" ng-click="WidgetHome.goToItem($index, item)" class="list-item col-xs-6 col-md-4 pull-left" ng-class="{'viewed' : item.viewed }" ng-repeat="item in WidgetHome.items" ng-class-even="list-item-even" ng-class-odd="list-item-odd" trigger-ng-repeat-render="">
-					
-              <div class="list-item-media border-radius-three text-center overflow-hidden" ng-if="WidgetHome.data.design.showImages == 'Yes'">
-                <div class="list-media-holder" style="cursor: pointer">
-
-                  <!-- ACTIONS -->
-                  <div class="li-actions">
-                    <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetHome.share($event, item)" role="button"></i>
-                    <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
-                  </div>
-
-                  <!-- IMAGE -->
-                  <img ng-if="item.imageSrcUrl" load-image="16x9" crop-width="{{ (deviceWidth - 30 ) / 2 }}" crop-height="{{ ((deviceWidth - 30) / 2) * .5625  }}" crop-type="crop" data-final-src="{{ item.imageSrcUrl }}" />
-                  <img ng-if="!item.imageSrcUrl" src='../../../styles/media/holder-16x9.png' />
-
-                </div>
-              </div>
-
-              <!-- INFO -->
-              <div class="list-item-copy text-left" style="cursor: pointer">
-                <p class="ellipsis margin-zero text-primary">{{ WidgetHome.getTitle(item) }}</p>
-                <span class="list-item-date">{{ WidgetHome.getItemPublishDate(item) }}</span>
-              </div>
-
-            </div>
+          <!-- INFO -->
+          <div class="list-item-copy text-left" style="cursor: pointer">
+            <p class="ellipsis margin-zero text-primary">{{ WidgetHome.getTitle(item) }}</p>
+            <span class="list-item-date">{{ WidgetHome.getItemPublishDate(item) }}</span>
           </div>
-
-          <!-- EMPTY STATE -->
-          <div ng-hide="WidgetHome.isItems" class="items-info">
-            <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>
-            <label class="pull-left">RSS Feed doesn't have any items</label>.
-          </div>
-
         </div>
-        
-        <!-- EMPTY STATE -->
-        <div ng-hide="WidgetHome.isItems" class="items-info">
-          <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>
-          <label class="pull-left">RSS Feed doesn't have any items</label>.
-        </div>
-
       </div>
+      <!-- EMPTY STATE -->
+      <div ng-hide="WidgetHome.isItems" class="items-info">
+        <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>
+        <label class="pull-left">RSS Feed doesn't have any items</label>.
+      </div>
+    </div>    
+    <!-- EMPTY STATE -->
+    <div ng-hide="WidgetHome.isItems" class="items-info">
+      <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>
+      <label class="pull-left">RSS Feed doesn't have any items</label>.
     </div>
   </div>
 </div>

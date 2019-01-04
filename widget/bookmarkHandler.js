@@ -70,11 +70,11 @@ const bookmarks = {
                     }
                 });
             } else if ($scope.WidgetMedia) {
-                const isBookmarked = bookmarkIds.includes($scope.WidgetMedia.link);
+                const isBookmarked = bookmarkIds.includes($scope.WidgetMedia.item.link);
                 if (isBookmarked) {
-                    item.bookmarked = true;
+                    $scope.WidgetMedia.item.bookmarked = true;
                 } else {
-                    item.bookmarked = false;
+                    $scope.WidgetMedia.item.bookmarked = false;
                 }
             }
             if (!$scope.$$phase) {
