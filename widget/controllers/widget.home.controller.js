@@ -346,6 +346,7 @@
                 WidgetHome.goToItem = function (index, item) {
                     viewedItems.markViewed($scope, item.link)
                     WidgetHome.items[index].index = index;
+                    WidgetHome.items[index].bookmarked = true;
                     ItemDetailsService.setData(WidgetHome.items[index]);
                     Buildfire.history.push(WidgetHome.items[index].title, {});
                     Location.goTo('#/item');

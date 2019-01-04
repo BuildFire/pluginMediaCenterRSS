@@ -10,6 +10,14 @@
                 $rootScope.deviceHeight = window.innerHeight;
                 $rootScope.deviceWidth = window.innerWidth;
 
+                buildfire.auth.onLogin(() => {
+                    bookmarks.findAndMarkAll($scope);
+                });
+                
+                buildfire.auth.onLogout(() => {
+                    bookmarks.findAndMarkAll($scope);
+                });
+
                 /*
                  * Private variables
                  *

@@ -3,7 +3,7 @@ const bookmarks = {
 		let options = {
 			id: item.link,
 			title: item.title,
-			payload: $scope.WidgetHome ? `#/item/goto/${$scope.WidgetHome.items.indexOf(item)}` : `#/item/goto/${$scope.WidgetMedia.index}`,
+			payload: $scope.WidgetHome ? `#/item/goto/${$scope.WidgetHome.items.indexOf(item)}` : `#/item/goto/${$scope.WidgetMedia.item.index}`,
 			icon: item.imageSrcUrl
 		};
 		let callback = (err, data) => {
@@ -59,14 +59,24 @@ const bookmarks = {
             bookmarks.forEach(bookmark => {
                 bookmarkIds.push(bookmark.id);
             });
-            $scope.WidgetHome.items.map(item => {
-                const isBookmarked = bookmarkIds.includes(item.link);
+
+            if ($scope.WidgetHome) {
+                $scope.WidgetHome.items.map(item => {
+                    const isBookmarked = bookmarkIds.includes(item.link);
+                    if (isBookmarked) {
+                        item.bookmarked = true;
+                    } else {
+                        item.bookmarked = false;
+                    }
+                });
+            } else if ($scope.WidgetMedia) {
+                const isBookmarked = bookmarkIds.includes($scope.WidgetMedia.link);
                 if (isBookmarked) {
                     item.bookmarked = true;
                 } else {
                     item.bookmarked = false;
                 }
-            });
+            }
             if (!$scope.$$phase) {
                 $scope.$apply();
             }
