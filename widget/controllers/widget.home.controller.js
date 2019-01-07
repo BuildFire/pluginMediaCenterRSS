@@ -249,6 +249,7 @@
                         }
                         else {
                             WidgetHome.data = _data;
+                            $rootScope.data = _data;
                         }
                         if (WidgetHome.data.design) {
                             $rootScope.backgroundImage = WidgetHome.data.design.itemListBgImage;
