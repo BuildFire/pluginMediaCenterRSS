@@ -11,16 +11,6 @@
                 
                 const _path = $location.path();
 
-                function Dialog(options,callback){
-                    this.modalInstance = null;
-                    this.options = options;
-                    this.callback = callback;
-                }
-            
-                Dialog.prototype.close = function(result){
-                    this.modalInstance.close(result);
-                };
-
                 const handleBookmarkNav = () => {
                     const reg = /^\/item\/goto/;
 
@@ -46,8 +36,8 @@
                  * Private variables
                  *
                  * _items used to hold RSS feed items and helps in lazy loading.
-                 * @type {object}
-                 * @private
+                 * @type {object} 
+                 * @private 
                  *
                  * limit used to load a number of items in list on scroll
                  * @type {number}
