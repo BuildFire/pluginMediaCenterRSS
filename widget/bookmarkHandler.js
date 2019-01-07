@@ -3,7 +3,7 @@ const bookmarks = {
 		let options = {
 			id: item.link,
 			title: item.title,
-			payload: $scope.WidgetHome ? `#/item/goto/${$scope.WidgetHome.items.indexOf(item)}` : `#/item/goto/${$scope.WidgetMedia.item.index}`,
+			payload: `#/item/goto/${item.link}`,
 			icon: item.imageSrcUrl
 		};
 		let callback = (err, data) => {

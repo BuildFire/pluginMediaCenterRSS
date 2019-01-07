@@ -11,12 +11,34 @@
                 
                 const _path = $location.path();
 
+                function Dialog(options,callback){
+                    this.modalInstance = null;
+                    this.options = options;
+                    this.callback = callback;
+                }
+            
+                Dialog.prototype.close = function(result){
+                    this.modalInstance.close(result);
+                };
+
                 const handleBookmarkNav = () => {
                     const reg = /^\/item\/goto/;
 
                     if (reg.test(_path)) {
-                        let index = _path[_path.lastIndexOf('/') + 1];
-                        WidgetHome.goToItem(index, WidgetHome.items[index]);
+                        let targetLink = _path.slice([_path.lastIndexOf('/goto/') + 6]);
+                        let itemLinks = WidgetHome.items.map(item => item.link);
+                        let index = itemLinks.indexOf(targetLink);
+                        if (index < 0) {
+                            buildfire.notifications.alert({
+                                title: "Item not found"
+                                , message: "The bookmarked item no longer exists."
+                                , okButton: { text: 'Ok' }
+                            }, function () {
+                                buildfire.bookmarks.delete(targetLink, () => console.log('bookmark deleted'));
+                            });
+                        } else {
+                            WidgetHome.goToItem(index, WidgetHome.items[index]);
+                        }
                     }
                 }   
                 
@@ -438,6 +460,7 @@
                     }
                 });
 
+                $scope.$watch('WidgetHome.items', () => console.log(WidgetHome.items), true);
                 /**
                  * Implementation of pull down to refresh
                  */
