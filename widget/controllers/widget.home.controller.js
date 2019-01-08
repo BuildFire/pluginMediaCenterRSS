@@ -16,7 +16,8 @@
 
                     if (reg.test(_path)) {
                         let targetLink = _path.slice([_path.lastIndexOf('/goto/') + 6]);
-                        let itemLinks = WidgetHome.items.map(item => item.link);
+                        // let itemLinks = WidgetHome.items.map(item => item.link);
+                        let itemLinks = _items.map(item => item.link);
                         let index = itemLinks.indexOf(targetLink);
                         if (index < 0) {
                             buildfire.notifications.alert({
@@ -27,7 +28,7 @@
                                 buildfire.bookmarks.delete(targetLink, () => console.log('bookmark deleted'));
                             });
                         } else {
-                            WidgetHome.goToItem(index, WidgetHome.items[index]);
+                            WidgetHome.goToItem(index, _items[index]);
                         }
                     }
                 }   
@@ -358,9 +359,13 @@
                  */
                 WidgetHome.goToItem = function (index, item) {
                     viewedItems.markViewed($scope, item.link)
-                    WidgetHome.items[index].index = index;
-                    ItemDetailsService.setData(WidgetHome.items[index]);
-                    Buildfire.history.push(WidgetHome.items[index].title, {});
+                    if (WidgetHome.items[index]) {
+                        WidgetHome.items[index].index = index;
+                    }
+                    // ItemDetailsService.setData(WidgetHome.items[index]);
+                    ItemDetailsService.setData(item);
+                    // Buildfire.history.push(WidgetHome.items[index].title, {});
+                    Buildfire.history.push(item.title, {});
                     Location.goTo('#/item');
                 };
 

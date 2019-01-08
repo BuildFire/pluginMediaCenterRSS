@@ -1,5 +1,18 @@
 const bookmarks = {
 	add($scope, item) {
+        // let icon = '';
+        // if (!item.imageSrcUrl) {
+        //     buildfire.pluginInstance.get(window.appContext.currentPlugin.instanceId, (err, data) => {
+        //         if (err) {
+        //             console.error(err);
+        //             return
+        //         } else {
+        //             icon = data.iconUrl;
+        //         }
+        //     });
+        // } else {
+        //     icon = item.imageSrcUrl;
+        // };
 		let options = {
 			id: item.link,
 			title: item.title,
