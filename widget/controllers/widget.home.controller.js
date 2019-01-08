@@ -16,7 +16,6 @@
 
                     if (reg.test(_path)) {
                         let targetLink = _path.slice([_path.lastIndexOf('/goto/') + 6]);
-                        // let itemLinks = WidgetHome.items.map(item => item.link);
                         let itemLinks = _items.map(item => item.link);
                         let index = itemLinks.indexOf(targetLink);
                         if (index < 0) {
@@ -427,6 +426,8 @@
                     } else {
                         if (!isInit) Buildfire.spinner.hide();
                     }
+                    bookmarks.findAndMarkAll($scope);
+                    viewedItems.findAndMarkViewed($scope.WidgetHome.items);
                 };
 
                 /**
