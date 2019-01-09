@@ -80,7 +80,7 @@ const viewedItems = {
 	 * marks videos that have been viewed
 	 * @param {Array} videos
 	 */
-	findAndMarkViewed(items) {
+	sync(items) {
 		return items.map(item => {
 			const isViewed = this.get().includes(item.link);
 			item.viewed = isViewed ? true : false;

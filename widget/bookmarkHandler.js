@@ -64,7 +64,7 @@ const bookmarks = {
         };
         buildfire.bookmarks ? buildfire.bookmarks.getAll(cb) : cb(null, []);
     },
-    findAndMarkAll($scope) {
+    sync($scope) {
         this._getAll(bookmarks => {
             console.log(bookmarks);
             

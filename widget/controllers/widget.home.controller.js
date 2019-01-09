@@ -190,8 +190,8 @@
                         chunkData = Underscore.chunk(_items, limit);
                         totalChunks = chunkData.length;
                         WidgetHome.loadMore();
-                        viewedItems.findAndMarkViewed(WidgetHome.items);
-                        bookmarks.findAndMarkAll($scope);
+                        viewedItems.sync(WidgetHome.items);
+                        bookmarks.sync($scope);
                         handleBookmarkNav();
                         Buildfire.spinner.hide();
                         isInit = false;
@@ -265,7 +265,7 @@
                         if (!WidgetHome.data.design.showImages) {
                             WidgetHome.data.design.showImages = FEED_IMAGES.YES;
                         }
-                        viewedItems.findAndMarkViewed(WidgetHome.items);
+                        viewedItems.sync(WidgetHome.items);
                     }
                     , error = function (err) {
                         console.error('Error while getting data', err);
@@ -398,13 +398,15 @@
                 };
 
 
-                Buildfire.auth.onLogin(() => {
-                    init();
-                });
-
-                Buildfire.auth.onLogout(() => {
-                    init();
-                });
+                const initAuthUpdate = () => {
+                    Buildfire.auth.onLogin(() => {
+                        init();
+                    });
+    
+                    Buildfire.auth.onLogout(() => {
+                        init();
+                    });
+                };
 
                 /**
                  * WidgetHome.loadMore() function
@@ -426,8 +428,8 @@
                     } else {
                         if (!isInit) Buildfire.spinner.hide();
                     }
-                    bookmarks.findAndMarkAll($scope);
-                    viewedItems.findAndMarkViewed($scope.WidgetHome.items);
+                    bookmarks.sync($scope);
+                    viewedItems.sync($scope.WidgetHome.items);
                 };
 
                 /**
@@ -438,8 +440,10 @@
                 });
 
                 $rootScope.$on("ROUTE_CHANGED", function (e, itemListLayout) {
-                    if (!WidgetHome.data.design)
+                    initAuthUpdate();
+                    if (!WidgetHome.data.design) {
                         WidgetHome.data.design = {};
+                    }
                     WidgetHome.data.design.itemListLayout = itemListLayout;
                     DataStore.onUpdate().then(null, null, onUpdateCallback);
                 });
@@ -457,7 +461,7 @@
                     }
                 });
 
-                $scope.$watch('WidgetHome.items', () => console.log(WidgetHome.items), true);
+                initAuthUpdate();
                 /**
                  * Implementation of pull down to refresh
                  */

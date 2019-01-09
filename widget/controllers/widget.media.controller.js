@@ -11,11 +11,11 @@
                 $rootScope.deviceWidth = window.innerWidth;
 
                 buildfire.auth.onLogin(() => {
-                    bookmarks.findAndMarkAll($scope);
+                    bookmarks.sync($scope);
                 });
                 
                 buildfire.auth.onLogout(() => {
-                    bookmarks.findAndMarkAll($scope);
+                    bookmarks.sync($scope);
                 });
 
                 /*
@@ -371,7 +371,7 @@
                 if (WidgetMedia.item) {
                     console.log('WidgetMedia Item----------------------', WidgetMedia.item);
                     filterItemType(WidgetMedia.item);
-                    bookmarks.findAndMarkAll($scope);
+                    bookmarks.sync($scope);
                 }
 
                 /**
