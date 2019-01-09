@@ -19,13 +19,14 @@
                         let itemLinks = _items.map(item => item.link);
                         let index = itemLinks.indexOf(targetLink);
                         if (index < 0) {
-                            buildfire.notifications.alert({
-                                title: "Item not found"
-                                , message: "The bookmarked item no longer exists."
-                                , okButton: { text: 'Ok' }
-                            }, function () {
-                                buildfire.bookmarks.delete(targetLink, () => console.log('bookmark deleted'));
-                            });
+                            // buildfire.notifications.alert({
+                            //     title: "Item not found"
+                            //     , message: "The bookmarked item no longer exists."
+                            //     , okButton: { text: 'Ok' }
+                            // }, function () {
+                            //     buildfire.bookmarks.delete(targetLink, () => console.log('bookmark deleted'));
+                            // });
+                            console.warn('bookmarked item not found.');
                         } else {
                             WidgetHome.goToItem(index, _items[index]);
                         }
