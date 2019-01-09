@@ -1,7 +1,7 @@
 'use strict';
 
 (function (angular, buildfire) {
-
+    
     // Make sure to include the required dependency to the module
     angular.module('mediaCenterRSSPluginWidget', [
         'ngRoute',

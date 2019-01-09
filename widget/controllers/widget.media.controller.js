@@ -10,6 +10,14 @@
                 $rootScope.deviceHeight = window.innerHeight;
                 $rootScope.deviceWidth = window.innerWidth;
 
+                buildfire.auth.onLogin(() => {
+                    bookmarks.sync($scope);
+                });
+                
+                buildfire.auth.onLogout(() => {
+                    bookmarks.sync($scope);
+                });
+
                 /*
                  * Private variables
                  *
@@ -17,7 +25,7 @@
                  * @type {string}
                  * @private
                  *
-                 * audioPlayer is an instance of buildfire.services.media.audioPlayer component
+                 * audioPlayer is an instance of Buildfire.services.media.audioPlayer component
                  *  @private
                  *
                  */
@@ -342,26 +350,9 @@
                  * It is used to fetch previously saved user's data
                  */
                 var init = function () {
-                    var success = function (result) {
-                            $rootScope.showFeed = false;
-                            if (Object.keys(result.data).length > 0)
-                                WidgetMedia.data = result.data;
-                            else
-                                WidgetMedia.data = _data;
-
-                            if (WidgetMedia.data.design) {
-                                $rootScope.backgroundImage = WidgetMedia.data.design.itemListBgImage;
-                                $rootScope.backgroundImageItem = WidgetMedia.data.design.itemDetailsBgImage;
-                                console.log('$rootScope.backgroundImage', $rootScope.backgroundImage);
-                                console.log('$rootScope.backgroundImageItem', $rootScope.backgroundImageItem);
-                            }
-                            currentRssUrl = WidgetMedia.data && WidgetMedia.data.content && WidgetMedia.data.content.rssUrl;
-                        }
-                        , error = function (err) {
-                            $rootScope.showFeed = false;
-                            console.error('Error while getting data', err);
-                        };
-                    DataStore.get(TAG_NAMES.RSS_FEED_INFO).then(success, error);
+                    WidgetMedia.data = $rootScope.data;
+                    currentRssUrl = $rootScope.data.currentRssUrl;
+                    $rootScope.showFeed = false;
                 };
 
                 /**
@@ -380,6 +371,7 @@
                 if (WidgetMedia.item) {
                     console.log('WidgetMedia Item----------------------', WidgetMedia.item);
                     filterItemType(WidgetMedia.item);
+                    bookmarks.sync($scope);
                 }
 
                 /**
@@ -536,12 +528,40 @@
                     WidgetMedia.loadingVideo = false;
                 };
 
+                WidgetMedia.bookmark = function ($event) {
+                    $event.stopImmediatePropagation();
+                    const isBookmarked = WidgetMedia.item.bookmarked ? true : false;            
+                    if (isBookmarked) {
+                      bookmarks.delete($scope, WidgetMedia.item);
+                    } else {
+                      bookmarks.add($scope, WidgetMedia.item);
+                    }
+                };
+
+                WidgetMedia.share = function () {
+
+                    const options = {
+                        subject: WidgetMedia.item.title,
+                        text: `${WidgetMedia.item.title}, by ${WidgetMedia.item.author}`,
+                        // image: WidgetMedia.item.image.url,
+                        link: WidgetMedia.item.link
+                    };
+
+                    const callback = err => {
+                        if (err) {
+                            console.warn(err);
+                        }
+                    };
+
+                    buildfire.device.share(options, callback);
+                };
 
                 /**
                  * Implementation of pull down to refresh
                  */
                 var onRefresh = Buildfire.datastore.onRefresh(function () {
                 });
+
 
 
                 /**
@@ -557,7 +577,7 @@
                     //WidgetMedia.pause();
                     //ItemDetailsService.setData(null);
                     if (WidgetMedia.data && WidgetMedia.data.design)
-                        $rootScope.$broadcast('ROUTE_CHANGED', WidgetMedia.data.design.itemListLayout);
+                        $rootScope.$broadcast('ROUTE_CHANGED', $rootScope.data.design.itemListLayout);
                 });
 
                 $rootScope.$on('deviceLocked', function () {

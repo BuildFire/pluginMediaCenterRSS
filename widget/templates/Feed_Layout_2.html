@@ -1,62 +1,66 @@
 <div class="holder padding-zero customBackground">
-  	<div class="media-center-plugin layout2">
-    	<div class="people-banner" style="background:url('{{WidgetMedia.imageUrl|resizeImage:340:190}}') no-repeat; background-position:center center; background-size:cover !important;">
-      		<div class="people-bg padding-bottom-fifteen clearfix">
-        		<div ng-switch="WidgetMedia.medium" class="people-holder clearfix">
-          			<div ng-switch-when="VIDEO" class="videogular-container" ng-style="{'min-height': (9 * deviceWidth / 16) + 'px' }">
-            			<videogular ng-if="WidgetMedia.isVideoPlayerSupported" vg-player-ready="WidgetMedia.onPlayerReady($API)" vg-change-source="WidgetMedia.sourceChanged($source)" vg-theme="WidgetMedia.videoPlayerConfig.theme.url"  vg-error="WidgetMedia.onVideoError($event)"
-                              vg-can-play="WidgetMedia.videoLoaded()">
-              				<vg-media
-                          vg-src="WidgetMedia.videoPlayerConfig.sources" vg-tracks="WidgetMedia.videoPlayerConfig.tracks" vg-native-controls="false" ng-show="!WidgetMedia.loadingVideo"></vg-media>
-              				<vg-controls vg-autohide="true" ng-show="!WidgetMedia.loadingVideo">
-                				<vg-play-pause-button ng-show="!WidgetMedia.loadingVideo"></vg-play-pause-button>
-                				<vg-scrub-bar>
-                  					<vg-scrub-bar-current-time></vg-scrub-bar-current-time>
-                				</vg-scrub-bar>
-                				<vg-time-display>{{ timeLeft | date:'mm:ss':'+0530' | timeCorrect }}</vg-time-display>
-                				<vg-volume>
+	<div class="media-center-plugin layout2 layout2-detail">
+		<div class="people-banner" style="background:url('{{WidgetMedia.imageUrl|resizeImage:340:190}}') no-repeat; background-position:center center; background-size:cover !important;">
+			<div class="people-bg padding-bottom-fifteen clearfix">
+				<div ng-switch="WidgetMedia.medium" class="people-holder clearfix">
+					<div ng-switch-when="VIDEO" class="videogular-container" ng-style="{'min-height': (9 * deviceWidth / 16) + 'px' }">
+						<videogular ng-if="WidgetMedia.isVideoPlayerSupported" vg-player-ready="WidgetMedia.onPlayerReady($API)"
+						 vg-change-source="WidgetMedia.sourceChanged($source)" vg-theme="WidgetMedia.videoPlayerConfig.theme.url"
+						 vg-error="WidgetMedia.onVideoError($event)" vg-can-play="WidgetMedia.videoLoaded()">
+							<vg-media vg-src="WidgetMedia.videoPlayerConfig.sources" vg-tracks="WidgetMedia.videoPlayerConfig.tracks"
+							 vg-native-controls="false" ng-show="!WidgetMedia.loadingVideo"></vg-media>
+							<vg-controls vg-autohide="true" ng-show="!WidgetMedia.loadingVideo">
+								<vg-play-pause-button ng-show="!WidgetMedia.loadingVideo"></vg-play-pause-button>
+								<vg-scrub-bar>
+									<vg-scrub-bar-current-time></vg-scrub-bar-current-time>
+								</vg-scrub-bar>
+								<vg-time-display>{{ timeLeft | date:'mm:ss':'+0530' | timeCorrect }}</vg-time-display>
+								<vg-volume>
 									<vg-mute-button></vg-mute-button>
-                  					<vg-volume-bar></vg-volume-bar>
-                				</vg-volume>
-                				<vg-fullscreen-button></vg-fullscreen-button>
-              				</vg-controls>
-              				<vg-overlay-play></vg-overlay-play>
-            			</videogular>
-            			<embed-video id="player1" data-ng-if="WidgetMedia.videoUrl" data-ng-href="{{WidgetMedia.videoUrl}}" controls=0></embed-video>
-                  <img src="../../../styles/media/holder-16x9.gif"
-                       ng-if="WidgetMedia.loadingVideo">
-          			</div>
-          			<div ng-switch-when="AUDIO">
-            			<div class="holder now-playing text-center back-color">
-              				<div class="audio-player-holder">
-                				<img class="border-radius-four" ng-if="WidgetMedia.item.imageSrcUrl"
-                                     ng-src="{{WidgetMedia.item.imageSrcUrl}}" height="100%" width="100%">
-                				<!--<img class="border-radius-four" ng-if="!WidgetMedia.item.imageSrcUrl" src="./assets/.images/now-playing.png" height="100%" width="100%">-->
-              				</div>
-            			</div>
-		  			</div>
-          			<div class="people-media text-center padding-top-fifteen" ng-switch-when="IMAGE" ng-if="WidgetMedia.imageUrl">
-	      				<img load-image="16x9"
-                        crop-width="250" crop-height="400" crop-type="resize"
-                        data-final-src="{{WidgetMedia.imageUrl}}">
-	      			</div>
-	      			<div class="people-info text-center col-xs-12">
-	      				<h5 class="ellipsis margin-top-fifteen whiteTheme" ng-bind-html="WidgetMedia.getTitle(WidgetMedia.item)" style="font-size: 16px;"></h5>
-	        			<h5 class="margin-bottom-zero whiteTheme" ng-if="WidgetMedia.item.author">By : {{WidgetMedia.item.author}}</h5>
-	        			<h5 class="margin-bottom-zero whiteTheme" ng-if="WidgetMedia.getItemPublishDate(WidgetMedia.item)">{{WidgetMedia.getItemPublishDate(WidgetMedia.item)}}</h5>
-	      			</div>
-          		</div>
-        	</div>
-      	</div>
-      	<div class="padded">
-        	<div class="link-list">
-          		<a class="text-primary" ng-click="WidgetMedia.playAudio()" ng-if="WidgetMedia.medium == 'AUDIO'">Listen</a>
-          		<a class="text-primary" ng-click="WidgetMedia.API.play()" ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">Watch</a>
-          		<a class="text-primary" ng-if="WidgetMedia.item.link" ng-click="WidgetMedia.openLink(WidgetMedia.item.link)" target="_blank">View Source</a>
-          		<!--<a class="text-primary">Share</a>-->
-        	</div>
-        	<hr class="small">
-        	<p ng-bind-html="WidgetMedia.item.description|removeHtmlStyle:WidgetMedia.imageUrl|safeHtml"></p>
-      	</div>
-  	</div>
+									<vg-volume-bar></vg-volume-bar>
+								</vg-volume>
+								<vg-fullscreen-button></vg-fullscreen-button>
+							</vg-controls>
+							<vg-overlay-play></vg-overlay-play>
+						</videogular>
+						<embed-video id="player1" data-ng-if="WidgetMedia.videoUrl" data-ng-href="{{WidgetMedia.videoUrl}}" controls=0></embed-video>
+						<img src="../../../styles/media/holder-16x9.gif" ng-if="WidgetMedia.loadingVideo">
+					</div>
+					<div ng-switch-when="AUDIO">
+						<div class="holder now-playing text-center back-color">
+							<div class="audio-player-holder">
+								<img class="border-radius-four" ng-if="WidgetMedia.item.imageSrcUrl" ng-src="{{WidgetMedia.item.imageSrcUrl}}"
+								 height="100%" width="100%">
+								<!--<img class="border-radius-four" ng-if="!WidgetMedia.item.imageSrcUrl" src="./assets/.images/now-playing.png" height="100%" width="100%">-->
+							</div>
+						</div>
+					</div>
+					<div class="people-media text-center padding-top-fifteen" ng-switch-when="IMAGE" ng-if="WidgetMedia.imageUrl">
+						<img load-image="16x9" crop-width="250" crop-height="400" crop-type="resize" data-final-src="{{WidgetMedia.imageUrl}}">
+					</div>
+					<div class="people-info text-center col-xs-12">
+						<h5 class="main-title margin-top-fifteen whiteTheme" ng-bind-html="WidgetMedia.getTitle(WidgetMedia.item)" style="font-size: 16px;"></h5>
+						<h5 class="margin-bottom-zero whiteTheme" ng-if="WidgetMedia.item.author">By : {{WidgetMedia.item.author}}</h5>
+						<h5 class="margin-bottom-zero whiteTheme" ng-if="WidgetMedia.getItemPublishDate(WidgetMedia.item)">{{WidgetMedia.getItemPublishDate(WidgetMedia.item)}}</h5>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="item-actions">
+			<div class="link-list">
+				<a class="text-primary" ng-click="WidgetMedia.playAudio()" ng-if="WidgetMedia.medium == 'AUDIO'">Listen</a>
+				<a class="text-primary" ng-click="WidgetMedia.API.play()" ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">Watch</a>
+				<a class="text-primary" ng-if="WidgetMedia.item.link" ng-click="WidgetMedia.openLink(WidgetMedia.item.link)" target="_blank">View
+					Source</a>
+			</div>
+			<div class="li-actions">
+				<i class="share glyphicon glyphicon-share-alt" ng-click="WidgetMedia.share()" role="button"></i>
+				<i class="icon bookmark" style="font-family: 'Glyphicons Halflings' !important;" ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }"
+				 ng-click="WidgetMedia.bookmark($event)" role="button"></i>
+			</div>
+		</div>
+		<div class="padded">
+			<p ng-bind-html="WidgetMedia.item.description|removeHtmlStyle:WidgetMedia.imageUrl|safeHtml"></p>
+		</div>
+	</div>
 </div>

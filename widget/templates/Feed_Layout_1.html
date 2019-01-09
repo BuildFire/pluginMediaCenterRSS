@@ -1,16 +1,12 @@
 <div class="holder padding-zero customBackground">
-  <div class="media-center-plugin layout1">
+  <div class="media-center-plugin layout1-detail">
     <div ng-switch="WidgetMedia.medium" class="media-center-banner clearfix">
       <div ng-switch-when="VIDEO" class="videogular-container" ng-style="{'min-height': (9 * deviceWidth / 16) + 'px' }">
         <videogular ng-if="WidgetMedia.isVideoPlayerSupported" vg-player-ready="WidgetMedia.onPlayerReady($API)"
-                    vg-change-source="WidgetMedia.sourceChanged($source)"
-                    vg-theme="WidgetMedia.videoPlayerConfig.theme.url"
-                    vg-error="WidgetMedia.onVideoError($event)"
-                    vg-can-play="WidgetMedia.videoLoaded()">
-          <vg-media vg-src="WidgetMedia.videoPlayerConfig.sources"
-                    vg-tracks="WidgetMedia.videoPlayerConfig.tracks"
-                    vg-native-controls="false"
-                    ng-show="!WidgetMedia.loadingVideo">
+          vg-change-source="WidgetMedia.sourceChanged($source)" vg-theme="WidgetMedia.videoPlayerConfig.theme.url"
+          vg-error="WidgetMedia.onVideoError($event)" vg-can-play="WidgetMedia.videoLoaded()">
+          <vg-media vg-src="WidgetMedia.videoPlayerConfig.sources" vg-tracks="WidgetMedia.videoPlayerConfig.tracks"
+            vg-native-controls="false" ng-show="!WidgetMedia.loadingVideo">
           </vg-media>
           <vg-controls vg-autohide="true" ng-show="!WidgetMedia.loadingVideo">
             <vg-play-pause-button ng-show="!WidgetMedia.loadingVideo"></vg-play-pause-button>
@@ -27,45 +23,46 @@
           <vg-overlay-play></vg-overlay-play>
         </videogular>
         <embed-video id="videoPlayer" data-ng-if="WidgetMedia.videoUrl" data-ng-href="{{WidgetMedia.videoUrl}}"
-                     controls=0></embed-video>
-        <img src="../../../styles/media/holder-16x9.gif"
-             ng-if="WidgetMedia.loadingVideo">
+          controls=0></embed-video>
+        <img src="../../../styles/media/holder-16x9.gif" ng-if="WidgetMedia.loadingVideo">
       </div>
       <div ng-switch-when="AUDIO">
         <div class="holder now-playing text-center back-color">
           <div class="audio-player-holder">
-              <img ng-if="WidgetMedia.item.imageSrcUrl" class="border-radius-four"
-                 load-image="16x9" crop-width="deviceWidth" crop-height="193" crop-type="crop"
-                 ng-src="{{WidgetMedia.item.imageSrcUrl}}">
+            <img ng-if="WidgetMedia.item.imageSrcUrl" class="border-radius-four" load-image="16x9" crop-width="deviceWidth"
+              crop-height="193" crop-type="crop" ng-src="{{WidgetMedia.item.imageSrcUrl}}">
           </div>
         </div>
       </div>
       <div ng-switch-when="IMAGE" class="plugin-slider text-center">
         <div class="plugin-slide" ng-if="WidgetMedia.imageUrl">
-          <img load-image="16x9"
-               crop-width="{{ deviceWidth }}" crop-height="{{ deviceWidth * 9/16 }}" crop-type="crop"
-               data-final-src="{{WidgetMedia.imageUrl}}">
+          <img load-image="16x9" crop-width="{{ deviceWidth }}" crop-height="{{ deviceWidth * 9/16 }}" crop-type="crop"
+            data-final-src="{{WidgetMedia.imageUrl}}">
         </div>
       </div>
     </div>
     <div class="text-left padded padding-bottom-zero clearfix ">
-      <h4 class="margin-zero" style="font-size: 16px;"
-          ng-bind-html="WidgetMedia.getTitle(WidgetMedia.item)"></h4>
+      <h4 class="main-title margin-top-zero" style="font-size: 16px;" ng-bind-html="WidgetMedia.getTitle(WidgetMedia.item)"></h4>
 
-      <p ng-if="WidgetMedia.item.author">By : {{WidgetMedia.item.author}}</p>
-      <p ng-if="WidgetMedia.getItemPublishDate(WidgetMedia.item)">{{WidgetMedia.getItemPublishDate(WidgetMedia.item)}}</p>
+      <p class="item-author" ng-if="WidgetMedia.item.author">By : {{WidgetMedia.item.author}}</p>
+      <p class="item-date" ng-if="WidgetMedia.getItemPublishDate(WidgetMedia.item)">{{WidgetMedia.getItemPublishDate(WidgetMedia.item)}}</p>
     </div>
-    <div class="padded padding-top-zero">
-      <hr class="small">
+    <div class="item-actions">
       <div class="link-list">
         <a class="text-primary" ng-click="WidgetMedia.playAudio()" ng-if="WidgetMedia.medium == 'AUDIO'">Listen</a>
-        <a class="text-primary" ng-click="WidgetMedia.API.play()"
-           ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">Watch</a>
-        <a class="text-primary" ng-if="WidgetMedia.item.link" ng-click="WidgetMedia.openLink(WidgetMedia.item.link)" target="_blank">View
+        <a class="text-primary" ng-click="WidgetMedia.API.play()" ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">Watch</a>
+        <a class="text-primary" ng-if="WidgetMedia.item.link" ng-click="WidgetMedia.openLink(WidgetMedia.item.link)"
+          target="_blank">View
           Source</a>
         <!--<a class="text-primary">Share</a>-->
       </div>
-      <hr class="small">
+      <div class="li-actions">
+        <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetMedia.share()" role="button"></i>
+        <i class="icon bookmark" style="font-family: 'Glyphicons Halflings' !important;" ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }"
+          ng-click="WidgetMedia.bookmark($event)" role="button"></i>
+      </div>
+    </div>
+    <div class="padded padding-top-zero">
       <p id="description" ng-bind-html="WidgetMedia.item.description|removeHtmlStyle:WidgetMedia.imageUrl|safeHtml"></p>
     </div>
   </div>
