@@ -11,6 +11,11 @@
                 
                 const _path = $location.path();
 
+                /**
+                 * @name handleBookmarkNav
+                 * @type {function}
+                 * Handles incoming bookmark navigation
+                 */
                 const handleBookmarkNav = () => {
                     const reg = /^\/item\/goto/;
 
@@ -36,31 +41,31 @@
                 /** 
                  * Private variables
                  *
-                 * _items used to hold RSS feed items and helps in lazy loading.
+                 * @name _items used to hold RSS feed items and helps in lazy loading.
                  * @type {object} 
                  * @private 
                  *
-                 * limit used to load a number of items in list on scroll
+                 * @name limit used to load a number of items in list on scroll
                  * @type {number}
                  * @private
                  *
-                 * chunkData used to hold chunks of _items.
+                 * @name chunkData used to hold chunks of _items.
                  * @type {object}
                  * @private
                  *
-                 * nextChunkDataIndex used to hold index of next chunk.
+                 * @name nextChunkDataIndex used to hold index of next chunk.
                  * @type {number}
                  * @private
                  *
-                 * nextChunk used to hold chunk based on nextChunkDataIndex token.
+                 * @name nextChunk used to hold chunk based on nextChunkDataIndex token.
                  * @type {object}
                  * @private
                  *
-                 * totalChunks used to hold number of available chunks i.e. chunkData.length.
+                 * @name totalChunks used to hold number of available chunks i.e. chunkData.length.
                  * @type {number}
                  * @private
                  *
-                 * currentRssUrl used to hold previously saved rss url.
+                 * @name currentRssUrl used to hold previously saved rss url.
                  * @type {string}
                  * @private
                  *
@@ -90,27 +95,27 @@
                     }
                 };
 
-                /*
-                 * WidgetHome.data is used to hold user's data object which used throughout the app.
+                /** 
+                 * @name WidgetHome.data is used to hold user's data object which used throughout the app.
                  * @type {object}
                  */
                 WidgetHome.data = null;
                 WidgetHome.view=null;
 
-                /*
-                 * WidgetHome.items is used to listing items.
+                /**
+                 * @name WidgetHome.items is used to listing items.
                  * @type {object}
                  */
                 WidgetHome.items = [];
 
-                /*
-                 * WidgetHome.busy is used to disable ng-infinite scroll when more data not available to show.
+                /** 
+                 * @name WidgetHome.busy is used to disable ng-infinite scroll when more data not available to show.
                  * @type {boolean}
                  */
                 WidgetHome.busy = false;
 
-                /*
-                 * WidgetHome.isItems is used to show info message when _items.length == 0.
+                /**
+                 * @name WidgetHome.isItems is used to show info message when _items.length == 0.
                  * @type {boolean}
                  */
                 WidgetHome.isItems = true;
@@ -118,8 +123,9 @@
                 $rootScope.showFeed = true;
 
                 /**
-                 * resetDefaults() private method
+                 * @name resetDefaults()
                  * Used to reset default values
+                 * @private
                  */
                 var resetDefaults = function () {
                     chunkData = null;
@@ -132,9 +138,9 @@
                     WidgetHome.isItems = true;
                     ItemDetailsService.setData(null);
                 };
-
+                
                 /**
-                 * getImageUrl() private method
+                 * @name getImageUrl()
                  * Used to extract image url
                  * @param item
                  * @returns {*}
@@ -170,7 +176,8 @@
                 };
 
                 /**
-                 * getFeedData() private method
+                 * @name getFeedData()
+                 * @private
                  * used to fetch RSS feed Data object if a valid RSS feed url provided
                  * @param rssUrl
                  */
@@ -196,6 +203,67 @@
                         handleBookmarkNav();
                         Buildfire.spinner.hide();
                         isInit = false;
+                        buildfire.services.searchEngine.feeds.get({ tag: 'rss_feed', feedType: 'rss' }, (err, result) => {
+                            if (err) throw err;
+                            console.log(result);
+                            let feedUrl = result[0] ? result[0].feed_config.url : false;
+                            if (feedUrl === rssUrl) {
+                                let options = { searchText: "space" };
+                                let callback = (e, d) => console.log(e, d);
+                                buildfire.services.searchEngine.search(options, callback);
+                                return;
+                            }
+                            else if (!feedUrl) {
+                                const options = {
+                                    tag: 'rss_feed',
+                                    title: 'rss feed',
+                                    feedType: "rss",
+                                    feedConfig: {
+                                        url: rssUrl
+                                    },
+                                    feed_item_config: {
+                                        unique_key: 'feed-item',
+                                        title_key: 'feed-title'
+                                    }
+                                };
+
+                                const callback = (e, d) => {
+                                    if (e) throw e;
+                                    console.log(d);
+                                };
+                                buildfire.services.searchEngine.feeds.insert(options, callback);
+                            } else {
+                                let feedId = feedUrl;
+                                const options = {
+                                    tag: 'rss_feed',
+                                    feedId,
+                                    remove_feed_data: true
+                                };
+                                const callback = (e, d) => {
+                                    if (e) throw e;
+                                    console.log(d);
+                                    const options = {
+                                        tag: 'rss_feed',
+                                        title: 'rss feed',
+                                        feedType: "rss",
+                                        feedConfig: {
+                                            url: rssUrl
+                                        },
+                                        feed_item_config: {
+                                            unique_key: 'feed-item',
+                                            title_key: 'feed-title'
+                                        }
+                                    };
+    
+                                    const callback = (e, d) => {
+                                        if (e) throw e;
+                                        console.log(d);
+                                    };
+                                    buildfire.services.searchEngine.feeds.insert(options, callback);
+                                };
+                                buildfire.services.searchEngine.feeds.delete(options,callback);
+                            }
+                        });
                     }
                     , error = function (err) {
                         Buildfire.spinner.hide();
@@ -205,7 +273,8 @@
                 };
 
                 /**
-                 * onUpdateCallback() private method
+                 * @name onUpdateCallback()
+                 * @private
                  * Will be called when DataStore.onUpdate() have been made.
                  * @param event
                  */
@@ -237,7 +306,8 @@
                 };
 
                 /**
-                 * init() private function
+                 * @name init()
+                 * @private
                  * It is used to fetch previously saved user's data
                  */
                 var init = function () {
@@ -275,17 +345,17 @@
                 };
 
                 /**
-                 * init() function invocation to fetch previously saved user's data from datastore.
+                 * @name init() function invocation to fetch previously saved user's data from datastore.
                  */
                 init();
 
                 /**
-                 * DataStore.onUpdate() will invoked when there is some change in datastore
+                 * @name DataStore.onUpdate() will invoked when there is some change in datastore
                  */
                 DataStore.onUpdate().then(null, null, onUpdateCallback);
 
                 /**
-                 * WidgetHome.showDescription() method
+                 * @name WidgetHome.showDescription() method
                  * will be called to check whether the description have text to show or no.
                  * @param description
                  * @returns {boolean}
@@ -300,7 +370,7 @@
                 };
 
                 /**
-                 * WidgetHome.getTitle() method
+                 * @name WidgetHome.getTitle() method
                  * Will used to extract item title
                  * @param item
                  * @returns {item.title|*}
@@ -321,7 +391,7 @@
                 };
 
                 /**
-                 * WidgetHome.getItemSummary() method
+                 * @name WidgetHome.getItemSummary() method
                  * Will used to extract item summary
                  * @param item
                  * @returns {*}
@@ -336,7 +406,7 @@
                 };
 
                 /**
-                 * WidgetHome.getItemPublishDate() method
+                 * @name WidgetHome.getItemPublishDate() method
                  * Will used to extract item published date
                  * @param item
                  * @returns {*}
@@ -353,7 +423,7 @@
                 };
 
                 /**
-                 * WidgetHome.goToItem() method
+                 * @name WidgetHome.goToItem() method
                  * will used to redirect on details page
                  * @param index
                  */
@@ -410,7 +480,7 @@
                 };
 
                 /**
-                 * WidgetHome.loadMore() function
+                 * @name WidgetHome.loadMore() function
                  * will used to load more items on scroll to implement lazy loading
                  */
                 WidgetHome.loadMore = function () {
