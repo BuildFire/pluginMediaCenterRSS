@@ -203,67 +203,7 @@
                         handleBookmarkNav();
                         Buildfire.spinner.hide();
                         isInit = false;
-                        buildfire.services.searchEngine.feeds.get({ tag: 'rss_feed', feedType: 'rss' }, (err, result) => {
-                            if (err) throw err;
-                            console.log(result);
-                            let feedUrl = result[0] ? result[0].feed_config.url : false;
-                            if (feedUrl === rssUrl) {
-                                let options = { searchText: "space" };
-                                let callback = (e, d) => console.log(e, d);
-                                buildfire.services.searchEngine.search(options, callback);
-                                return;
-                            }
-                            else if (!feedUrl) {
-                                const options = {
-                                    tag: 'rss_feed',
-                                    title: 'rss feed',
-                                    feedType: "rss",
-                                    feedConfig: {
-                                        url: rssUrl
-                                    },
-                                    feed_item_config: {
-                                        unique_key: 'feed-item',
-                                        title_key: 'feed-title'
-                                    }
-                                };
-
-                                const callback = (e, d) => {
-                                    if (e) throw e;
-                                    console.log(d);
-                                };
-                                buildfire.services.searchEngine.feeds.insert(options, callback);
-                            } else {
-                                let feedId = feedUrl;
-                                const options = {
-                                    tag: 'rss_feed',
-                                    feedId,
-                                    remove_feed_data: true
-                                };
-                                const callback = (e, d) => {
-                                    if (e) throw e;
-                                    console.log(d);
-                                    const options = {
-                                        tag: 'rss_feed',
-                                        title: 'rss feed',
-                                        feedType: "rss",
-                                        feedConfig: {
-                                            url: rssUrl
-                                        },
-                                        feed_item_config: {
-                                            unique_key: 'feed-item',
-                                            title_key: 'feed-title'
-                                        }
-                                    };
-    
-                                    const callback = (e, d) => {
-                                        if (e) throw e;
-                                        console.log(d);
-                                    };
-                                    buildfire.services.searchEngine.feeds.insert(options, callback);
-                                };
-                                buildfire.services.searchEngine.feeds.delete(options,callback);
-                            }
-                        });
+                        indexFeed(rssUrl);
                     }
                     , error = function (err) {
                         Buildfire.spinner.hide();
@@ -271,6 +211,70 @@
                     };
                     FeedParseService.getFeedData(rssUrl).then(success, error);
                 };
+
+                var indexFeed = function (rssUrl) {
+                    buildfire.services.searchEngine.feeds.get({ tag: 'rss_feed', feedType: 'rss' }, (err, result) => {
+                        if (err) throw err;
+                        console.log(result);
+                        let feedUrl = result[0] ? result[0].feed_config.url : false;
+                        if (feedUrl === rssUrl) {
+                            let options = { searchText: "space" };
+                            let callback = (e, d) => console.log(e, d);
+                            buildfire.services.searchEngine.search(options, callback);
+                            return;
+                        }
+                        else if (!feedUrl) {
+                            const options = {
+                                tag: 'rss_feed',
+                                title: 'rss feed',
+                                feedType: "rss",
+                                feedConfig: {
+                                    url: rssUrl
+                                },
+                                // feed_item_config: {
+                                //     unique_key: 'feed-item',
+                                //     title_key: 'feed-title'
+                                // }
+                            };
+
+                            const callback = (e, d) => {
+                                if (e) throw e;
+                                console.log(d);
+                            };
+                            buildfire.services.searchEngine.feeds.insert(options, callback);
+                        } else {
+                            let feedId = feedUrl;
+                            const options = {
+                                tag: 'rss_feed',
+                                feedId: result[0]._id,
+                                removeFeedData: true
+                            };
+                            const callback = (e, d) => {
+                                if (e) console.error(e);
+                                console.log(d);
+                                const options = {
+                                    tag: 'rss_feed',
+                                    title: 'rss feed',
+                                    feedType: "rss",
+                                    feedConfig: {
+                                        url: rssUrl
+                                    },
+                                    // feed_item_config: {
+                                    //     unique_key: 'link',
+                                    //     title_key: 'title'
+                                    // }
+                                };
+
+                                const callback = (e, d) => {
+                                    if (e) throw e;
+                                    console.log(d);
+                                };
+                                buildfire.services.searchEngine.feeds.insert(options, callback);
+                            };
+                            buildfire.services.searchEngine.feeds.delete(options,callback);
+                        }
+                    });
+                }
 
                 /**
                  * @name onUpdateCallback()

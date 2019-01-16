@@ -556,6 +556,22 @@
                     buildfire.device.share(options, callback);
                 };
 
+                WidgetMedia.addNote = function () {
+                    var options = {
+                        noteData: {
+                            description: $scope.WidgetMedia.item.description,
+                            title: $scope.WidgetMedia.item.title
+                        }
+                    };
+                    var callback = function (err, data) {
+                        if (err) throw err;
+                        console.log(data);
+                    }
+                    // buildfire.input.showTextDialog(options, callback);
+                    buildfire.notes.openDialog(options, callback);
+                };
+
+
                 /**
                  * Implementation of pull down to refresh
                  */

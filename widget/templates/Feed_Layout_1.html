@@ -51,9 +51,10 @@
       <div class="link-list">
         <a class="text-primary" ng-click="WidgetMedia.playAudio()" ng-if="WidgetMedia.medium == 'AUDIO'">Listen</a>
         <a class="text-primary" ng-click="WidgetMedia.API.play()" ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">Watch</a>
-        <a class="text-primary" ng-if="WidgetMedia.item.link" ng-click="WidgetMedia.openLink(WidgetMedia.item.link)"
-          target="_blank">View
-          Source</a>
+        <a class="text-primary" ng-if="WidgetMedia.item.link" ng-click="WidgetMedia.openLink(WidgetMedia.item.link)" target="_blank">
+          View Source
+        </a>
+        <button ng-click="WidgetMedia.addNote()">Add Note</button>
         <!--<a class="text-primary">Share</a>-->
       </div>
       <div class="li-actions">

@@ -204,6 +204,22 @@
                     toggle ? track.swiped = true : track.swiped = false;
                 };
 
+                NowPlaying.addNote = function () {
+                    var options = {
+                        noteData: {
+                            description: $scope.NowPlaying.item.description,
+                            title: $scope.NowPlaying.item.title,
+                            timeIndex: $scope.NowPlaying.currentTime
+                        }
+                    };
+                    var callback = function (err, data) {
+                        if (err) throw err;
+                        console.log(data);
+                    }
+                    // buildfire.input.showTextDialog(options, callback);
+                    buildfire.notes.openDialog(options, callback);
+                };
+
 
                 /**
                  * Track Smaple
