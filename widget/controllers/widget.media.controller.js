@@ -10,14 +10,13 @@
                 $rootScope.deviceHeight = window.innerHeight;
                 $rootScope.deviceWidth = window.innerWidth;
 
-                buildfire.auth.onLogin(() => {
+                buildfire.auth.onLogin(function () {
                     bookmarks.sync($scope);
                 });
                 
-                buildfire.auth.onLogout(() => {
+                buildfire.auth.onLogout(function () {
                     bookmarks.sync($scope);
                 });
-
                 /*
                  * Private variables
                  *
@@ -286,6 +285,7 @@
                  * @param _item
                  */
                 var filterItemType = function (_item) {
+                    debugger
                     var _src = ''
                         , mediaData = checkEnclosuresTag(_item);
 
@@ -530,7 +530,7 @@
 
                 WidgetMedia.bookmark = function ($event) {
                     $event.stopImmediatePropagation();
-                    const isBookmarked = WidgetMedia.item.bookmarked ? true : false;            
+                    var isBookmarked = WidgetMedia.item.bookmarked ? true : false;            
                     if (isBookmarked) {
                       bookmarks.delete($scope, WidgetMedia.item);
                     } else {
@@ -540,14 +540,14 @@
 
                 WidgetMedia.share = function () {
 
-                    const options = {
+                    var options = {
                         subject: WidgetMedia.item.title,
-                        text: `${WidgetMedia.item.title}, by ${WidgetMedia.item.author}`,
+                        text: WidgetMedia.item.title + ", by " + WidgetMedia.item.author,
                         // image: WidgetMedia.item.image.url,
                         link: WidgetMedia.item.link
                     };
 
-                    const callback = err => {
+                    var callback = function(err) {
                         if (err) {
                             console.warn(err);
                         }
@@ -557,6 +557,7 @@
                 };
 
                 WidgetMedia.addNote = function () {
+                    debugger
                     var options = {
                         noteData: {
                             description: $scope.WidgetMedia.item.description,

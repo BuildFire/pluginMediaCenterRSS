@@ -9,34 +9,29 @@
                 $rootScope.deviceHeight = window.innerHeight;
                 $rootScope.deviceWidth = window.innerWidth || 320;
                 
-                const _path = $location.path();
+                var _path = $location.path();
 
                 /**
                  * @name handleBookmarkNav
                  * @type {function}
                  * Handles incoming bookmark navigation
                  */
-                const handleBookmarkNav = () => {
-                    const reg = /^\/item\/goto/;
-
+                var handleBookmarkNav = function handleBookmarkNav() {
+                    var reg = /^\/item\/goto/;
+                
                     if (reg.test(_path)) {
-                        let targetLink = _path.slice([_path.lastIndexOf('/goto/') + 6]);
-                        let itemLinks = _items.map(item => item.link);
-                        let index = itemLinks.indexOf(targetLink);
+                        var targetGuid = _path.slice([_path.lastIndexOf('/goto/') + 6]);
+                        var itemGuids = _items.map(function (item) {
+                            return item.guid;
+                        });
+                        var index = itemGuids.indexOf(targetGuid);
                         if (index < 0) {
-                            // buildfire.notifications.alert({
-                            //     title: "Item not found"
-                            //     , message: "The bookmarked item no longer exists."
-                            //     , okButton: { text: 'Ok' }
-                            // }, function () {
-                            //     buildfire.bookmarks.delete(targetLink, () => console.log('bookmark deleted'));
-                            // });
                             console.warn('bookmarked item not found.');
                         } else {
                             WidgetHome.goToItem(index, _items[index]);
                         }
                     }
-                }   
+                };
                 
                 /** 
                  * Private variables
@@ -203,7 +198,7 @@
                         handleBookmarkNav();
                         Buildfire.spinner.hide();
                         isInit = false;
-                        indexFeed(rssUrl);
+                        searchEngine.indexFeed(rssUrl);
                     }
                     , error = function (err) {
                         Buildfire.spinner.hide();
@@ -211,70 +206,6 @@
                     };
                     FeedParseService.getFeedData(rssUrl).then(success, error);
                 };
-
-                var indexFeed = function (rssUrl) {
-                    buildfire.services.searchEngine.feeds.get({ tag: 'rss_feed', feedType: 'rss' }, (err, result) => {
-                        if (err) throw err;
-                        console.log(result);
-                        let feedUrl = result[0] ? result[0].feed_config.url : false;
-                        if (feedUrl === rssUrl) {
-                            let options = { searchText: "space" };
-                            let callback = (e, d) => console.log(e, d);
-                            buildfire.services.searchEngine.search(options, callback);
-                            return;
-                        }
-                        else if (!feedUrl) {
-                            const options = {
-                                tag: 'rss_feed',
-                                title: 'rss feed',
-                                feedType: "rss",
-                                feedConfig: {
-                                    url: rssUrl
-                                },
-                                // feed_item_config: {
-                                //     unique_key: 'feed-item',
-                                //     title_key: 'feed-title'
-                                // }
-                            };
-
-                            const callback = (e, d) => {
-                                if (e) throw e;
-                                console.log(d);
-                            };
-                            buildfire.services.searchEngine.feeds.insert(options, callback);
-                        } else {
-                            let feedId = feedUrl;
-                            const options = {
-                                tag: 'rss_feed',
-                                feedId: result[0]._id,
-                                removeFeedData: true
-                            };
-                            const callback = (e, d) => {
-                                if (e) console.error(e);
-                                console.log(d);
-                                const options = {
-                                    tag: 'rss_feed',
-                                    title: 'rss feed',
-                                    feedType: "rss",
-                                    feedConfig: {
-                                        url: rssUrl
-                                    },
-                                    // feed_item_config: {
-                                    //     unique_key: 'link',
-                                    //     title_key: 'title'
-                                    // }
-                                };
-
-                                const callback = (e, d) => {
-                                    if (e) throw e;
-                                    console.log(d);
-                                };
-                                buildfire.services.searchEngine.feeds.insert(options, callback);
-                            };
-                            buildfire.services.searchEngine.feeds.delete(options,callback);
-                        }
-                    });
-                }
 
                 /**
                  * @name onUpdateCallback()
@@ -432,7 +363,8 @@
                  * @param index
                  */
                 WidgetHome.goToItem = function (index, item) {
-                    viewedItems.markViewed($scope, item.link)
+                    debugger
+                    viewedItems.markViewed($scope, item.guid)
                     if (WidgetHome.items[index]) {
                         WidgetHome.items[index].index = index;
                     }
@@ -445,7 +377,7 @@
 
                 WidgetHome.bookmark = function ($event, item) {
                     $event.stopImmediatePropagation();
-                    const isBookmarked = item.bookmarked ? true : false;            
+                    var isBookmarked = item.bookmarked ? true : false;            
                     if (isBookmarked) {
                       bookmarks.delete($scope, item);
                     } else {
@@ -456,14 +388,14 @@
                 WidgetHome.share = function ($event, item) {
                     $event.stopImmediatePropagation();
 
-                    const options = {
+                    var options = {
                         subject: item.title,
-                        text: `${item.title}, by ${item.author}`,
+                        text: item.title + ", by " + item.author,
                         // image: item.image.url,
                         link: item.link
                     };
 
-                    const callback = err => {
+                    var callback = function(err) {
                         if (err) {
                             console.warn(err);
                         }
@@ -472,13 +404,12 @@
                     buildfire.device.share(options, callback);
                 };
 
-
-                const initAuthUpdate = () => {
-                    Buildfire.auth.onLogin(() => {
+                var initAuthUpdate = function () {
+                    Buildfire.auth.onLogin(function () {
                         init();
                     });
-    
-                    Buildfire.auth.onLogout(() => {
+                
+                    Buildfire.auth.onLogout(function () {
                         init();
                     });
                 };

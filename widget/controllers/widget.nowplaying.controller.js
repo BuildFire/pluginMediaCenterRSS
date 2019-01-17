@@ -206,8 +206,8 @@
 
                 NowPlaying.addNote = function () {
                     var options = {
+                        pluginOpen: true,
                         noteData: {
-                            description: $scope.NowPlaying.item.description,
                             title: $scope.NowPlaying.item.title,
                             timeIndex: $scope.NowPlaying.currentTime
                         }

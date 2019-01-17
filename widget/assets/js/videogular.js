@@ -131,7 +131,7 @@ angular.module("com.2fdevs.videogular")
  */
 angular.module("com.2fdevs.videogular")
     .controller("vgController",
-    ['$scope', '$window', 'vgConfigLoader', 'vgFullscreen', 'VG_UTILS', 'VG_STATES', 'VG_VOLUME_KEY', function ($scope, $window, vgConfigLoader, vgFullscreen, VG_UTILS, VG_STATES, VG_VOLUME_KEY) {
+    ['$scope', '$rootScope', '$window', 'vgConfigLoader', 'vgFullscreen', 'VG_UTILS', 'VG_STATES', 'VG_VOLUME_KEY', function ($scope, $rootScope, $window, vgConfigLoader, vgFullscreen, VG_UTILS, VG_STATES, VG_VOLUME_KEY) {
         var currentTheme = null;
         var isFullScreenPressed = false;
         var isMetaDataLoaded = false;
@@ -516,6 +516,7 @@ angular.module("com.2fdevs.videogular")
             if (vgFullscreen.isAvailable) {
                 document.addEventListener(vgFullscreen.onchange, this.onFullScreenChange.bind(this));
             }
+            $rootScope.videogularScope = $scope;
         };
 
         this.onUpdateTheme = function onUpdateTheme(newValue) {

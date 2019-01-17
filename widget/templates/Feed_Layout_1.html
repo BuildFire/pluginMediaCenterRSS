@@ -23,7 +23,7 @@
           <vg-overlay-play></vg-overlay-play>
         </videogular>
         <embed-video id="videoPlayer" data-ng-if="WidgetMedia.videoUrl" data-ng-href="{{WidgetMedia.videoUrl}}"
-          controls=0></embed-video>
+          controls='0'></embed-video>
         <img src="../../../styles/media/holder-16x9.gif" ng-if="WidgetMedia.loadingVideo">
       </div>
       <div ng-switch-when="AUDIO">

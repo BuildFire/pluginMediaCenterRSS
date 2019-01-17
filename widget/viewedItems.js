@@ -66,7 +66,7 @@ const viewedItems = {
 		this._set(viewedItems);
 
 		$scope.WidgetHome.items.map(item => {
-			if (viewedItems.includes(item.link)) {
+			if (viewedItems.includes(item.guid)) {
 				item.viewed = true;
 			}
 		});
@@ -82,7 +82,7 @@ const viewedItems = {
 	 */
 	sync(items) {
 		return items.map(item => {
-			const isViewed = this.get().includes(item.link);
+			const isViewed = this.get().includes(item.guid);
 			item.viewed = isViewed ? true : false;
 		});
 	}

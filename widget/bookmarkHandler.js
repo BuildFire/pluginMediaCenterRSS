@@ -1,29 +1,18 @@
-const bookmarks = {
-	add($scope, item) {
-        // let icon = '';
-        // if (!item.imageSrcUrl) {
-        //     buildfire.pluginInstance.get(window.appContext.currentPlugin.instanceId, (err, data) => {
-        //         if (err) {
-        //             console.error(err);
-        //             return
-        //         } else {
-        //             icon = data.iconUrl;
-        //         }
-        //     });
-        // } else {
-        //     icon = item.imageSrcUrl;
-        // };
-		let options = {
-			id: item.link,
-			title: item.title,
-			payload: `#/item/goto/${item.link}`,
-			icon: item.imageSrcUrl
-		};
-		let callback = (err, data) => {
+"use strict";
+
+var bookmarks = {
+    add: function add($scope, item) {
+        var options = {
+            id: item.guid,
+            title: item.title,
+            payload: "#/item/goto/" + item.guid,
+            icon: item.imageSrcUrl
+        };
+        var callback = function callback(err, data) {
             if (err) throw err;
             if ($scope.WidgetHome) {
-                $scope.WidgetHome.items.map(i => {
-                    const isBookmarked = i.link === item.link;
+                $scope.WidgetHome.items.map(function (i) {
+                    var isBookmarked = i.guid === item.guid;
                     if (isBookmarked) {
                         i.bookmarked = true;
                     }
@@ -31,18 +20,17 @@ const bookmarks = {
             } else if ($scope.WidgetMedia) {
                 $scope.WidgetMedia.item.bookmarked = true;
             }
-			if (!$scope.$$phase) {
+            if (!$scope.$$phase) {
                 $scope.$apply();
-            } 
-
-		};
-		buildfire.bookmarks ? buildfire.bookmarks.add(options, callback) : null;
+            }
+        };
+        buildfire.bookmarks ? buildfire.bookmarks.add(options, callback) : null;
     },
-    delete($scope, item) {
-        const callback = () => {
+    delete: function _delete($scope, item) {
+        var callback = function callback() {
             if ($scope.WidgetHome) {
-                $scope.WidgetHome.items.map(i => {
-                    const isBookmarked = i.link === item.link;
+                $scope.WidgetHome.items.map(function (i) {
+                    var isBookmarked = i.guid === item.guid;
                     if (isBookmarked) {
                         i.bookmarked = false;
                     }
@@ -50,32 +38,31 @@ const bookmarks = {
             } else if ($scope.WidgetMedia) {
                 $scope.WidgetMedia.item.bookmarked = false;
             }
-			if (!$scope.$$phase) {
+            if (!$scope.$$phase) {
                 $scope.$apply();
-            } 
-
+            }
         };
-        buildfire.bookmarks ? buildfire.bookmarks.delete(item.link, callback) : null;
+        buildfire.bookmarks ? buildfire.bookmarks.delete(item.guid, callback) : null;
     },
-    _getAll(callback) {
-        const cb = (err, bookmarks) => {
+    _getAll: function _getAll(callback) {
+        var cb = function cb(err, bookmarks) {
             if (err) throw err;
             callback(bookmarks);
         };
         buildfire.bookmarks ? buildfire.bookmarks.getAll(cb) : cb(null, []);
     },
-    sync($scope) {
-        this._getAll(bookmarks => {
+    sync: function sync($scope) {
+        this._getAll(function (bookmarks) {
             console.log(bookmarks);
-            
-            const bookmarkIds = [];
-            bookmarks.forEach(bookmark => {
+
+            var bookmarkIds = [];
+            bookmarks.forEach(function (bookmark) {
                 bookmarkIds.push(bookmark.id);
             });
 
             if ($scope.WidgetHome) {
-                $scope.WidgetHome.items.map(item => {
-                    const isBookmarked = bookmarkIds.includes(item.link);
+                $scope.WidgetHome.items.map(function (item) {
+                    var isBookmarked = bookmarkIds.includes(item.guid);
                     if (isBookmarked) {
                         item.bookmarked = true;
                     } else {
@@ -83,7 +70,7 @@ const bookmarks = {
                     }
                 });
             } else if ($scope.WidgetMedia) {
-                const isBookmarked = bookmarkIds.includes($scope.WidgetMedia.item.link);
+                var isBookmarked = bookmarkIds.includes($scope.WidgetMedia.item.guid);
                 if (isBookmarked) {
                     $scope.WidgetMedia.item.bookmarked = true;
                 } else {
@@ -94,6 +81,5 @@ const bookmarks = {
                 $scope.$apply();
             }
         });
-        
     }
 };
