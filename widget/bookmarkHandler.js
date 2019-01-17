@@ -16,7 +16,7 @@ const bookmarks = {
 		let options = {
 			id: item.link,
 			title: item.title,
-			payload: `#/item/goto/${item.link}`,
+			payload: {link: item.link},
 			icon: item.imageSrcUrl
 		};
 		let callback = (err, data) => {
