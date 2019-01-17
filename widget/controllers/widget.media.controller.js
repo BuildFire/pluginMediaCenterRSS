@@ -559,6 +559,7 @@
                 WidgetMedia.addNote = function () {
                     debugger
                     var options = {
+                        pluginOpen: true,
                         noteData: {
                             description: $scope.WidgetMedia.item.description,
                             title: $scope.WidgetMedia.item.title

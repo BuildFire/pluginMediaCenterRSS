@@ -5,7 +5,7 @@ var bookmarks = {
         var options = {
             id: item.guid,
             title: item.title,
-            payload: "#/item/goto/" + item.guid,
+            payload: {link: item.guid},
             icon: item.imageSrcUrl
         };
         var callback = function callback(err, data) {

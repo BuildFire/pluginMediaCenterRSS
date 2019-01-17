@@ -3,7 +3,6 @@
 var searchEngine = {
   indexFeed: function indexFeed(rssUrl) {
     var _this = this;
-    // buildfire.services.searchEngine.feeds.get({ tag: 'rss_feed', feedType: 'rss' }, (err, result) => {
     this._get(function (err, result) {
       if (err) throw err;
       console.log(result);

@@ -17,20 +17,18 @@
                  * Handles incoming bookmark navigation
                  */
                 var handleBookmarkNav = function handleBookmarkNav() {
-                    var reg = /^\/item\/goto/;
-                
-                    if (reg.test(_path)) {
-                        var targetGuid = _path.slice([_path.lastIndexOf('/goto/') + 6]);
-                        var itemGuids = _items.map(function (item) {
-                            return item.guid;
-                        });
-                        var index = itemGuids.indexOf(targetGuid);
-                        if (index < 0) {
-                            console.warn('bookmarked item not found.');
-                        } else {
-                            WidgetHome.goToItem(index, _items[index]);
+                    buildfire.deeplink.getData(function(data){
+                        if(data && data.link){
+                            var targetGuid = data.link;
+                            var itemLinks = _items.map(item => item.guid);
+                            var index = itemLinks.indexOf(targetGuid);
+                            if (index < 0) {
+                                console.warn('bookmarked item not found.');
+                            } else {
+                                WidgetHome.goToItem(index, _items[index]);
+                            }
                         }
-                    }
+                    }); 
                 };
                 
                 /** 
