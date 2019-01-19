@@ -557,13 +557,10 @@
                 };
 
                 WidgetMedia.addNote = function () {
-                    debugger
                     var options = {
-                        pluginOpen: true,
-                        noteData: {
-                            description: $scope.WidgetMedia.item.description,
-                            title: $scope.WidgetMedia.item.title
-                        }
+                        itemId: $scope.WidgetMedia.item.guid,
+                        title: $scope.WidgetMedia.item.title,
+                        imageUrl: $scope.WidgetMedia.item.imageSrcUrl
                     };
                     var callback = function (err, data) {
                         if (err) throw err;
