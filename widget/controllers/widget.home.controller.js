@@ -196,7 +196,7 @@
                         handleBookmarkNav();
                         Buildfire.spinner.hide();
                         isInit = false;
-                        searchEngine.indexFeed(rssUrl);
+                        // searchEngine.indexFeed(rssUrl);
                     }
                     , error = function (err) {
                         Buildfire.spinner.hide();
