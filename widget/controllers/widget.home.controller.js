@@ -9,29 +9,20 @@
                 $rootScope.deviceHeight = window.innerHeight;
                 $rootScope.deviceWidth = window.innerWidth || 320;
                 
-                const _path = $location.path();
-
-                const handleBookmarkNav = () => {
-                    const reg = /^\/item\/goto/;
-
-                    if (reg.test(_path)) {
-                        let targetLink = _path.slice([_path.lastIndexOf('/goto/') + 6]);
-                        let itemLinks = _items.map(item => item.link);
-                        let index = itemLinks.indexOf(targetLink);
-                        if (index < 0) {
-                            // buildfire.notifications.alert({
-                            //     title: "Item not found"
-                            //     , message: "The bookmarked item no longer exists."
-                            //     , okButton: { text: 'Ok' }
-                            // }, function () {
-                            //     buildfire.bookmarks.delete(targetLink, () => console.log('bookmark deleted'));
-                            // });
-                            console.warn('bookmarked item not found.');
-                        } else {
-                            WidgetHome.goToItem(index, _items[index]);
+                var handleBookmarkNav = function handleBookmarkNav() {
+                    buildfire.deeplink.getData(function(data){
+                        if(data && data.link){
+                            var targetGuid = data.link;
+                            var itemLinks = _items.map(item => item.guid);
+                            var index = itemLinks.indexOf(targetGuid);
+                            if (index < 0) {
+                                console.warn('bookmarked item not found.');
+                            } else {
+                                WidgetHome.goToItem(index, _items[index]);
+                            }
                         }
-                    }
-                }   
+                    }); 
+                };
                 
                 /** 
                  * Private variables
