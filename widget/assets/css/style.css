@@ -1382,11 +1382,12 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 }
 .layout1-detail .li-actions,
 .layout2-detail .li-actions{
+	display: flex;
 	position: relative;
 }
 .item-actions{
 	margin: 16px 0;
-	padding: 8px 16px;
+	padding: 0 0 0 16px;
 	border-top: 1px solid #ddd;
 	border-bottom: 1px solid #ddd;
 	display: flex;
@@ -1402,8 +1403,10 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 .layout2-detail .li-actions i{
 	flex-shrink: 0;
 	position: relative;
-	display: inline-block;
-	margin-left: 8px;
+	display: block;
+	padding: 16px;
+	flex-shrink: 0;
+	top: 0;
 }
 .layout2-detail .li-actions .share,
 .layout2-detail .li-actions .bookmark{
@@ -1418,4 +1421,7 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 /* Hide share button until functionality is ready*/
 .share{
 	/* display: none !important; */
+}
+.glyphicon{
+	color: blue !important;
 }
