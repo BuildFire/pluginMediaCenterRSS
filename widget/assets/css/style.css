@@ -1418,10 +1418,3 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 .layout1-detail .audio-player-holder img{
 	max-height: 400px;
 }
-/* Hide share button until functionality is ready*/
-.share{
-	/* display: none !important; */
-}
-.glyphicon{
-	color: blue !important;
-}
