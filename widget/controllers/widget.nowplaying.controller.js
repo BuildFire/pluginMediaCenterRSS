@@ -250,8 +250,8 @@
 				this.image = track && track.imageSrcUrl;
 				this.album = '';
 				this.artist = track && track.author;
-				this.startAt = track.seekTo || 0; // where to begin playing
-				this.lastPosition = track.seekTo || 0; // last played to
+				this.startAt = 0; // where to begin playing
+				this.lastPosition = 0; // last played to
 			}
 
 			/**

@@ -39,7 +39,15 @@ var searchEngine = {
     };
 
     buildfire.services.searchEngine.feeds.insert(options, function (err, result) {
-      if (err) throw err;
+      if (err) {
+        if (err.innerError.error === 'invalid unique_key') {
+          options.feedItemConfig.uniqueKey = 'title';
+          buildfire.services.searchEngine.feeds.insert(options, function (err, result) {
+            if (err) throw err;
+            console.log(result);
+          });
+        }
+      };
       console.log(result);
     });
   },
