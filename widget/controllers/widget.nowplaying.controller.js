@@ -38,9 +38,19 @@
 			/**
 			 * audioPlayer.onEvent callback calls when audioPlayer event fires.
 			 */
+
+			var first = true;
 			audioPlayer.onEvent(function(e) {
 				switch (e.event) {
+					case 'skip':
+						NowPlaying.changeTime(e.data);
+						break;
 					case 'timeUpdate':
+						let ready = e.data.duration > 0;
+						if (ready && first && NowPlaying.item.seekTo) {
+							NowPlaying.changeTime(NowPlaying.item.seekTo);
+							first = false;
+						}
 						NowPlaying.currentTime = e.data.currentTime;
 						NowPlaying.duration = e.data.duration;
 						break;
@@ -69,11 +79,13 @@
 			NowPlaying.playTrack = function() {
 				if (NowPlaying.settings) {
 					NowPlaying.settings.isPlayingCurrentTrack = true;
+					NowPlaying.settings.autoJumpToLastPosition = true;
 					audioPlayer.settings.set(NowPlaying.settings);
 				} else {
 					audioPlayer.settings.get(function(err, setting) {
 						NowPlaying.settings = setting;
 						NowPlaying.settings.isPlayingCurrentTrack = true;
+						NowPlaying.settings.autoJumpToLastPosition = true;
 						audioPlayer.settings.set(NowPlaying.settings);
 					});
 				}
@@ -200,6 +212,7 @@
 
 			NowPlaying.addNote = function() {
 				var options = {
+					itemId: $scope.NowPlaying.item.guid,
 					title: $scope.NowPlaying.item.title,
 					imageUrl: $scope.NowPlaying.item.imageSrcUrl,
 					timeIndex: $scope.NowPlaying.currentTime
@@ -237,8 +250,8 @@
 				this.image = track && track.imageSrcUrl;
 				this.album = '';
 				this.artist = track && track.author;
-				this.startAt = 0; // where to begin playing
-				this.lastPosition = 0; // last played to
+				this.startAt = track.seekTo || 0; // where to begin playing
+				this.lastPosition = track.seekTo || 0; // last played to
 			}
 
 			/**

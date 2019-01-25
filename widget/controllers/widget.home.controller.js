@@ -25,6 +25,9 @@
                             if (index < 0) {
                                 console.warn('bookmarked item not found.');
                             } else {
+                                if (data.timeIndex) {
+                                    _items[index].seekTo = data.timeIndex;
+                                }
                                 WidgetHome.goToItem(index, _items[index]);
                             }
                         }
@@ -196,7 +199,7 @@
                         handleBookmarkNav();
                         Buildfire.spinner.hide();
                         isInit = false;
-                        // searchEngine.indexFeed(rssUrl);
+                        searchEngine.indexFeed(rssUrl);
                     }
                     , error = function (err) {
                         Buildfire.spinner.hide();
@@ -361,7 +364,6 @@
                  * @param index
                  */
                 WidgetHome.goToItem = function (index, item) {
-                    debugger
                     viewedItems.markViewed($scope, item.guid)
                     if (WidgetHome.items[index]) {
                         WidgetHome.items[index].index = index;

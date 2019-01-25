@@ -285,7 +285,6 @@
                  * @param _item
                  */
                 var filterItemType = function (_item) {
-                    debugger
                     var _src = ''
                         , mediaData = checkEnclosuresTag(_item);
 
@@ -623,6 +622,10 @@
                         }
                     }
                 };
+
+                if (WidgetMedia.item && WidgetMedia.item.seekTo) {
+                    WidgetMedia.playAudio();
+                }
 
             }]
     )
