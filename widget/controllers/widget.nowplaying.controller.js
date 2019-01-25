@@ -211,6 +211,7 @@
 			};
 
 			NowPlaying.addNote = function() {
+				NowPlaying.pauseTrack();
 				var options = {
 					itemId: $scope.NowPlaying.item.guid,
 					title: $scope.NowPlaying.item.title,
@@ -282,6 +283,10 @@
 			 * Implementation of pull down to refresh
 			 */
 			var onRefresh = Buildfire.datastore.onRefresh(function() {});
+
+			buildfire.auth.onLogin(function() {});
+
+			buildfire.auth.onLogout(function() {});
 
 			/**
 			 * Unbind the onRefresh

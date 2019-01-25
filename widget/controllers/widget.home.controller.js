@@ -10,28 +10,32 @@
                 $rootScope.deviceWidth = window.innerWidth || 320;
                 
                 var _path = $location.path();
-
+                $scope.first = true;
                 /**
                  * @name handleBookmarkNav
                  * @type {function}
                  * Handles incoming bookmark navigation
                  */
                 var handleBookmarkNav = function handleBookmarkNav() {
-                    buildfire.deeplink.getData(function(data){
-                        if(data && data.link){
-                            var targetGuid = data.link;
-                            var itemLinks = _items.map(item => item.guid);
-                            var index = itemLinks.indexOf(targetGuid);
-                            if (index < 0) {
-                                console.warn('bookmarked item not found.');
-                            } else {
-                                if (data.timeIndex) {
-                                    _items[index].seekTo = data.timeIndex;
+                    if ($scope.first) {
+                        buildfire.deeplink.getData(function(data){
+                            if(data && data.link){
+                                var targetGuid = data.link;
+                                var itemLinks = _items.map(item => item.guid);
+                                var index = itemLinks.indexOf(targetGuid);
+                                if (index < 0) {
+                                    console.warn('bookmarked item not found.');
+                                } else {
+                                    if (data.timeIndex) {
+                                        _items[index].seekTo = data.timeIndex;
+                                    }
+                                    WidgetHome.goToItem(index, _items[index]);
                                 }
-                                WidgetHome.goToItem(index, _items[index]);
+                                $scope.first = false;
+                                if (!$scope.$$phase) $scope.$apply();
                             }
-                        }
-                    }); 
+                        }); 
+                    }
                 };
                 
                 /** 
