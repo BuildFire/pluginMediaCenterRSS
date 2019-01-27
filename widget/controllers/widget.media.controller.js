@@ -561,7 +561,7 @@
                         title: $scope.WidgetMedia.item.title,
                         imageUrl: $scope.WidgetMedia.item.imageSrcUrl
                     };
-                    if (WidgetMedia.medium = MEDIUM_TYPES.VIDEO && WidgetMedia.API) {
+                    if (WidgetMedia.medium === MEDIUM_TYPES.VIDEO && WidgetMedia.API) {
                         options.timeIndex = WidgetMedia.API.currentTime / 1000;
                     }
                     var callback = function (err, data) {
