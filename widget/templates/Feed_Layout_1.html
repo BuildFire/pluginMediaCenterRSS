@@ -23,7 +23,7 @@
           <vg-overlay-play></vg-overlay-play>
         </videogular>
         <embed-video id="videoPlayer" data-ng-if="WidgetMedia.videoUrl" data-ng-href="{{WidgetMedia.videoUrl}}"
-          controls=0></embed-video>
+          controls='0'></embed-video>
         <img src="../../../styles/media/holder-16x9.gif" ng-if="WidgetMedia.loadingVideo">
       </div>
       <div ng-switch-when="AUDIO">
@@ -51,14 +51,15 @@
       <div class="link-list">
         <a class="text-primary" ng-click="WidgetMedia.playAudio()" ng-if="WidgetMedia.medium == 'AUDIO'">Listen</a>
         <a class="text-primary" ng-click="WidgetMedia.API.play()" ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">Watch</a>
-        <a class="text-primary" ng-if="WidgetMedia.item.link" ng-click="WidgetMedia.openLink(WidgetMedia.item.link)"
-          target="_blank">View
-          Source</a>
+        <a class="text-primary" ng-if="WidgetMedia.item.link" ng-click="WidgetMedia.openLink(WidgetMedia.item.link)" target="_blank">
+          View Source
+        </a>
         <!--<a class="text-primary">Share</a>-->
       </div>
       <div class="li-actions">
+        <i class="share glyphicon glyphicon glyphicon-edit"  ng-click="WidgetMedia.addNote()" ng-click="" role="button"></i>
         <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetMedia.share()" role="button"></i>
-        <i class="icon bookmark" style="font-family: 'Glyphicons Halflings' !important;" ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }"
+        <i class="glyphicon icon bookmark" style="font-family: 'Glyphicons Halflings' !important;" ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }"
           ng-click="WidgetMedia.bookmark($event)" role="button"></i>
       </div>
     </div>

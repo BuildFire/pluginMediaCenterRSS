@@ -54,8 +54,9 @@
 					Source</a>
 			</div>
 			<div class="li-actions">
+				<i class="share glyphicon glyphicon-edit"  ng-click="WidgetMedia.addNote()" role="button"></i>
 				<i class="share glyphicon glyphicon-share-alt" ng-click="WidgetMedia.share()" role="button"></i>
-				<i class="icon bookmark" style="font-family: 'Glyphicons Halflings' !important;" ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }"
+				<i class="glyphicon icon bookmark" style="font-family: 'Glyphicons Halflings' !important;" ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }"
 				 ng-click="WidgetMedia.bookmark($event)" role="button"></i>
 			</div>
 		</div>
