@@ -29,6 +29,7 @@
                                     if (data.timeIndex) {
                                         _items[index].seekTo = data.timeIndex;
                                     }
+                                    $rootScope.deeplinkFirstNav = true;
                                     WidgetHome.goToItem(index, _items[index]);
                                 }
                                 $scope.first = false;

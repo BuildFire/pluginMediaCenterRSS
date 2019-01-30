@@ -647,10 +647,11 @@
                     }
                 };
 
-                if (WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.AUDIO) {
-                    WidgetMedia.item.seekTo = false;
+                if ($rootScope.deeplinkFirstNav && WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.AUDIO) {
+                    $rootScope.deeplinkFirstNav = false;
                     WidgetMedia.playAudio();
-                } else if (WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.VIDEO) {
+                } else if ($rootScope.deeplinkFirstNav && WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.VIDEO) {
+                    $rootScope.deeplinkFirstNav = false;
                     let retry = setInterval(() => {
                         if (!WidgetMedia.API || !WidgetMedia.API.isReady || WidgetMedia.API.totalTime === 0) {
                             return
