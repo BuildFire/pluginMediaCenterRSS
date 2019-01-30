@@ -464,6 +464,7 @@
                  * will be called when you click play button
                  */
                 WidgetMedia.playAudio = function () {
+                    buildfire.history.push('Now Playing', {});
                     Location.goTo('#/nowplaying');
 
                     /* WidgetMedia.audio.playing = true;
@@ -647,6 +648,7 @@
                 };
 
                 if (WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.AUDIO) {
+                    WidgetMedia.item.seekTo = false;
                     WidgetMedia.playAudio();
                 } else if (WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.VIDEO) {
                     let retry = setInterval(() => {
