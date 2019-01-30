@@ -35,6 +35,7 @@ var searchEngine = {
       //   titleKey: 'title',
       //   urlKey: 'link',
       //   descriptionKey: 'media:group.media:description'
+      // imageUrlKey: "itunes.image"
       // }
     };
 

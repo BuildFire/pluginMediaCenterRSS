@@ -16,7 +16,7 @@
 			NowPlaying.playing = false;
 			NowPlaying.currentTime = 0;
 			/**
-			 * WidgetMedia.item used to hold item details object
+			 * NowPlaying.item used to hold item details object
 			 * @type {object}
 			 */
 			NowPlaying.item = ItemDetailsService.getData();
@@ -35,6 +35,9 @@
 				NowPlaying.volume = setting.volume;
 			});
 
+			buildfire.notes && buildfire.notes.onSeekTo && buildfire.notes.onSeekTo(function (data) {
+				NowPlaying.changeTime(data.time);
+			});
 			/**
 			 * audioPlayer.onEvent callback calls when audioPlayer event fires.
 			 */
@@ -208,6 +211,31 @@
 
 			NowPlaying.addEvents = function(e, i, toggle, track) {
 				toggle ? (track.swiped = true) : (track.swiped = false);
+			};
+
+			NowPlaying.bookmark = function ($event) {
+				$event.stopImmediatePropagation();
+				var isBookmarked = NowPlaying.item.bookmarked ? true : false;            
+				if (isBookmarked) {
+					bookmarks.delete($scope, NowPlaying.item);
+				} else {
+					bookmarks.add($scope, NowPlaying.item);
+				}
+			};
+
+			NowPlaying.share = function () {
+				var options = {
+					subject: NowPlaying.item.title,
+					text: NowPlaying.item.title + ", by " + NowPlaying.item.author,
+					// image: NowPlaying.item.image.url,
+					link: NowPlaying.item.link
+				};
+				var callback = function (err) {
+					if (err) {
+						console.warn(err);
+					}
+				};
+				buildfire.device.share(options, callback);
 			};
 
 			NowPlaying.addNote = function() {

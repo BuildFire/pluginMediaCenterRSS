@@ -572,6 +572,26 @@
                     buildfire.notes.openDialog(options, callback);
                 };
 
+                buildfire.notes && buildfire.notes.onSeekTo && buildfire.notes.onSeekTo(function (data) {
+                    WidgetMedia.item.seekTo = data.time;
+                    if (WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.AUDIO) {
+                        WidgetMedia.playAudio();
+                    } else if (WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.VIDEO) {
+                        let retry = setInterval(() => {
+                            if (!WidgetMedia.API || !WidgetMedia.API.isReady || WidgetMedia.API.totalTime === 0) {
+                                return
+                            } else {
+                                clearInterval(retry);
+                                WidgetMedia.API.seekTime(WidgetMedia.item.seekTo);
+                                setTimeout(() => {
+                                    WidgetMedia.API.play();
+                                }, 500);
+                            }
+                        }, 500);
+    
+                    }
+                });
+
 
                 /**
                  * Implementation of pull down to refresh

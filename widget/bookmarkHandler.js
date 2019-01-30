@@ -19,6 +19,8 @@ var bookmarks = {
                 });
             } else if ($scope.WidgetMedia) {
                 $scope.WidgetMedia.item.bookmarked = true;
+            } else if ($scope.NowPlaying) {
+                $scope.NowPlaying.item.bookmarked = true;
             }
             if (!$scope.$$phase) {
                 $scope.$apply();
@@ -37,6 +39,8 @@ var bookmarks = {
                 });
             } else if ($scope.WidgetMedia) {
                 $scope.WidgetMedia.item.bookmarked = false;
+            } else if ($scope.NowPlaying) {
+                $scope.NowPlaying.item.bookmarked = false;
             }
             if (!$scope.$$phase) {
                 $scope.$apply();
