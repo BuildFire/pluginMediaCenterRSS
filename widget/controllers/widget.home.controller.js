@@ -9,49 +9,64 @@
                 $rootScope.deviceHeight = window.innerHeight;
                 $rootScope.deviceWidth = window.innerWidth || 320;
                 
+                var _path = $location.path();
+                $scope.first = true;
+                /**
+                 * @name handleBookmarkNav
+                 * @type {function}
+                 * Handles incoming bookmark navigation
+                 */
                 var handleBookmarkNav = function handleBookmarkNav() {
-                    buildfire.deeplink.getData(function(data){
-                        if(data && data.link){
-                            var targetGuid = data.link;
-                            var itemLinks = _items.map(item => item.guid);
-                            var index = itemLinks.indexOf(targetGuid);
-                            if (index < 0) {
-                                console.warn('bookmarked item not found.');
-                            } else {
-                                WidgetHome.goToItem(index, _items[index]);
+                    if ($scope.first) {
+                        buildfire.deeplink.getData(function(data){
+                            if(data && data.link){
+                                var targetGuid = data.link;
+                                var itemLinks = _items.map(item => item.guid);
+                                var index = itemLinks.indexOf(targetGuid);
+                                if (index < 0) {
+                                    console.warn('bookmarked item not found.');
+                                } else {
+                                    if (data.timeIndex) {
+                                        _items[index].seekTo = data.timeIndex;
+                                    }
+                                    $rootScope.deeplinkFirstNav = true;
+                                    WidgetHome.goToItem(index, _items[index]);
+                                }
+                                $scope.first = false;
+                                if (!$scope.$$phase) $scope.$apply();
                             }
-                        }
-                    }); 
+                        }); 
+                    }
                 };
                 
                 /** 
                  * Private variables
                  *
-                 * _items used to hold RSS feed items and helps in lazy loading.
+                 * @name _items used to hold RSS feed items and helps in lazy loading.
                  * @type {object} 
                  * @private 
                  *
-                 * limit used to load a number of items in list on scroll
+                 * @name limit used to load a number of items in list on scroll
                  * @type {number}
                  * @private
                  *
-                 * chunkData used to hold chunks of _items.
+                 * @name chunkData used to hold chunks of _items.
                  * @type {object}
                  * @private
                  *
-                 * nextChunkDataIndex used to hold index of next chunk.
+                 * @name nextChunkDataIndex used to hold index of next chunk.
                  * @type {number}
                  * @private
                  *
-                 * nextChunk used to hold chunk based on nextChunkDataIndex token.
+                 * @name nextChunk used to hold chunk based on nextChunkDataIndex token.
                  * @type {object}
                  * @private
                  *
-                 * totalChunks used to hold number of available chunks i.e. chunkData.length.
+                 * @name totalChunks used to hold number of available chunks i.e. chunkData.length.
                  * @type {number}
                  * @private
                  *
-                 * currentRssUrl used to hold previously saved rss url.
+                 * @name currentRssUrl used to hold previously saved rss url.
                  * @type {string}
                  * @private
                  *
@@ -81,27 +96,27 @@
                     }
                 };
 
-                /*
-                 * WidgetHome.data is used to hold user's data object which used throughout the app.
+                /** 
+                 * @name WidgetHome.data is used to hold user's data object which used throughout the app.
                  * @type {object}
                  */
                 WidgetHome.data = null;
                 WidgetHome.view=null;
 
-                /*
-                 * WidgetHome.items is used to listing items.
+                /**
+                 * @name WidgetHome.items is used to listing items.
                  * @type {object}
                  */
                 WidgetHome.items = [];
 
-                /*
-                 * WidgetHome.busy is used to disable ng-infinite scroll when more data not available to show.
+                /** 
+                 * @name WidgetHome.busy is used to disable ng-infinite scroll when more data not available to show.
                  * @type {boolean}
                  */
                 WidgetHome.busy = false;
 
-                /*
-                 * WidgetHome.isItems is used to show info message when _items.length == 0.
+                /**
+                 * @name WidgetHome.isItems is used to show info message when _items.length == 0.
                  * @type {boolean}
                  */
                 WidgetHome.isItems = true;
@@ -109,8 +124,9 @@
                 $rootScope.showFeed = true;
 
                 /**
-                 * resetDefaults() private method
+                 * @name resetDefaults()
                  * Used to reset default values
+                 * @private
                  */
                 var resetDefaults = function () {
                     chunkData = null;
@@ -123,9 +139,9 @@
                     WidgetHome.isItems = true;
                     ItemDetailsService.setData(null);
                 };
-
+                
                 /**
-                 * getImageUrl() private method
+                 * @name getImageUrl()
                  * Used to extract image url
                  * @param item
                  * @returns {*}
@@ -161,7 +177,8 @@
                 };
 
                 /**
-                 * getFeedData() private method
+                 * @name getFeedData()
+                 * @private
                  * used to fetch RSS feed Data object if a valid RSS feed url provided
                  * @param rssUrl
                  */
@@ -187,6 +204,7 @@
                         handleBookmarkNav();
                         Buildfire.spinner.hide();
                         isInit = false;
+                        searchEngine.indexFeed(rssUrl);
                     }
                     , error = function (err) {
                         Buildfire.spinner.hide();
@@ -196,7 +214,8 @@
                 };
 
                 /**
-                 * onUpdateCallback() private method
+                 * @name onUpdateCallback()
+                 * @private
                  * Will be called when DataStore.onUpdate() have been made.
                  * @param event
                  */
@@ -228,7 +247,8 @@
                 };
 
                 /**
-                 * init() private function
+                 * @name init()
+                 * @private
                  * It is used to fetch previously saved user's data
                  */
                 var init = function () {
@@ -266,17 +286,17 @@
                 };
 
                 /**
-                 * init() function invocation to fetch previously saved user's data from datastore.
+                 * @name init() function invocation to fetch previously saved user's data from datastore.
                  */
                 init();
 
                 /**
-                 * DataStore.onUpdate() will invoked when there is some change in datastore
+                 * @name DataStore.onUpdate() will invoked when there is some change in datastore
                  */
                 DataStore.onUpdate().then(null, null, onUpdateCallback);
 
                 /**
-                 * WidgetHome.showDescription() method
+                 * @name WidgetHome.showDescription() method
                  * will be called to check whether the description have text to show or no.
                  * @param description
                  * @returns {boolean}
@@ -291,7 +311,7 @@
                 };
 
                 /**
-                 * WidgetHome.getTitle() method
+                 * @name WidgetHome.getTitle() method
                  * Will used to extract item title
                  * @param item
                  * @returns {item.title|*}
@@ -312,7 +332,7 @@
                 };
 
                 /**
-                 * WidgetHome.getItemSummary() method
+                 * @name WidgetHome.getItemSummary() method
                  * Will used to extract item summary
                  * @param item
                  * @returns {*}
@@ -327,7 +347,7 @@
                 };
 
                 /**
-                 * WidgetHome.getItemPublishDate() method
+                 * @name WidgetHome.getItemPublishDate() method
                  * Will used to extract item published date
                  * @param item
                  * @returns {*}
@@ -344,12 +364,12 @@
                 };
 
                 /**
-                 * WidgetHome.goToItem() method
+                 * @name WidgetHome.goToItem() method
                  * will used to redirect on details page
                  * @param index
                  */
                 WidgetHome.goToItem = function (index, item) {
-                    viewedItems.markViewed($scope, item.link)
+                    viewedItems.markViewed($scope, item.guid)
                     if (WidgetHome.items[index]) {
                         WidgetHome.items[index].index = index;
                     }
@@ -362,7 +382,7 @@
 
                 WidgetHome.bookmark = function ($event, item) {
                     $event.stopImmediatePropagation();
-                    const isBookmarked = item.bookmarked ? true : false;            
+                    var isBookmarked = item.bookmarked ? true : false;            
                     if (isBookmarked) {
                       bookmarks.delete($scope, item);
                     } else {
@@ -373,14 +393,14 @@
                 WidgetHome.share = function ($event, item) {
                     $event.stopImmediatePropagation();
 
-                    const options = {
+                    var options = {
                         subject: item.title,
-                        text: `${item.title}, by ${item.author}`,
+                        text: item.title + ", by " + item.author,
                         // image: item.image.url,
                         link: item.link
                     };
 
-                    const callback = err => {
+                    var callback = function(err) {
                         if (err) {
                             console.warn(err);
                         }
@@ -389,19 +409,18 @@
                     buildfire.device.share(options, callback);
                 };
 
-
-                const initAuthUpdate = () => {
-                    Buildfire.auth.onLogin(() => {
+                var initAuthUpdate = function () {
+                    Buildfire.auth.onLogin(function () {
                         init();
                     });
-    
-                    Buildfire.auth.onLogout(() => {
+                
+                    Buildfire.auth.onLogout(function () {
                         init();
                     });
                 };
 
                 /**
-                 * WidgetHome.loadMore() function
+                 * @name WidgetHome.loadMore() function
                  * will used to load more items on scroll to implement lazy loading
                  */
                 WidgetHome.loadMore = function () {

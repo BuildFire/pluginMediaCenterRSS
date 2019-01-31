@@ -71,8 +71,11 @@
         </div>
         <div class="media-player-action-btns">
             <!--<span class="icon icon-volume-high icon-sm" ng-click="NowPlaying.showVolume=!NowPlaying.showVolume"></span>-->
-            <span class="icon icon-ellipsis icon-sm whiteTheme" ng-click="NowPlaying.openMoreInfoOverlay()"></span>
-            <span class="icon icon-cog icon-sm whiteTheme" ng-click="NowPlaying.getSettings()"></span>
+            <span class="glyphicon glyphicon-option-horizontal whiteTheme" ng-click="NowPlaying.openMoreInfoOverlay()"></span>
+            <span class="glyphicon glyphicon-cog whiteTheme" ng-click="NowPlaying.getSettings()"></span>
+            <span class="glyphicon glyphicon-edit whiteTheme"  ng-click="NowPlaying.addNote()"></span>
+            <span class="glyphicon glyphicon-share-alt whiteTheme" ng-click="NowPlaying.share()" role="button"></span>
+            <span class="glyphicon whiteTheme" ng-class="{ 'glyphicon-star-empty' : !NowPlaying.item.bookmarked, 'glyphicon-star' : NowPlaying.item.bookmarked }" ng-click="NowPlaying.bookmark($event)" role="button"></span>
         </div>
         <div class="media-player-btns margin-top-ten">
             <span ng-class="(NowPlaying.settings && NowPlaying.settings.shufflePlaylist) ? 'primaryTheme bold' : 'whiteTheme'"
