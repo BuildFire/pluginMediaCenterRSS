@@ -1252,7 +1252,6 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	right: 0;
 }
 .layout1 .list-item .list-media-holder::before,
-.layout2 .list-item .list-media-holder::before,
 .layout4 .list-item .list-media-holder::before {
 	display: block;
 	position: absolute;
@@ -1323,9 +1322,6 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	border-radius: 4px;
 	margin-right: 10px;
 	flex-shrink: 0;
-}
-.layout2 .li-actions .share{
-	color: #fff !important;
 }
 .layout2 .list-media-holder .li-actions{
 	position: absolute;

@@ -12,9 +12,6 @@
                 <div ng-show="WidgetHome.isItems" class="list-item" ng-class="{'viewed' : item.viewed }" ng-repeat="item in  WidgetHome.items" trigger-ng-repeat-render="" ng-click="WidgetHome.goToItem($index, item)" style="cursor: pointer">
 
                     <div ng-if="item.imageSrcUrl && WidgetHome.data.design.showImages == 'Yes'" class="list-media-holder">
-                        <div class="li-actions">
-                            <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetHome.share($event, item)" role="button"></i>
-                        </div>
                         <img load-image="16x9" crop-width="220" crop-height="120" crop-type="crop" data-final-src="{{item.imageSrcUrl}}">
                     </div>
 
@@ -30,6 +27,7 @@
                             <span class="list-item-date">{{WidgetHome.getItemPublishDate(item)}}</span>
 
                             <div class="li-actions">
+                                    <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetHome.share($event, item)" role="button"></i>
                                 <i class="glyphicon bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
                             </div>
 
