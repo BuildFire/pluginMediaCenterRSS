@@ -22,9 +22,18 @@ function releaseFolder() {
 
 console.log(">> Building to " , destinationFolder);
 
+const widgetCssFiles = [
+    'widget/assets/css/style.css',
+    'widget/assets/css/videogular.css',
+    '../../styles/helper.css',
+    '../../styles/siteIcons.css',
+    '../../scripts/owlCarousel/owlCarousel.css',
+    '../../styles/transitionAnimation.css',
+    '../../styles/bootstrap.css'
+]
 
 const cssTasks=[
-    {name:"widgetCSS",src:"widget/**/*.css",dest:"/widget"}
+    {name:"widgetCSS", src: widgetCssFiles, dest:"/widget/styles"}
     ,{name:"controlContentCSS",src:"control/content/**/*.css",dest:"/control/content"}
     ,{name:"controlDesignCSS",src:"control/design/**/*.css",dest:"/control/design"}
     ,{name:"controlSettingsCSS",src:"control/settings/**/*.css",dest:"/control/settings"}
@@ -53,6 +62,16 @@ cssTasks.forEach(function(task){
 });
 
 const widgetJSFiles= [
+    "../../scripts/jquery/jquery-1.11.2.min.js",
+    "../../scripts/smartcrop.js",
+    "../../scripts/owlCarousel/owlCarousel.js",
+    "../../scripts/buildfire/components/carousel/carousel.js",
+    "../../scripts/angular/angular.min.js",
+    "../../scripts/angular/angular-route.min.js",
+    "../../scripts/angular/ui-bootstrap.min.js",
+    "../../scripts/angular/angular-animate.min.js",
+    "../../scripts/angular/angular-touch.js",
+    "../../scripts/angular/ng-infinite-scroll.custom.js",
     "widget/assets/js/lodash.js",
     "widget/assets/js/jquery.truncate.js",
     "widget/assets/js/ng-videosharing-embed.min.js",
@@ -155,7 +174,7 @@ gulp.task('html', function(){
     /// with scripts.min.js with cache buster
         .pipe(htmlReplace({
             bundleJSFiles:"scripts.min.js?v=" + (new Date().getTime())
-            ,bundleCSSFiles:"styles.min.css?v=" + (new Date().getTime())
+            ,bundleCSSFiles:"styles/styles.min.css?v=" + (new Date().getTime())
         }))
 
         /// then strip the html from any comments
