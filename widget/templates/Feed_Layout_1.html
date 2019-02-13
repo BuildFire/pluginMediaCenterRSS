@@ -49,12 +49,15 @@
     </div>
     <div class="item-actions">
       <div class="link-list">
-        <a class="text-primary" ng-click="WidgetMedia.playAudio()" ng-if="WidgetMedia.medium == 'AUDIO'">Listen</a>
-        <a class="text-primary" ng-click="WidgetMedia.API.play()" ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">Watch</a>
-        <a class="text-primary" ng-if="WidgetMedia.item.link" ng-click="WidgetMedia.openLink(WidgetMedia.item.link)" target="_blank">
-          View Source
+        <a class="media-action" ng-click="WidgetMedia.playAudio()" ng-if="WidgetMedia.medium == 'AUDIO'">
+          <i class="btn btn-success share glyphicon glyphicon-volume-up"></i>
         </a>
-        <!--<a class="text-primary">Share</a>-->
+        <a class="media-action video" ng-click="WidgetMedia.API.play()" ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">
+          <i class="btn btn-success share glyphicon glyphicon-play"></i>
+        </a>
+        <a ng-if="WidgetMedia.item.link" ng-click="WidgetMedia.openLink(WidgetMedia.item.link)" target="_blank">
+          <i class="share glyphicon glyphicon-screenshot"></i>
+        </a>
       </div>
       <div class="li-actions">
         <i class="share glyphicon glyphicon glyphicon-edit"  ng-click="WidgetMedia.addNote()" ng-click="" role="button"></i>
