@@ -91,5 +91,5 @@
                   $rootScope.$broadcast("Carousel:LOADED");
               }
           };
-      }])
+      }]);
 })(window.angular, window.buildfire);

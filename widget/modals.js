@@ -24,5 +24,5 @@
             RemoveTrackPopup.ok = function () {
                 $modalInstance.close();
             };
-        }])
+        }]);
 })(window.angular, window.buildfire);

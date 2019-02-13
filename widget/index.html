@@ -2,51 +2,49 @@
 <html ng-app="mediaCenterRSSPluginWidget">
 <head>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="../../../styles/bootstrap.css">
-  <link rel="stylesheet" href="../../../styles/siteIcons.css">
-  <link rel="stylesheet" href="../../../styles/helper.css">
-  <link rel="stylesheet" href="assets/css/style.css">
-
   <!-- sdk scripts -->
   <script src="../../../scripts/jquery/jquery-1.11.2.min.js"></script>
   <script src="../../../scripts/smartcrop.js"></script>
   <script src="../../../scripts/buildfire.js"></script>
-    <script src="../../../scripts/owlCarousel/owlCarousel.js"></script>
-    <script src="../../../scripts/buildfire/components/carousel/carousel.js"></script>
+  <script src="../../../scripts/owlCarousel/owlCarousel.js"></script>
+  <script src="../../../scripts/buildfire/components/carousel/carousel.js"></script>
   <script src="../../../scripts/angular/angular.min.js"></script>
   <script src="../../../scripts/angular/angular-route.min.js"></script>
 
-  <!--jquery truncate-->
-  <script src="assets/js/jquery.truncate.js"></script>
-  <!-- for touch-->
+  <script src="../../../scripts/angular/ui-bootstrap.min.js"></script>
+  <script src="../../../scripts/angular/angular-animate.min.js"></script>
   <script src="../../../scripts/angular/angular-touch.js"></script>
-
-  <!-- Owl Carousel -->
-
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="../../../styles/bootstrap.css">
+  <link rel="stylesheet" href="../../../styles/siteIcons.css">
+  <link rel="stylesheet" href="../../../styles/helper.css">
   <link rel="stylesheet" href="../../../scripts/owlCarousel/owlCarousel.css">
 
-  <script src="../../../scripts/angular/ui-bootstrap.min.js"></script>
+  <!-- build:bundleCSSFiles -->
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/videogular.css">
+  <!-- endbuild -->
 
+  
+  <!-- Audio player-->
+  <script src="../../../scripts/buildfire/services/media/audioPlayer.js"></script>
+  <script src="../../../scripts/buildfire/services/searchEngine/searchEngine.js"></script>
+  
+  <!-- lodash and ng-infinite-scroll -->
+  <script src="../../../scripts/angular/ng-infinite-scroll.custom.js"></script>
 
+  <!-- build:bundleJSFiles  -->
+  <script src="assets/js/lodash.js"></script>
+  <!--jquery truncate-->
+  <script src="assets/js/jquery.truncate.js"></script>
   <!--Video Embeder for Vimeo Youtube-->
   <script src="assets/js/ng-videosharing-embed.min.js"></script>
-
   <!-- videogular -->
   <script src="assets/js/angular-sanitize.js"></script>
   <script src="assets/js/videogular.js"></script>
   <script src="assets/js/videogular-controls.js"></script>
   <script src="assets/js/videogular-overlay-play.js"></script>
-  <link rel="stylesheet" href="assets/css/videogular.css">
-
-
-  <!-- Audio player-->
-  <script src="../../../scripts/buildfire/services/media/audioPlayer.js"></script>
-  <script src="../../../scripts/buildfire/services/searchEngine/searchEngine.js"></script>
-
-  <!-- lodash and ng-infinite-scroll -->
-  <script src="../../../scripts/angular/ng-infinite-scroll.custom.js"></script>
-  <script src="assets/js/lodash.js"></script>
 
   <!--App scripts-->
   <script src="app.js"></script>
@@ -61,7 +59,8 @@
   <script src="controllers/widget.home.controller.js"></script>
   <script src="controllers/widget.media.controller.js"></script>
   <script src="controllers/widget.nowplaying.controller.js"></script>
-  <script src="../../../scripts/angular/angular-animate.min.js"></script>
+  <!-- endbuild -->
+
   <link rel="stylesheet" href="../../../styles/transitionAnimation.css">
 
   <!--Buildfire Carousel-->

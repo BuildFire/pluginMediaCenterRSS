@@ -21,7 +21,7 @@
                         buildfire.deeplink.getData(function(data){
                             if(data && data.link){
                                 var targetGuid = data.link;
-                                var itemLinks = _items.map(item => item.guid);
+                                var itemLinks = _items.map(function (item) { return item.guid });
                                 var index = itemLinks.indexOf(targetGuid);
                                 if (index < 0) {
                                     console.warn('bookmarked item not found.');
@@ -369,7 +369,9 @@
                  * @param index
                  */
                 WidgetHome.goToItem = function (index, item) {
-                    viewedItems.markViewed($scope, item.guid)
+                    setTimeout(function () {
+                        viewedItems.markViewed($scope, item.guid);
+                    }, 500);
                     if (WidgetHome.items[index]) {
                         WidgetHome.items[index].index = index;
                     }

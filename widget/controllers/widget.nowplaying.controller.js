@@ -49,7 +49,7 @@
 						NowPlaying.changeTime(e.data);
 						break;
 					case 'timeUpdate':
-						let ready = e.data.duration > 0;
+						var ready = e.data.duration > 0;
 						if (ready && first && NowPlaying.item.seekTo) {
 							NowPlaying.changeTime(NowPlaying.item.seekTo);
 							first = false;

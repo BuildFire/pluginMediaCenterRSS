@@ -42,5 +42,5 @@
     .constant('FEED_IMAGES', {
       YES: 'Yes',
       NO: 'No'
-    })
+    });
 })(window.angular);

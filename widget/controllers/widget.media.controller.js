@@ -184,10 +184,10 @@
                         return {
                             type: _item.enclosures[0].type,
                             src: _item.enclosures[0].url
-                        }
+                        };
                     }
                     else {
-                        return null
+                        return null;
                     }
                 };
 
@@ -215,14 +215,14 @@
                             return {
                                 type: _item['media:group']['media:content']['@'].type,
                                 src: _item['media:group']['media:content']['@'].url
-                            }
+                            };
                         }
                         else if (_item['media:group']['media:content']['media:thumbnail'] && _item['media:group']['media:content']['media:thumbnail']['@'] && _item['media:group']['media:content']['media:thumbnail']['@'].url) {
                             WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
                             return {
                                 type: 'image/*',
                                 src: _item['media:group']['media:content']['media:thumbnail']['@'].url
-                            }
+                            };
                         }
                         else {
                             return null;
@@ -244,35 +244,35 @@
                         return {
                             type: _item['media:content']['@'].type,
                             src: _item['media:content']['@'].url
-                        }
+                        };
                     }
                     else if (_item['media:content'] && _item['media:content']['media:player'] && _item['media:content']['media:player']['@'] && _item['media:content']['media:player']['@'].url) {
                         WidgetMedia.medium = MEDIUM_TYPES.VIDEO;
                         return {
                             type: 'video/*',
                             src: _item['media:content']['media:player']['@'].url
-                        }
+                        };
                     }
                     else if (_item['media:thumbnail'] && _item['media:thumbnail']['@'] && _item['media:thumbnail']['@'].url) {
                         WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
                         return {
                             type: 'image/*',
                             src: _item['media:thumbnail']['@'].url
-                        }
+                        };
                     }
                     else if (_item.image && _item.image.url) {
                         WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
                         return {
                             type: 'image/*',
                             src: _item.image.url
-                        }
+                        };
                     }
                     else if (_item.imageSrcUrl) {
                         WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
                         return {
                             type: 'image/*',
                             src: _item.imageSrcUrl
-                        }
+                        };
                     }
                     else {
                         return null;
@@ -289,7 +289,7 @@
                         , mediaData = checkEnclosuresTag(_item);
 
                     if (!mediaData) {
-                        mediaData = checkMediaTag(_item)
+                        mediaData = checkMediaTag(_item);
                     }
                     if (mediaData) {
                         switch (WidgetMedia.medium) {
@@ -568,7 +568,7 @@
                     var callback = function (err, data) {
                         if (err) throw err;
                         console.log(data);
-                    }
+                    };
                     // buildfire.input.showTextDialog(options, callback);
                     buildfire.notes.openDialog(options, callback);
                 };
@@ -578,13 +578,13 @@
                     if (WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.AUDIO) {
                         WidgetMedia.playAudio();
                     } else if (WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.VIDEO) {
-                        let retry = setInterval(() => {
+                        var retry = setInterval(function () {
                             if (!WidgetMedia.API || !WidgetMedia.API.isReady || WidgetMedia.API.totalTime === 0) {
-                                return
+                                return;
                             } else {
                                 clearInterval(retry);
                                 WidgetMedia.API.seekTime(WidgetMedia.item.seekTo);
-                                setTimeout(() => {
+                                setTimeout(function () {
                                     WidgetMedia.API.play();
                                 }, 500);
                             }
@@ -652,13 +652,13 @@
                     WidgetMedia.playAudio();
                 } else if ($rootScope.deeplinkFirstNav && WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.VIDEO) {
                     $rootScope.deeplinkFirstNav = false;
-                    let retry = setInterval(() => {
+                    var retry = setInterval(function () {
                         if (!WidgetMedia.API || !WidgetMedia.API.isReady || WidgetMedia.API.totalTime === 0) {
-                            return
+                            return;
                         } else {
                             clearInterval(retry);
                             WidgetMedia.API.seekTime(WidgetMedia.item.seekTo);
-                            setTimeout(() => {
+                            setTimeout(function () {
                                 WidgetMedia.API.play();
                             }, 500);
                         }
@@ -667,5 +667,5 @@
                 }
 
             }]
-    )
+    );
 })(window.angular);

@@ -13,7 +13,7 @@
     .provider('Buildfire', [function () {
       var Buildfire = this;
       Buildfire.$get = function () {
-        return buildfire
+        return buildfire;
       };
       return Buildfire;
     }])
@@ -59,7 +59,7 @@
           });
           onUpdateListeners = [];
         }
-      }
+      };
     }])
 
   /**
@@ -84,7 +84,7 @@
       };
       return {
         getFeedData: getFeedData
-      }
+      };
     }])
 
   /**
@@ -121,7 +121,7 @@
         }
         , _setData = function (newData) {
           //You could also set specific attribute of the form data instead
-          itemData = newData
+          itemData = newData;
         };
       return {
         getData: _getData,
