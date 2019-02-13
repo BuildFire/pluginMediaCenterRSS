@@ -7,7 +7,6 @@ const strip = require('gulp-strip-comments');
 const htmlReplace = require('gulp-html-replace');
 const uglify = require('gulp-uglify');
 const eslint = require('gulp-eslint');
-const imagemin = require('gulp-imagemin');
 const gulpSequence = require('gulp-sequence');
 const minifyInline = require('gulp-minify-inline');
 const gutil = require('gulp-util');
@@ -178,7 +177,6 @@ gulp.task('resources', function(){
 
 gulp.task('images', function(){
     return gulp.src(['**/.images/**','control/design/icons/**','control/design/layouts/**'],{base: '.'})
-        .pipe(imagemin())
         .pipe(gulp.dest(destinationFolder ));
 });
 
