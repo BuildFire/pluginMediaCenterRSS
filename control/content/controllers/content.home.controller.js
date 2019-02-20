@@ -290,6 +290,7 @@
               ContentHome.isValidUrl = true;
               ContentHome.isValidateButtonClicked = false;
               ContentHome.data.content.rssUrl = ContentHome.rssFeedUrl;
+              searchEngine.indexFeed(ContentHome.data.content.rssUrl);
               Buildfire.spinner.hide();
               $timeout(function () {
                 ContentHome.isValidUrl = false;

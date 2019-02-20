@@ -25,11 +25,6 @@ console.log(">> Building to " , destinationFolder);
 const widgetCssFiles = [
     'widget/assets/css/style.css',
     'widget/assets/css/videogular.css',
-    '../../styles/helper.css',
-    '../../styles/siteIcons.css',
-    '../../scripts/owlCarousel/owlCarousel.css',
-    '../../styles/transitionAnimation.css',
-    '../../styles/bootstrap.css'
 ]
 
 const cssTasks=[
@@ -62,16 +57,6 @@ cssTasks.forEach(function(task){
 });
 
 const widgetJSFiles= [
-    "../../scripts/jquery/jquery-1.11.2.min.js",
-    "../../scripts/smartcrop.js",
-    "../../scripts/owlCarousel/owlCarousel.js",
-    "../../scripts/buildfire/components/carousel/carousel.js",
-    "../../scripts/angular/angular.min.js",
-    "../../scripts/angular/angular-route.min.js",
-    "../../scripts/angular/ui-bootstrap.min.js",
-    "../../scripts/angular/angular-animate.min.js",
-    "../../scripts/angular/angular-touch.js",
-    "../../scripts/angular/ng-infinite-scroll.custom.js",
     "widget/assets/js/lodash.js",
     "widget/assets/js/jquery.truncate.js",
     "widget/assets/js/ng-videosharing-embed.min.js",
@@ -86,12 +71,12 @@ const widgetJSFiles= [
     "widget/directives.js",
     "widget/filters.js",
     "widget/viewedItems.js",
-    "widget/searchEngine.js",
     "widget/bookmarkHandler.js",
     "widget/controllers/widget.home.controller.js",
     "widget/controllers/widget.media.controller.js",
     "widget/controllers/widget.nowplaying.controller.js"
 ];
+
 
 const jsTasks = [
     // { name: "widgetJS", src: "widget/**/*.js", dest: "/widget" },
