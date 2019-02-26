@@ -6,10 +6,19 @@
         .controller('WidgetHomeCtrl', ['$location', '$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope','FEED_IMAGES',
             function ($location, $scope, DataStore, Buildfire, FeedParseService, TAG_NAMES, ItemDetailsService, Location, $filter, Underscore, $rootScope,FEED_IMAGES) {
 
-                $rootScope.deviceHeight = window.innerHeight;
-                $rootScope.deviceWidth = window.innerWidth || 320;
-                
-                var _path = $location.path();
+                if (window.device) {
+                    if (window.device.platform === 'Android') {
+                        $rootScope.deviceHeight = window.outerHeight;
+                        $rootScope.deviceWidth = window.outerWidth;
+                    } else {
+                        $rootScope.deviceHeight = window.innerHeight;
+                        $rootScope.deviceWidth = window.innerWidth || 320;
+                    }
+                } else {
+                    $rootScope.deviceHeight = window.innerHeight;
+                    $rootScope.deviceWidth = window.innerWidth || 320;
+                }
+
                 $scope.first = true;
                 /**
                  * @name handleBookmarkNav
@@ -268,6 +277,7 @@
                         }
                         if (WidgetHome.data.content && WidgetHome.data.content.rssUrl) {
                             currentRssUrl = WidgetHome.data.content.rssUrl;
+                            buildfire.appearance.ready();
                             getFeedData(WidgetHome.data.content.rssUrl);
                         }
                         if(!WidgetHome.data.design) {
