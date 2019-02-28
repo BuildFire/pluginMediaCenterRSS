@@ -1,20 +1,20 @@
 'use strict';
 
 (function (angular, buildfire) {
-    
+
     // Make sure to include the required dependency to the module
     angular.module('mediaCenterRSSPluginWidget', [
-        'ngRoute',
-        'infinite-scroll',
-        "ngSanitize",
-        "com.2fdevs.videogular",
-        "com.2fdevs.videogular.plugins.controls",
-        "com.2fdevs.videogular.plugins.overlayplay",
-        "videosharing-embed",
-        "ngAnimate",
-        "media_RSSModals",
-        "ngTouch"
-    ])
+            'ngRoute',
+            'infinite-scroll',
+            "ngSanitize",
+            "com.2fdevs.videogular",
+            "com.2fdevs.videogular.plugins.controls",
+            "com.2fdevs.videogular.plugins.overlayplay",
+            "videosharing-embed",
+            "ngAnimate",
+            "media_RSSModals",
+            "ngTouch"
+        ])
 
         .config(['$routeProvider', '$compileProvider', function ($routeProvider, $compileProvider) {
 
@@ -28,7 +28,7 @@
              *  Redirects and Otherwise  *
              *****************************/
 
-                // Use $routeProvider to configure any redirects (when) and invalid urls (otherwise).
+            // Use $routeProvider to configure any redirects (when) and invalid urls (otherwise).
             $routeProvider
                 .when('/', {
                     template: '<div></div>'
@@ -52,18 +52,16 @@
                 var reg = /^\/item/;
                 var reg1 = /^\/nowplaying/;
                 if (reg.test($location.path())) {
-                    $timeout(function(){
+                    $timeout(function () {
                         $rootScope.showFeed = true;
-                    },200);
-					Location.goTo('#/');
-                }
-                else if (reg1.test($location.path())) {
-                    if($rootScope.playlist){
-                        $rootScope.playlist=false;
-                    }
-                    else{
+                    }, 200);
+                    Location.goTo('#/');
+                } else if (reg1.test($location.path())) {
+                    if ($rootScope.playlist) {
+                        $rootScope.playlist = false;
+                    } else {
                         $rootScope.showFeed = false;
-						Location.goTo('#/item');
+                        Location.goTo('#/item');
                     }
                 }
             });
@@ -85,67 +83,69 @@
                             _imgUrl.i = imgUrl;
                         });
                     } else {
-                        *//*Buildfire.imageLib.local.cropImage(url, {
-                            width: width,
-                            height: height
-                        }, function (err, imgUrl) {
-                            _imgUrl = imgUrl;
-                        });*//*
-                        Buildfire.imageLib.local.cropImage(url, {
-                            width: width,
-                            height: height
-                        }, function (err, imgUrl) {
-                            _imgUrl = imgUrl;
-                        });
-                        (function (i, u) {
-                            $timeout(function () {
-                                i.img = u;
-                            }, 2000);
-                        })(_imgUrl, url)
+                        */
+        /*Buildfire.imageLib.local.cropImage(url, {
+                                    width: width,
+                                    height: height
+                                }, function (err, imgUrl) {
+                                    _imgUrl = imgUrl;
+                                });*/
+        /*
+                                Buildfire.imageLib.local.cropImage(url, {
+                                    width: width,
+                                    height: height
+                                }, function (err, imgUrl) {
+                                    _imgUrl = imgUrl;
+                                });
+                                (function (i, u) {
+                                    $timeout(function () {
+                                        i.img = u;
+                                    }, 2000);
+                                })(_imgUrl, url)
 
+                            }
+                        }
+                        return _imgUrl.i;
+                    }
+                    return filter;
+                }])*/
+        .directive("loadImage", function () {
+            return {
+                restrict: 'A',
+                link: function (scope, element, attrs) {
+                    element.attr("src", "../../../styles/media/holder-" + attrs.loadImage + ".gif");
+
+                    attrs.$observe('finalSrc', function () {
+                        var _img = attrs.finalSrc;
+
+                        if (attrs.cropType == 'resize') {
+                            buildfire.imageLib.local.resizeImage(_img, {
+                                width: attrs.cropWidth,
+                                height: attrs.cropHeight
+                            }, function (err, imgUrl) {
+                                _img = imgUrl;
+                                replaceImg(_img);
+                            });
+                        } else {
+                            buildfire.imageLib.local.cropImage(_img, {
+                                width: attrs.cropWidth,
+                                height: attrs.cropHeight
+                            }, function (err, imgUrl) {
+                                _img = imgUrl;
+                                replaceImg(_img);
+                            });
+                        }
+                    });
+
+                    function replaceImg(finalSrc) {
+                        var elem = $("<img>");
+                        elem[0].onload = function () {
+                            element.attr("src", finalSrc);
+                            elem.remove();
+                        };
+                        elem.attr("src", finalSrc);
                     }
                 }
-                return _imgUrl.i;
-            }
-            return filter;
-        }])*/
-      .directive("loadImage", function () {
-        return {
-          restrict: 'A',
-          link: function (scope, element, attrs) {
-            element.attr("src", "../../../styles/media/holder-" + attrs.loadImage + ".gif");
-
-              attrs.$observe('finalSrc', function() {
-                  var _img = attrs.finalSrc;
-
-                  if (attrs.cropType == 'resize') {
-                      buildfire.imageLib.local.resizeImage(_img, {
-                          width: attrs.cropWidth,
-                          height: attrs.cropHeight
-                      }, function (err, imgUrl) {
-                          _img = imgUrl;
-                          replaceImg(_img);
-                      });
-                  } else {
-                      buildfire.imageLib.local.cropImage(_img, {
-                          width: attrs.cropWidth,
-                          height: attrs.cropHeight
-                      }, function (err, imgUrl) {
-                          _img = imgUrl;
-                          replaceImg(_img);
-                      });
-                  }
-              });
-
-              function replaceImg(finalSrc) {
-                  var elem = $("<img>");
-                  elem[0].onload = function () {
-                      element.attr("src", finalSrc);
-                      elem.remove();
-                  };
-                  elem.attr("src", finalSrc);
-              }
-          }
-        };
-      });
+            };
+        });
 })(window.angular, window.buildfire);

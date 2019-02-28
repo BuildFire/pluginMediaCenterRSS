@@ -1,4 +1,4 @@
-(function(angular) {
+(function (angular) {
 	angular.module('mediaCenterRSSPluginWidget').controller('NowPlayingCtrl', [
 		'$scope',
 		'Buildfire',
@@ -7,7 +7,7 @@
 		'Location',
 		'ItemDetailsService',
 		'Modals',
-		function($scope, Buildfire, $rootScope, $timeout, Location, ItemDetailsService, Modals) {
+		function ($scope, Buildfire, $rootScope, $timeout, Location, ItemDetailsService, Modals) {
 			console.log('----------------------------Now Playing controller loaded-------------------');
 			//$rootScope.blackBackground = true;
 			$rootScope.showFeed = false;
@@ -30,7 +30,7 @@
 			 * audioPlayer is Buildfire.services.media.audioPlayer.
 			 */
 			var audioPlayer = Buildfire.services.media.audioPlayer;
-			audioPlayer.settings.get(function(err, setting) {
+			audioPlayer.settings.get(function (err, setting) {
 				NowPlaying.settings = setting;
 				NowPlaying.volume = setting.volume;
 			});
@@ -43,7 +43,7 @@
 			 */
 
 			var first = true;
-			audioPlayer.onEvent(function(e) {
+			audioPlayer.onEvent(function (e) {
 				switch (e.event) {
 					case 'skip':
 						NowPlaying.changeTime(e.data);
@@ -79,13 +79,13 @@
 			/**
 			 * Player related method and variables
 			 */
-			NowPlaying.playTrack = function() {
+			NowPlaying.playTrack = function () {
 				if (NowPlaying.settings) {
 					NowPlaying.settings.isPlayingCurrentTrack = true;
 					NowPlaying.settings.autoJumpToLastPosition = true;
 					audioPlayer.settings.set(NowPlaying.settings);
 				} else {
-					audioPlayer.settings.get(function(err, setting) {
+					audioPlayer.settings.get(function (err, setting) {
 						NowPlaying.settings = setting;
 						NowPlaying.settings.isPlayingCurrentTrack = true;
 						NowPlaying.settings.autoJumpToLastPosition = true;
@@ -99,18 +99,20 @@
 					audioPlayer.play(NowPlaying.currentTrack);
 				}
 			};
-			NowPlaying.playlistPlay = function(track) {
+			NowPlaying.playlistPlay = function (track) {
 				if (NowPlaying.settings) {
 					NowPlaying.settings.isPlayingCurrentTrack = true;
 					audioPlayer.settings.set(NowPlaying.settings);
 				}
 				NowPlaying.playing = true;
 				if (track) {
-					audioPlayer.play({ url: track.url });
+					audioPlayer.play({
+						url: track.url
+					});
 					track.playing = true;
 				}
 			};
-			NowPlaying.pauseTrack = function() {
+			NowPlaying.pauseTrack = function () {
 				if (NowPlaying.settings) {
 					NowPlaying.settings.isPlayingCurrentTrack = false;
 					audioPlayer.settings.set(NowPlaying.settings);
@@ -119,7 +121,7 @@
 				NowPlaying.paused = true;
 				audioPlayer.pause();
 			};
-			NowPlaying.playlistPause = function(track) {
+			NowPlaying.playlistPause = function (track) {
 				if (NowPlaying.settings) {
 					NowPlaying.settings.isPlayingCurrentTrack = false;
 					audioPlayer.settings.set(NowPlaying.settings);
@@ -129,44 +131,44 @@
 				NowPlaying.paused = true;
 				audioPlayer.pause();
 			};
-			NowPlaying.forward = function() {
+			NowPlaying.forward = function () {
 				if (NowPlaying.currentTime + 5 >= NowPlaying.currentTrack.duration) audioPlayer.setTime(NowPlaying.currentTrack.duration);
 				else audioPlayer.setTime(NowPlaying.currentTime + 5);
 			};
 
-			NowPlaying.backward = function() {
+			NowPlaying.backward = function () {
 				if (NowPlaying.currentTime - 5 > 0) audioPlayer.setTime(NowPlaying.currentTime - 5);
 				else audioPlayer.setTime(0);
 			};
-			NowPlaying.shufflePlaylist = function() {
+			NowPlaying.shufflePlaylist = function () {
 				if (NowPlaying.settings) {
 					NowPlaying.settings.shufflePlaylist = NowPlaying.settings.shufflePlaylist ? false : true;
 				}
 				audioPlayer.settings.set(NowPlaying.settings);
 			};
 
-			NowPlaying.loopPlaylist = function() {
+			NowPlaying.loopPlaylist = function () {
 				if (NowPlaying.settings) {
 					NowPlaying.settings.loopPlaylist = NowPlaying.settings.loopPlaylist ? false : true;
 				}
 				audioPlayer.settings.set(NowPlaying.settings);
 			};
-			NowPlaying.addToPlaylist = function(track) {
+			NowPlaying.addToPlaylist = function (track) {
 				if (track) audioPlayer.addToPlaylist(track);
 			};
-			NowPlaying.removeFromPlaylist = function(track) {
+			NowPlaying.removeFromPlaylist = function (track) {
 				if (NowPlaying.playList) {
-					NowPlaying.playList.filter(function(val, index) {
+					NowPlaying.playList.filter(function (val, index) {
 						if (val.url == track.url) audioPlayer.removeFromPlaylist(index);
 						return index;
 					});
 				}
 			};
-			NowPlaying.removeTrackFromPlayList = function(index) {
+			NowPlaying.removeTrackFromPlayList = function (index) {
 				audioPlayer.removeFromPlaylist(index);
 			};
-			NowPlaying.getFromPlaylist = function() {
-				audioPlayer.getPlaylist(function(err, data) {
+			NowPlaying.getFromPlaylist = function () {
+				audioPlayer.getPlaylist(function (err, data) {
 					if (data && data.tracks) {
 						NowPlaying.playList = data.tracks;
 						$scope.$digest();
@@ -175,12 +177,12 @@
 				NowPlaying.openMoreInfo = false;
 				$rootScope.playlist = true;
 			};
-			NowPlaying.changeTime = function(time) {
+			NowPlaying.changeTime = function (time) {
 				audioPlayer.setTime(time);
 			};
-			NowPlaying.getSettings = function() {
+			NowPlaying.getSettings = function () {
 				NowPlaying.openSettings = true;
-				audioPlayer.settings.get(function(err, data) {
+				audioPlayer.settings.get(function (err, data) {
 					if (data) {
 						NowPlaying.settings = data;
 						if (!$scope.$$phase) {
@@ -189,33 +191,33 @@
 					}
 				});
 			};
-			NowPlaying.setSettings = function(settings) {
+			NowPlaying.setSettings = function (settings) {
 				var newSettings = new AudioSettings(settings);
 				audioPlayer.settings.set(newSettings);
 			};
-			NowPlaying.addEvents = function(e, i, toggle) {
+			NowPlaying.addEvents = function (e, i, toggle) {
 				toggle ? (NowPlaying.swiped[i] = true) : (NowPlaying.swiped[i] = false);
 			};
-			NowPlaying.openMoreInfoOverlay = function() {
+			NowPlaying.openMoreInfoOverlay = function () {
 				NowPlaying.openMoreInfo = true;
 			};
-			NowPlaying.closeSettingsOverlay = function() {
+			NowPlaying.closeSettingsOverlay = function () {
 				NowPlaying.openSettings = false;
 			};
-			NowPlaying.closePlayListOverlay = function() {
+			NowPlaying.closePlayListOverlay = function () {
 				$rootScope.playlist = false;
 			};
-			NowPlaying.closeMoreInfoOverlay = function() {
+			NowPlaying.closeMoreInfoOverlay = function () {
 				NowPlaying.openMoreInfo = false;
 			};
 
-			NowPlaying.addEvents = function(e, i, toggle, track) {
+			NowPlaying.addEvents = function (e, i, toggle, track) {
 				toggle ? (track.swiped = true) : (track.swiped = false);
 			};
 
 			NowPlaying.bookmark = function ($event) {
 				$event.stopImmediatePropagation();
-				var isBookmarked = NowPlaying.item.bookmarked ? true : false;            
+				var isBookmarked = NowPlaying.item.bookmarked ? true : false;
 				if (isBookmarked) {
 					bookmarks.delete($scope, NowPlaying.item);
 				} else {
@@ -238,7 +240,7 @@
 				buildfire.device.share(options, callback);
 			};
 
-			NowPlaying.addNote = function() {
+			NowPlaying.addNote = function () {
 				NowPlaying.pauseTrack();
 				var options = {
 					itemId: $scope.NowPlaying.item.guid,
@@ -246,7 +248,7 @@
 					imageUrl: $scope.NowPlaying.item.imageSrcUrl,
 					timeIndex: $scope.NowPlaying.currentTime
 				};
-				var callback = function(err, data) {
+				var callback = function (err, data) {
 					if (err) throw err;
 					console.log(data);
 				};
@@ -302,7 +304,7 @@
 			/**
 			 * auto play the song
 			 */
-			$timeout(function() {
+			$timeout(function () {
 				console.log('Auto play called-------------------------');
 				NowPlaying.playTrack();
 			}, 100);
@@ -310,19 +312,19 @@
 			/**
 			 * Implementation of pull down to refresh
 			 */
-			var onRefresh = Buildfire.datastore.onRefresh(function() {});
+			var onRefresh = Buildfire.datastore.onRefresh(function () {});
 
-			buildfire.auth.onLogin(function() {});
+			buildfire.auth.onLogin(function () {});
 
-			buildfire.auth.onLogout(function() {});
+			buildfire.auth.onLogout(function () {});
 
 			/**
 			 * Unbind the onRefresh
 			 */
-			$scope.$on('$destroy', function() {
+			$scope.$on('$destroy', function () {
 				$rootScope.blackBackground = false;
 				onRefresh.clear();
-				Buildfire.datastore.onRefresh(function() {});
+				Buildfire.datastore.onRefresh(function () {});
 			});
 		}
 	]);

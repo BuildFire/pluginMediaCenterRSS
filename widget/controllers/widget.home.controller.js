@@ -3,8 +3,8 @@
 (function (angular) {
     angular
         .module('mediaCenterRSSPluginWidget')
-        .controller('WidgetHomeCtrl', ['$location', '$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope','FEED_IMAGES',
-            function ($location, $scope, DataStore, Buildfire, FeedParseService, TAG_NAMES, ItemDetailsService, Location, $filter, Underscore, $rootScope,FEED_IMAGES) {
+        .controller('WidgetHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope', 'FEED_IMAGES',
+            function ($scope, DataStore, Buildfire, FeedParseService, TAG_NAMES, ItemDetailsService, Location, $filter, Underscore, $rootScope, FEED_IMAGES) {
 
                 if (window.device) {
                     if (window.device.platform === 'Android') {
@@ -27,10 +27,12 @@
                  */
                 var handleBookmarkNav = function handleBookmarkNav() {
                     if ($scope.first) {
-                        buildfire.deeplink.getData(function(data){
-                            if(data && data.link){
+                        buildfire.deeplink.getData(function (data) {
+                            if (data && data.link) {
                                 var targetGuid = data.link;
-                                var itemLinks = _items.map(function (item) { return item.guid });
+                                var itemLinks = _items.map(function (item) {
+                                    return item.guid
+                                });
                                 var index = itemLinks.indexOf(targetGuid);
                                 if (index < 0) {
                                     console.warn('bookmarked item not found.');
@@ -44,10 +46,10 @@
                                 $scope.first = false;
                                 if (!$scope.$$phase) $scope.$apply();
                             }
-                        }); 
+                        });
                     }
                 };
-                
+
                 /** 
                  * Private variables
                  *
@@ -80,15 +82,15 @@
                  * @private
                  *
                  *  */
-                var view = null
-                    , _items = []
-                    , limit = 15
-                    , chunkData = null
-                    , nextChunkDataIndex = 0
-                    , nextChunk = null
-                    , totalChunks = 0
-                    , currentRssUrl = null
-                    , WidgetHome = this,
+                var view = null,
+                    _items = [],
+                    limit = 15,
+                    chunkData = null,
+                    nextChunkDataIndex = 0,
+                    nextChunk = null,
+                    totalChunks = 0,
+                    currentRssUrl = null,
+                    WidgetHome = this,
                     isInit = true;
 
                 var _data = {
@@ -110,7 +112,7 @@
                  * @type {object}
                  */
                 WidgetHome.data = null;
-                WidgetHome.view=null;
+                WidgetHome.view = null;
 
                 /**
                  * @name WidgetHome.items is used to listing items.
@@ -148,7 +150,7 @@
                     WidgetHome.isItems = true;
                     ItemDetailsService.setData(null);
                 };
-                
+
                 /**
                  * @name getImageUrl()
                  * Used to extract image url
@@ -156,13 +158,12 @@
                  * @returns {*}
                  */
                 var getImageUrl = function (item) {
-                    var i = 0
-                        , length = 0
-                        , imageUrl = '';
+                    var i = 0,
+                        length = 0,
+                        imageUrl = '';
                     if (item.image && item.image.url) {
                         return item.image.url;
-                    }
-                    else if (item.enclosures && item.enclosures.length > 0) {
+                    } else if (item.enclosures && item.enclosures.length > 0) {
                         length = item.enclosures.length;
                         for (i = 0; i < length; i++) {
                             if (item.enclosures[i].type.indexOf('image/') === 0) {
@@ -178,8 +179,7 @@
                             return item['media:group']['media:content']['media:thumbnail']['@'].url;
                         } else if (item.description) {
                             return $filter('extractImgSrc')(item.description);
-                        }
-                        else {
+                        } else {
                             return '';
                         }
                     }
@@ -195,29 +195,29 @@
                     resetDefaults();
                     Buildfire.spinner.show();
                     var success = function (result) {
-                        console.info('Feed data: ', result);
-                        if (result.data && result.data.items.length > 0) {
-                            result.data.items.forEach(function (item) {
-                                item.imageSrcUrl = getImageUrl(item);
-                            });
-                            _items = result.data.items;
-                            WidgetHome.isItems = true;
-                        } else {
-                            WidgetHome.isItems = false;
-                        }
-                        chunkData = Underscore.chunk(_items, limit);
-                        totalChunks = chunkData.length;
-                        WidgetHome.loadMore();
-                        viewedItems.sync(WidgetHome.items);
-                        bookmarks.sync($scope);
-                        handleBookmarkNav();
-                        Buildfire.spinner.hide();
-                        isInit = false;
-                    }
-                    , error = function (err) {
-                        Buildfire.spinner.hide();
-                        console.error('Error while getting feed data', err);
-                    };
+                            console.info('Feed data: ', result);
+                            if (result.data && result.data.items.length > 0) {
+                                result.data.items.forEach(function (item) {
+                                    item.imageSrcUrl = getImageUrl(item);
+                                });
+                                _items = result.data.items;
+                                WidgetHome.isItems = true;
+                            } else {
+                                WidgetHome.isItems = false;
+                            }
+                            chunkData = Underscore.chunk(_items, limit);
+                            totalChunks = chunkData.length;
+                            WidgetHome.loadMore();
+                            viewedItems.sync(WidgetHome.items);
+                            bookmarks.sync($scope);
+                            handleBookmarkNav();
+                            Buildfire.spinner.hide();
+                            isInit = false;
+                        },
+                        error = function (err) {
+                            Buildfire.spinner.hide();
+                            console.error('Error while getting feed data', err);
+                        };
                     FeedParseService.getFeedData(rssUrl).then(success, error);
                 };
 
@@ -239,10 +239,10 @@
                         if (WidgetHome.view && event.data.content && event.data.content.carouselImages) {
                             WidgetHome.view.loadItems(event.data.content.carouselImages);
                         }
-                        if(!WidgetHome.data.design)
+                        if (!WidgetHome.data.design)
                             WidgetHome.data.design = {};
-                        if(!WidgetHome.data.design.showImages)
-                        WidgetHome.data.design.showImages = FEED_IMAGES.YES;
+                        if (!WidgetHome.data.design.showImages)
+                            WidgetHome.data.design.showImages = FEED_IMAGES.YES;
                         if (WidgetHome.data.content && WidgetHome.data.content.rssUrl) {
                             if (WidgetHome.data.content.rssUrl !== currentRssUrl) {
                                 currentRssUrl = WidgetHome.data.content.rssUrl;
@@ -262,35 +262,34 @@
                 var init = function () {
                     viewedItems.init();
                     var success = function (result) {
-                        
-                        if (Object.keys(result.data).length > 0) {
-                            WidgetHome.data = result.data;
-                            $rootScope.data = result.data;
-                        }
-                        else {
-                            WidgetHome.data = _data;
-                            $rootScope.data = _data;
-                        }
-                        if (WidgetHome.data.design) {
-                            $rootScope.backgroundImage = WidgetHome.data.design.itemListBgImage;
-                            $rootScope.backgroundImageItem = WidgetHome.data.design.itemDetailsBgImage;
-                        }
-                        if (WidgetHome.data.content && WidgetHome.data.content.rssUrl) {
-                            currentRssUrl = WidgetHome.data.content.rssUrl;
-                            buildfire.appearance.ready();
-                            getFeedData(WidgetHome.data.content.rssUrl);
-                        }
-                        if(!WidgetHome.data.design) {
-                            WidgetHome.data.design = {};
-                        }
-                        if (!WidgetHome.data.design.showImages) {
-                            WidgetHome.data.design.showImages = FEED_IMAGES.YES;
-                        }
-                        viewedItems.sync(WidgetHome.items);
-                    }
-                    , error = function (err) {
-                        console.error('Error while getting data', err);
-                    };
+
+                            if (Object.keys(result.data).length > 0) {
+                                WidgetHome.data = result.data;
+                                $rootScope.data = result.data;
+                            } else {
+                                WidgetHome.data = _data;
+                                $rootScope.data = _data;
+                            }
+                            if (WidgetHome.data.design) {
+                                $rootScope.backgroundImage = WidgetHome.data.design.itemListBgImage;
+                                $rootScope.backgroundImageItem = WidgetHome.data.design.itemDetailsBgImage;
+                            }
+                            if (WidgetHome.data.content && WidgetHome.data.content.rssUrl) {
+                                currentRssUrl = WidgetHome.data.content.rssUrl;
+                                buildfire.appearance.ready();
+                                getFeedData(WidgetHome.data.content.rssUrl);
+                            }
+                            if (!WidgetHome.data.design) {
+                                WidgetHome.data.design = {};
+                            }
+                            if (!WidgetHome.data.design.showImages) {
+                                WidgetHome.data.design.showImages = FEED_IMAGES.YES;
+                            }
+                            viewedItems.sync(WidgetHome.items);
+                        },
+                        error = function (err) {
+                            console.error('Error while getting data', err);
+                        };
                     DataStore.get(TAG_NAMES.RSS_FEED_INFO).then(success, error);
                 };
 
@@ -332,8 +331,7 @@
                             var html = item.summary ? item.summary : item.description;
                             item.title = html;
                             truncatedTitle = $filter('truncate')(html, 50);
-                        }
-                        else {
+                        } else {
                             truncatedTitle = $filter('truncate')(item.title, 50);
                         }
                         return truncatedTitle;
@@ -393,11 +391,11 @@
 
                 WidgetHome.bookmark = function ($event, item) {
                     $event.stopImmediatePropagation();
-                    var isBookmarked = item.bookmarked ? true : false;            
+                    var isBookmarked = item.bookmarked ? true : false;
                     if (isBookmarked) {
-                      bookmarks.delete($scope, item);
+                        bookmarks.delete($scope, item);
                     } else {
-                      bookmarks.add($scope, item);
+                        bookmarks.add($scope, item);
                     }
                 };
 
@@ -411,7 +409,7 @@
                         link: item.link
                     };
 
-                    var callback = function(err) {
+                    var callback = function (err) {
                         if (err) {
                             console.warn(err);
                         }
@@ -424,7 +422,7 @@
                     Buildfire.auth.onLogin(function () {
                         init();
                     });
-                
+
                     Buildfire.auth.onLogout(function () {
                         init();
                     });
@@ -476,7 +474,7 @@
                         WidgetHome.view = new Buildfire.components.carousel.view("#carousel", [], "WideScreen");
                     }
                     if (WidgetHome.data && WidgetHome.data.content.carouselImages) {
-//                        WidgetHome.view = new Buildfire.components.carousel.view("#carousel", WidgetHome.data.content.carouselImages);
+                        //                        WidgetHome.view = new Buildfire.components.carousel.view("#carousel", WidgetHome.data.content.carouselImages);
                         WidgetHome.view.loadItems(WidgetHome.data.content.carouselImages, null, 'WideScreen');
                     } else {
                         WidgetHome.view.loadItems([]);
@@ -492,5 +490,6 @@
                     Location.goToHome();
                 });
 
-            }]);
+            }
+        ]);
 })(window.angular);

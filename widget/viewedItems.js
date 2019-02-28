@@ -1,14 +1,30 @@
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+	return typeof obj;
+} : function (obj) {
+	return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _defineProperty(obj, key, value) {
+	if (key in obj) {
+		Object.defineProperty(obj, key, {
+			value: value,
+			enumerable: true,
+			configurable: true,
+			writable: true
+		});
+	} else {
+		obj[key] = value;
+	}
+	return obj;
+}
 
 var viewedItems = {
 	id: '',
 	/**
-  * If localStorage is not set, initialize viewed videos as an empty array
-  */
+	 * If localStorage is not set, initialize viewed videos as an empty array
+	 */
 	init: function init() {
 		var _this = this;
 
@@ -23,7 +39,8 @@ var viewedItems = {
 
 			if (storageInitialized) {
 				var userStateInitialized = viewedItems.hasOwnProperty(_this.id);
-				if (userStateInitialized) return;else viewedItems[_this.id] = [];
+				if (userStateInitialized) return;
+				else viewedItems[_this.id] = [];
 			} else {
 				viewedItems = _defineProperty({}, _this.id, []);
 			}
@@ -33,9 +50,9 @@ var viewedItems = {
 	},
 
 	/**
-  * returns the current user's parsed array of viewed videos
-  * @returns {Array}
-  */
+	 * returns the current user's parsed array of viewed videos
+	 * @returns {Array}
+	 */
 	get: function get() {
 		try {
 			return JSON.parse(localStorage.getItem('viewedItems'))[this.id];
@@ -46,9 +63,9 @@ var viewedItems = {
 	},
 
 	/**
-  * stringify and set viewed videos to local storage
-  * @param {Array} videos
-  */
+	 * stringify and set viewed videos to local storage
+	 * @param {Array} videos
+	 */
 	_set: function _set(items) {
 		try {
 			var _viewedItems2 = JSON.parse(localStorage.getItem('viewedItems'));
@@ -61,11 +78,11 @@ var viewedItems = {
 	},
 
 	/**
-  * pushes a video id to local storage
-  * marks video as viewed
-  * @param {Object} $scope
-  * @param {Object} video
-  */
+	 * pushes a video id to local storage
+	 * marks video as viewed
+	 * @param {Object} $scope
+	 * @param {Object} video
+	 */
 	markViewed: function markViewed($scope, id) {
 		var viewedItems = this.get();
 		var isViewed = viewedItems.includes(id);
@@ -87,10 +104,10 @@ var viewedItems = {
 	},
 
 	/**
-  * maps through an array of videos
-  * marks videos that have been viewed
-  * @param {Array} videos
-  */
+	 * maps through an array of videos
+	 * marks videos that have been viewed
+	 * @param {Array} videos
+	 */
 	sync: function sync(items) {
 		var _this2 = this;
 
