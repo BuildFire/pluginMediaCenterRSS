@@ -627,7 +627,7 @@
                     callPlayer('ytPlayer', 'pauseVideo');
 
                     // pause Vimeo video (no need to check if there is any vimeo video playing)
-                    callVimeoPlayer('ytPlayer');
+                    callVimeoPlayer('vimeoPlayer');
                 });
 
                 /**
