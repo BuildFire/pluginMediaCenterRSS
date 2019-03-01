@@ -194,32 +194,50 @@
                 var getFeedData = function (rssUrl) {
                     resetDefaults();
                     Buildfire.spinner.show();
-                    var success = function (result) {
-                            console.info('Feed data: ', result);
-                            if (result.data && result.data.items.length > 0) {
-                                result.data.items.forEach(function (item) {
-                                    item.imageSrcUrl = getImageUrl(item);
-                                });
-                                _items = result.data.items;
-                                WidgetHome.isItems = true;
-                            } else {
-                                WidgetHome.isItems = false;
-                            }
-                            chunkData = Underscore.chunk(_items, limit);
-                            totalChunks = chunkData.length;
-                            WidgetHome.loadMore();
-                            viewedItems.sync(WidgetHome.items);
-                            bookmarks.sync($scope);
-                            handleBookmarkNav();
-                            Buildfire.spinner.hide();
-                            isInit = false;
-                        },
-                        error = function (err) {
-                            Buildfire.spinner.hide();
-                            console.error('Error while getting feed data', err);
-                        };
-                    FeedParseService.getFeedData(rssUrl).then(success, error);
+                    FeedParseService.getFeedData(rssUrl).then(getFeedDataSuccess, getFeedDataError);
                 };
+                var getFeedDataSuccess = function (result) {
+                    // compare the first item of the cached feed and the fetched feed
+                    // return if the feed hasnt changed
+                    var isUnchanged = _items[0] && _items[0].guid === result.data.items[0].guid;
+                    if (isUnchanged) return;
+
+                    if (WidgetHome.items.length > 0) {
+                        WidgetHome.items = [];
+                        _items = [];
+                        nextChunkDataIndex = 0;
+                    }
+                    if (result.data && result.data.items.length > 0) {
+                        result.data.items.forEach(function (item) {
+                            item.imageSrcUrl = getImageUrl(item);
+                        });
+                        _items = result.data.items;
+                        WidgetHome.isItems = true;
+                    } else {
+                        WidgetHome.isItems = false;
+                    }
+                    chunkData = Underscore.chunk(_items, limit);
+                    totalChunks = chunkData.length;
+                    WidgetHome.loadMore();
+
+                    viewedItems.sync(WidgetHome.items);
+                    bookmarks.sync($scope);
+                    handleBookmarkNav();
+
+                    // attach the feed url for diff checking later
+                    // save or update the cache
+                    result.rssUrl = WidgetHome.data.content.rssUrl ? WidgetHome.data.content.rssUrl : false;
+                    cache.saveCache(result);
+
+                    Buildfire.spinner.hide();
+                    isInit = false;
+                };
+
+                var getFeedDataError = function (err) {
+                    Buildfire.spinner.hide();
+                    console.error('Error while getting feed data', err);
+                };
+
 
                 /**
                  * @name onUpdateCallback()
@@ -261,35 +279,47 @@
                  */
                 var init = function () {
                     viewedItems.init();
+                    
                     var success = function (result) {
+                        cache.init({
+                            dbName: 'rss.cache',
+                            indexName: 'feed',
+                            objectStoreName: 'feed.cache'
+                        }, function () {
+                            cache.getCache(function (err, data) {
+                                // if the rss feed url has changed, ignore the cache and update when fetched 
+                                if (err || !data || data.rssUrl != result.data.content.rssUrl) return;
+                                getFeedDataSuccess(data);
+                            });
+                        });
 
-                            if (Object.keys(result.data).length > 0) {
-                                WidgetHome.data = result.data;
-                                $rootScope.data = result.data;
-                            } else {
-                                WidgetHome.data = _data;
-                                $rootScope.data = _data;
-                            }
-                            if (WidgetHome.data.design) {
-                                $rootScope.backgroundImage = WidgetHome.data.design.itemListBgImage;
-                                $rootScope.backgroundImageItem = WidgetHome.data.design.itemDetailsBgImage;
-                            }
-                            if (WidgetHome.data.content && WidgetHome.data.content.rssUrl) {
-                                currentRssUrl = WidgetHome.data.content.rssUrl;
-                                buildfire.appearance.ready();
-                                getFeedData(WidgetHome.data.content.rssUrl);
-                            }
-                            if (!WidgetHome.data.design) {
-                                WidgetHome.data.design = {};
-                            }
-                            if (!WidgetHome.data.design.showImages) {
-                                WidgetHome.data.design.showImages = FEED_IMAGES.YES;
-                            }
-                            viewedItems.sync(WidgetHome.items);
-                        },
-                        error = function (err) {
-                            console.error('Error while getting data', err);
-                        };
+                        if (Object.keys(result.data).length > 0) {
+                            WidgetHome.data = result.data;
+                            $rootScope.data = result.data;
+                        } else {
+                            WidgetHome.data = _data;
+                            $rootScope.data = _data;
+                        }
+                        if (WidgetHome.data.design) {
+                            $rootScope.backgroundImage = WidgetHome.data.design.itemListBgImage;
+                            $rootScope.backgroundImageItem = WidgetHome.data.design.itemDetailsBgImage;
+                        }
+                        if (WidgetHome.data.content && WidgetHome.data.content.rssUrl) {
+                            currentRssUrl = WidgetHome.data.content.rssUrl;
+                            buildfire.appearance.ready();
+                            getFeedData(WidgetHome.data.content.rssUrl);
+                        }
+                        if (!WidgetHome.data.design) {
+                            WidgetHome.data.design = {};
+                        }
+                        if (!WidgetHome.data.design.showImages) {
+                            WidgetHome.data.design.showImages = FEED_IMAGES.YES;
+                        }
+                        viewedItems.sync(WidgetHome.items);
+                    },
+                    error = function (err) {
+                        console.error('Error while getting data', err);
+                    };
                     DataStore.get(TAG_NAMES.RSS_FEED_INFO).then(success, error);
                 };
 

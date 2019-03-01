@@ -72,6 +72,7 @@ const widgetJSFiles= [
     "widget/filters.js",
     "widget/viewedItems.js",
     "widget/bookmarkHandler.js",
+    "widget/cache.js",
     "widget/controllers/widget.home.controller.js",
     "widget/controllers/widget.media.controller.js",
     "widget/controllers/widget.nowplaying.controller.js"
