@@ -65,9 +65,9 @@
                     }
                 }
             });
-            buildfire.device.onAppBackgrounded(function () {
-                $rootScope.$emit('deviceLocked', {});
-            });
+            // buildfire.device.onAppBackgrounded(function () {
+            //     $rootScope.$emit('deviceLocked', {});
+            // });
         }])
         /*.filter('getImageUrl', ['Buildfire','$timeout', function (Buildfire, $timeout) {
             filter.$stateful = true;

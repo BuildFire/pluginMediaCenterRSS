@@ -197,9 +197,13 @@
                     FeedParseService.getFeedData(rssUrl).then(getFeedDataSuccess, getFeedDataError);
                 };
                 var getFeedDataSuccess = function (result) {
-                    // compare the first item of the cached feed and the fetched feed
-                    // return if the feed hasnt changed
-                    var isUnchanged = _items[0] && _items[0].guid === result.data.items[0].guid;
+                    // compare the first item, last item, and length of the cached feed vs fetched feed
+
+                    var isUnchanged = checkFeedEquality(_items, result.data.items);
+                    console.warn(isUnchanged);
+                    
+                    result.rssUrl = WidgetHome.data.content.rssUrl ? WidgetHome.data.content.rssUrl : false;
+                    cache.saveCache(result);
                     if (isUnchanged) return;
 
                     if (WidgetHome.items.length > 0) {
@@ -226,11 +230,21 @@
 
                     // attach the feed url for diff checking later
                     // save or update the cache
-                    result.rssUrl = WidgetHome.data.content.rssUrl ? WidgetHome.data.content.rssUrl : false;
-                    cache.saveCache(result);
+                    // cache.saveCache(result);
 
                     Buildfire.spinner.hide();
                     isInit = false;
+
+                    function checkFeedEquality(currentItems, fetchedItems) {
+                        
+                        if (!currentItems[0] || !currentItems[0].guid) return false;
+
+                        var sameLength = currentItems.length === fetchedItems.length;
+                        var firstItemUnchanged = currentItems[0].guid === fetchedItems[0].guid;
+                        var lastItemUnchanged = currentItems[currentItems.length - 1].guid === fetchedItems[fetchedItems.length - 1].guid;
+    
+                        return sameLength && firstItemUnchanged && lastItemUnchanged;
+                    }
                 };
 
                 var getFeedDataError = function (err) {

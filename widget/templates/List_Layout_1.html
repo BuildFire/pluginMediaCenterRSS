@@ -22,8 +22,8 @@
                 <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
               </div>
               <!-- IMAGE -->
-              <img ng-if="item.imageSrcUrl" ng-style="{ 'height': ((deviceWidth / 2) -30 ) * .5625 }" load-image="16x9" crop-width="{{ (deviceWidth / 2) - 30 }}" crop-height="{{ ((deviceWidth / 2) -30 ) * .5625 }}" crop-type="crop" data-final-src="{{ item.imageSrcUrl }}" ng-style="{ 'min-height': ((deviceWidth / 2) -30 ) * .5625 }"/>
-              <img ng-if="!item.imageSrcUrl" ng-style="{ 'height': ((deviceWidth / 2) -30 ) * .5625 }" src='../../../styles/media/holder-16x9.png' />
+              <img ng-if="item.imageSrcUrl" ng-style="{ 'height': ((deviceWidth / 2) -30 ) * (9 / 16) }" load-image="16x9" crop-width="{{ (deviceWidth / 2) - 30 }}" crop-height="{{ ((deviceWidth / 2) -30 ) * (9 / 16) }}" crop-type="crop" data-final-src="{{ item.imageSrcUrl }}" ng-style="{ 'min-height': ((deviceWidth / 2) -30 ) * (9 / 16) }"/>
+              <img ng-if="!item.imageSrcUrl" ng-style="{ 'height': ((deviceWidth / 2) -30 ) * (9 / 16) }" src='../../../styles/media/holder-16x9.png' />
             </div>
           </div>
           <!-- INFO -->
