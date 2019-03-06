@@ -228,10 +228,6 @@
                     bookmarks.sync($scope);
                     handleBookmarkNav();
 
-                    // attach the feed url for diff checking later
-                    // save or update the cache
-                    // cache.saveCache(result);
-
                     Buildfire.spinner.hide();
                     isInit = false;
 
@@ -302,7 +298,7 @@
                         }, function () {
                             cache.getCache(function (err, data) {
                                 // if the rss feed url has changed, ignore the cache and update when fetched 
-                                if (err || !data || data.rssUrl != result.data.content.rssUrl) return;
+                                if (err || !data || !WidgetHome.data.content || data.rssUrl != WidgetHome.data.content.rssUrl) return;
                                 getFeedDataSuccess(data);
                             });
                         });
