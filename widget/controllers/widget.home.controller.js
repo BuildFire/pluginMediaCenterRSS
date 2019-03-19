@@ -511,7 +511,7 @@
                 $rootScope.$on("Carousel:LOADED", function () {
                     WidgetHome.view = null;
                     if (!WidgetHome.view) {
-                        WidgetHome.view = new Buildfire.components.carousel.view("#carousel", [], "WideScreen", null, false);
+                        WidgetHome.view = new Buildfire.components.carousel.view("#carousel", [], "WideScreen", null, true);
                     }
                     if (WidgetHome.data && WidgetHome.data.content.carouselImages) {
                         //                        WidgetHome.view = new Buildfire.components.carousel.view("#carousel", WidgetHome.data.content.carouselImages);
