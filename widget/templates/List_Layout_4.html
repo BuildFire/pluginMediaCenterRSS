@@ -22,9 +22,9 @@
 								<i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }"
 								 ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
 							</div>
-							<img ng-if="item.imageSrcUrl" load-image="1x1" crop-width="{{ (deviceWidth - 30) / 2 }}" crop-height="{{ (deviceWidth - 30) / 2 }}" crop-type="crop"
-							 data-final-src="{{ item.imageSrcUrl }}" />
-							<img ng-if="!item.imageSrcUrl" src="../../../styles/media/holder-1x1.png" />
+							<img ng-if="item.imageSrcUrl" ng-style="{ 'height': (deviceWidth / 2) -30 }" load-image="1x1" crop-width="{{ (deviceWidth / 2) - 30 }}" crop-height="{{ (deviceWidth / 2) - 30 }}" crop-type="crop"
+							 data-final-src="{{ item.imageSrcUrl }}" ng-style="{'min-height': (deviceWidth / 2) - 30}"/>
+							<img ng-if="!item.imageSrcUrl" ng-style="{ 'height': (deviceWidth / 2) -30 }" src="../../../styles/media/holder-1x1.png" />
 						</div>
 					</div>
 					<div class="list-item-copy text-left" style="cursor: pointer">

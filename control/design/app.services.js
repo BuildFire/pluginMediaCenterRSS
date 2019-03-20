@@ -13,7 +13,7 @@
     .provider('Buildfire', [function () {
       var Buildfire = this;
       Buildfire.$get = function () {
-        return buildfire
+        return buildfire;
       };
       return Buildfire;
     }])
@@ -53,7 +53,7 @@
           Buildfire.datastore.save(_item, _tagName, callback);
           return deferred.promise;
         }
-      }
+      };
     }])
 
   /**
@@ -80,6 +80,6 @@
           Buildfire.imageLib.showDialog(_options, callback);
           return deferred.promise;
         }
-      }
+      };
     }]);
 })(window.angular, window.buildfire);

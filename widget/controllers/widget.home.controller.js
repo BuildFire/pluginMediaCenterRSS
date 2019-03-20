@@ -3,13 +3,22 @@
 (function (angular) {
     angular
         .module('mediaCenterRSSPluginWidget')
-        .controller('WidgetHomeCtrl', ['$location', '$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope','FEED_IMAGES',
-            function ($location, $scope, DataStore, Buildfire, FeedParseService, TAG_NAMES, ItemDetailsService, Location, $filter, Underscore, $rootScope,FEED_IMAGES) {
+        .controller('WidgetHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope', 'FEED_IMAGES',
+            function ($scope, DataStore, Buildfire, FeedParseService, TAG_NAMES, ItemDetailsService, Location, $filter, Underscore, $rootScope, FEED_IMAGES) {
 
-                $rootScope.deviceHeight = window.innerHeight;
-                $rootScope.deviceWidth = window.innerWidth || 320;
-                
-                var _path = $location.path();
+                if (window.device) {
+                    if (window.device.platform === 'Android') {
+                        $rootScope.deviceHeight = window.outerHeight;
+                        $rootScope.deviceWidth = window.outerWidth;
+                    } else {
+                        $rootScope.deviceHeight = window.innerHeight;
+                        $rootScope.deviceWidth = window.innerWidth || 320;
+                    }
+                } else {
+                    $rootScope.deviceHeight = window.innerHeight;
+                    $rootScope.deviceWidth = window.innerWidth || 320;
+                }
+
                 $scope.first = true;
                 /**
                  * @name handleBookmarkNav
@@ -18,10 +27,12 @@
                  */
                 var handleBookmarkNav = function handleBookmarkNav() {
                     if ($scope.first) {
-                        buildfire.deeplink.getData(function(data){
-                            if(data && data.link){
+                        buildfire.deeplink.getData(function (data) {
+                            if (data && data.link) {
                                 var targetGuid = data.link;
-                                var itemLinks = _items.map(item => item.guid);
+                                var itemLinks = _items.map(function (item) {
+                                    return item.guid
+                                });
                                 var index = itemLinks.indexOf(targetGuid);
                                 if (index < 0) {
                                     console.warn('bookmarked item not found.');
@@ -35,10 +46,10 @@
                                 $scope.first = false;
                                 if (!$scope.$$phase) $scope.$apply();
                             }
-                        }); 
+                        });
                     }
                 };
-                
+
                 /** 
                  * Private variables
                  *
@@ -71,15 +82,15 @@
                  * @private
                  *
                  *  */
-                var view = null
-                    , _items = []
-                    , limit = 15
-                    , chunkData = null
-                    , nextChunkDataIndex = 0
-                    , nextChunk = null
-                    , totalChunks = 0
-                    , currentRssUrl = null
-                    , WidgetHome = this,
+                var view = null,
+                    _items = [],
+                    limit = 15,
+                    chunkData = null,
+                    nextChunkDataIndex = 0,
+                    nextChunk = null,
+                    totalChunks = 0,
+                    currentRssUrl = null,
+                    WidgetHome = this,
                     isInit = true;
 
                 var _data = {
@@ -101,7 +112,7 @@
                  * @type {object}
                  */
                 WidgetHome.data = null;
-                WidgetHome.view=null;
+                WidgetHome.view = null;
 
                 /**
                  * @name WidgetHome.items is used to listing items.
@@ -139,7 +150,7 @@
                     WidgetHome.isItems = true;
                     ItemDetailsService.setData(null);
                 };
-                
+
                 /**
                  * @name getImageUrl()
                  * Used to extract image url
@@ -147,13 +158,12 @@
                  * @returns {*}
                  */
                 var getImageUrl = function (item) {
-                    var i = 0
-                        , length = 0
-                        , imageUrl = '';
+                    var i = 0,
+                        length = 0,
+                        imageUrl = '';
                     if (item.image && item.image.url) {
                         return item.image.url;
-                    }
-                    else if (item.enclosures && item.enclosures.length > 0) {
+                    } else if (item.enclosures && item.enclosures.length > 0) {
                         length = item.enclosures.length;
                         for (i = 0; i < length; i++) {
                             if (item.enclosures[i].type.indexOf('image/') === 0) {
@@ -169,8 +179,7 @@
                             return item['media:group']['media:content']['media:thumbnail']['@'].url;
                         } else if (item.description) {
                             return $filter('extractImgSrc')(item.description);
-                        }
-                        else {
+                        } else {
                             return '';
                         }
                     }
@@ -185,33 +194,60 @@
                 var getFeedData = function (rssUrl) {
                     resetDefaults();
                     Buildfire.spinner.show();
-                    var success = function (result) {
-                        console.info('Feed data: ', result);
-                        if (result.data && result.data.items.length > 0) {
-                            result.data.items.forEach(function (item) {
-                                item.imageSrcUrl = getImageUrl(item);
-                            });
-                            _items = result.data.items;
-                            WidgetHome.isItems = true;
-                        } else {
-                            WidgetHome.isItems = false;
-                        }
-                        chunkData = Underscore.chunk(_items, limit);
-                        totalChunks = chunkData.length;
-                        WidgetHome.loadMore();
-                        viewedItems.sync(WidgetHome.items);
-                        bookmarks.sync($scope);
-                        handleBookmarkNav();
-                        Buildfire.spinner.hide();
-                        isInit = false;
-                        searchEngine.indexFeed(rssUrl);
-                    }
-                    , error = function (err) {
-                        Buildfire.spinner.hide();
-                        console.error('Error while getting feed data', err);
-                    };
-                    FeedParseService.getFeedData(rssUrl).then(success, error);
+                    FeedParseService.getFeedData(rssUrl).then(getFeedDataSuccess, getFeedDataError);
                 };
+                var getFeedDataSuccess = function (result) {
+                    // compare the first item, last item, and length of the cached feed vs fetched feed
+
+                    var isUnchanged = checkFeedEquality(_items, result.data.items);
+                    console.warn(isUnchanged);
+                    
+                    result.rssUrl = WidgetHome.data.content.rssUrl ? WidgetHome.data.content.rssUrl : false;
+                    cache.saveCache(result);
+                    if (isUnchanged) return;
+
+                    if (WidgetHome.items.length > 0) {
+                        WidgetHome.items = [];
+                        _items = [];
+                        nextChunkDataIndex = 0;
+                    }
+                    if (result.data && result.data.items.length > 0) {
+                        result.data.items.forEach(function (item) {
+                            item.imageSrcUrl = getImageUrl(item);
+                        });
+                        _items = result.data.items;
+                        WidgetHome.isItems = true;
+                    } else {
+                        WidgetHome.isItems = false;
+                    }
+                    chunkData = Underscore.chunk(_items, limit);
+                    totalChunks = chunkData.length;
+                    WidgetHome.loadMore();
+
+                    viewedItems.sync(WidgetHome.items);
+                    bookmarks.sync($scope);
+                    handleBookmarkNav();
+
+                    Buildfire.spinner.hide();
+                    isInit = false;
+
+                    function checkFeedEquality(currentItems, fetchedItems) {
+                        
+                        if (!currentItems[0] || !currentItems[0].guid) return false;
+
+                        var sameLength = currentItems.length === fetchedItems.length;
+                        var firstItemUnchanged = currentItems[0].guid === fetchedItems[0].guid;
+                        var lastItemUnchanged = currentItems[currentItems.length - 1].guid === fetchedItems[fetchedItems.length - 1].guid;
+    
+                        return sameLength && firstItemUnchanged && lastItemUnchanged;
+                    }
+                };
+
+                var getFeedDataError = function (err) {
+                    Buildfire.spinner.hide();
+                    console.error('Error while getting feed data', err);
+                };
+
 
                 /**
                  * @name onUpdateCallback()
@@ -231,10 +267,10 @@
                         if (WidgetHome.view && event.data.content && event.data.content.carouselImages) {
                             WidgetHome.view.loadItems(event.data.content.carouselImages);
                         }
-                        if(!WidgetHome.data.design)
+                        if (!WidgetHome.data.design)
                             WidgetHome.data.design = {};
-                        if(!WidgetHome.data.design.showImages)
-                        WidgetHome.data.design.showImages = FEED_IMAGES.YES;
+                        if (!WidgetHome.data.design.showImages)
+                            WidgetHome.data.design.showImages = FEED_IMAGES.YES;
                         if (WidgetHome.data.content && WidgetHome.data.content.rssUrl) {
                             if (WidgetHome.data.content.rssUrl !== currentRssUrl) {
                                 currentRssUrl = WidgetHome.data.content.rssUrl;
@@ -253,13 +289,24 @@
                  */
                 var init = function () {
                     viewedItems.init();
+                    
                     var success = function (result) {
-                        
+                        cache.init({
+                            dbName: 'rss.cache',
+                            indexName: 'feed',
+                            objectStoreName: 'feed.cache'
+                        }, function () {
+                            cache.getCache(function (err, data) {
+                                // if the rss feed url has changed, ignore the cache and update when fetched 
+                                if (err || !data || !WidgetHome.data.content || data.rssUrl != WidgetHome.data.content.rssUrl) return;
+                                getFeedDataSuccess(data);
+                            });
+                        });
+
                         if (Object.keys(result.data).length > 0) {
                             WidgetHome.data = result.data;
                             $rootScope.data = result.data;
-                        }
-                        else {
+                        } else {
                             WidgetHome.data = _data;
                             $rootScope.data = _data;
                         }
@@ -269,17 +316,18 @@
                         }
                         if (WidgetHome.data.content && WidgetHome.data.content.rssUrl) {
                             currentRssUrl = WidgetHome.data.content.rssUrl;
+                            buildfire.appearance.ready();
                             getFeedData(WidgetHome.data.content.rssUrl);
                         }
-                        if(!WidgetHome.data.design) {
+                        if (!WidgetHome.data.design) {
                             WidgetHome.data.design = {};
                         }
                         if (!WidgetHome.data.design.showImages) {
                             WidgetHome.data.design.showImages = FEED_IMAGES.YES;
                         }
                         viewedItems.sync(WidgetHome.items);
-                    }
-                    , error = function (err) {
+                    },
+                    error = function (err) {
                         console.error('Error while getting data', err);
                     };
                     DataStore.get(TAG_NAMES.RSS_FEED_INFO).then(success, error);
@@ -323,8 +371,7 @@
                             var html = item.summary ? item.summary : item.description;
                             item.title = html;
                             truncatedTitle = $filter('truncate')(html, 50);
-                        }
-                        else {
+                        } else {
                             truncatedTitle = $filter('truncate')(item.title, 50);
                         }
                         return truncatedTitle;
@@ -369,7 +416,9 @@
                  * @param index
                  */
                 WidgetHome.goToItem = function (index, item) {
-                    viewedItems.markViewed($scope, item.guid)
+                    setTimeout(function () {
+                        viewedItems.markViewed($scope, item.guid);
+                    }, 500);
                     if (WidgetHome.items[index]) {
                         WidgetHome.items[index].index = index;
                     }
@@ -382,11 +431,11 @@
 
                 WidgetHome.bookmark = function ($event, item) {
                     $event.stopImmediatePropagation();
-                    var isBookmarked = item.bookmarked ? true : false;            
+                    var isBookmarked = item.bookmarked ? true : false;
                     if (isBookmarked) {
-                      bookmarks.delete($scope, item);
+                        bookmarks.delete($scope, item);
                     } else {
-                      bookmarks.add($scope, item);
+                        bookmarks.add($scope, item);
                     }
                 };
 
@@ -400,7 +449,7 @@
                         link: item.link
                     };
 
-                    var callback = function(err) {
+                    var callback = function (err) {
                         if (err) {
                             console.warn(err);
                         }
@@ -413,7 +462,7 @@
                     Buildfire.auth.onLogin(function () {
                         init();
                     });
-                
+
                     Buildfire.auth.onLogout(function () {
                         init();
                     });
@@ -462,10 +511,10 @@
                 $rootScope.$on("Carousel:LOADED", function () {
                     WidgetHome.view = null;
                     if (!WidgetHome.view) {
-                        WidgetHome.view = new Buildfire.components.carousel.view("#carousel", [], "WideScreen");
+                        WidgetHome.view = new Buildfire.components.carousel.view("#carousel", [], "WideScreen", null, true);
                     }
                     if (WidgetHome.data && WidgetHome.data.content.carouselImages) {
-//                        WidgetHome.view = new Buildfire.components.carousel.view("#carousel", WidgetHome.data.content.carouselImages);
+                        //                        WidgetHome.view = new Buildfire.components.carousel.view("#carousel", WidgetHome.data.content.carouselImages);
                         WidgetHome.view.loadItems(WidgetHome.data.content.carouselImages, null, 'WideScreen');
                     } else {
                         WidgetHome.view.loadItems([]);
@@ -481,5 +530,6 @@
                     Location.goToHome();
                 });
 
-            }]);
+            }
+        ]);
 })(window.angular);

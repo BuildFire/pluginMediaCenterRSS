@@ -3,30 +3,30 @@
 (function (angular, buildfire, _) {
   angular.module('mediaCenterRSSPluginWidget')
 
-  /**************************************
-   *  providers and factories/services  *
-   **************************************/
+    /**************************************
+     *  providers and factories/services  *
+     **************************************/
 
-  /**
-   * A provider for retrieving global window.buildfire object defined in buildfire.js.
-   */
+    /**
+     * A provider for retrieving global window.buildfire object defined in buildfire.js.
+     */
     .provider('Buildfire', [function () {
       var Buildfire = this;
       Buildfire.$get = function () {
-        return buildfire
+        return buildfire;
       };
       return Buildfire;
     }])
 
-  /**
-   * A factory which is a wrapper on global buildfire.datastore object defined in buildfire.js
-   */
+    /**
+     * A factory which is a wrapper on global buildfire.datastore object defined in buildfire.js
+     */
     .factory("DataStore", ['Buildfire', '$q', 'STATUS_CODE', 'STATUS_MESSAGES', function (Buildfire, $q, STATUS_CODE, STATUS_MESSAGES) {
       var onUpdateListeners = [];
       return {
         get: function (_tagName) {
-          var deferred = $q.defer()
-            , callback = function (err, result) {
+          var deferred = $q.defer(),
+            callback = function (err, result) {
               if (err) {
                 return deferred.reject(err);
               } else if (result) {
@@ -37,8 +37,8 @@
           return deferred.promise;
         },
         onUpdate: function () {
-          var deferred = $q.defer()
-            , callback = function (event) {
+          var deferred = $q.defer(),
+            callback = function (event) {
               if (!event) {
                 return deferred.notify(new Error({
                   code: STATUS_CODE.UNDEFINED_EVENT,
@@ -59,12 +59,12 @@
           });
           onUpdateListeners = [];
         }
-      }
+      };
     }])
 
-  /**
-   * A REST-ful factory used to retrieve feed data.
-   */
+    /**
+     * A REST-ful factory used to retrieve feed data.
+     */
     .factory("FeedParseService", ['$q', '$http', function ($q, $http) {
       var getFeedData = function (_feedUrl) {
         var deferred = $q.defer();
@@ -72,8 +72,8 @@
           deferred.reject(new Error('Undefined feed url'));
         }
         $http.post('https://proxy.buildfire.com/parsefeedurl', {
-          feedUrl: _feedUrl
-        })
+            feedUrl: _feedUrl
+          })
           .success(function (response) {
             deferred.resolve(response);
           })
@@ -84,12 +84,12 @@
       };
       return {
         getFeedData: getFeedData
-      }
+      };
     }])
 
-  /**
-   * A factory which is used to change routes
-   */
+    /**
+     * A factory which is used to change routes
+     */
     .factory('Location', [function () {
       var _location = window.location;
       return {
@@ -102,26 +102,26 @@
       };
     }])
 
-  /**
-   * A factory which is a wrapper on lodash.js library
-   */
+    /**
+     * A factory which is a wrapper on lodash.js library
+     */
     .factory('Underscore', [function () {
       return _;
     }])
 
-  /**
-   * A factory which is used to hold selected item before going on item details page.
-   */
+    /**
+     * A factory which is used to hold selected item before going on item details page.
+     */
     .factory("ItemDetailsService", function () {
-      var itemData = null
-        , _getData = function () {
+      var itemData = null,
+        _getData = function () {
           //You could also return specific attribute of the form data instead
           //of the entire data
           return itemData;
-        }
-        , _setData = function (newData) {
+        },
+        _setData = function (newData) {
           //You could also set specific attribute of the form data instead
-          itemData = newData
+          itemData = newData;
         };
       return {
         getData: _getData,

@@ -179,13 +179,13 @@
               }
               //updateMasterItem(ContentHome.data);
               if (tmrDelay) {
-                clearTimeout(tmrDelay)
+                clearTimeout(tmrDelay);
               }
             }
             , error = function (err) {
               console.error('Error while getting data', err);
               if (tmrDelay) {
-                clearTimeout(tmrDelay)
+                clearTimeout(tmrDelay);
               }
 
             };
@@ -290,6 +290,7 @@
               ContentHome.isValidUrl = true;
               ContentHome.isValidateButtonClicked = false;
               ContentHome.data.content.rssUrl = ContentHome.rssFeedUrl;
+              searchEngine.indexFeed(ContentHome.data.content.rssUrl);
               Buildfire.spinner.hide();
               $timeout(function () {
                 ContentHome.isValidUrl = false;
@@ -298,25 +299,25 @@
             , error = function (err) {
               switch (err.code) {
                 case 'ETIMEDOUT': {
-                  ContentHome.errorMessage = "No response from the RSS server."
+                  ContentHome.errorMessage = "No response from the RSS server.";
                   break;
                 }
                 case 'ENOTFOUND': {
-                  ContentHome.errorMessage = "Can't find the requested resource. Check the URL."
+                  ContentHome.errorMessage = "Can't find the requested resource. Check the URL.";
                   break;
                 }
                 case 500: {
-                  ContentHome.errorMessage = "Something went wrong in the RSS server."
+                  ContentHome.errorMessage = "Something went wrong in the RSS server.";
                   break;
                 }
                 case 200: {
                   if (err.message === "Invalid RSS feeds format") {
-                    ContentHome.errorMessage = "Feed format is invalid."
+                    ContentHome.errorMessage = "Feed format is invalid.";
                   }
                   break;
                 }
                 default: {
-                  ContentHome.errorMessage = "Not a valid feed URL. Try again."
+                  ContentHome.errorMessage = "Not a valid feed URL. Try again.";
                   break;
                 }
               }

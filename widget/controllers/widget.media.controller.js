@@ -13,7 +13,7 @@
                 buildfire.auth.onLogin(function () {
                     bookmarks.sync($scope);
                 });
-                
+
                 buildfire.auth.onLogout(function () {
                     bookmarks.sync($scope);
                 });
@@ -28,9 +28,9 @@
                  *  @private
                  *
                  */
-                var WidgetMedia = this
-                    , currentRssUrl = null
-                    , audioPlayer = Buildfire.services.media.audioPlayer;
+                var WidgetMedia = this,
+                    currentRssUrl = null,
+                    audioPlayer = Buildfire.services.media.audioPlayer;
                 WidgetMedia.loadingVideo = false;
 
                 var _data = {
@@ -171,23 +171,19 @@
                     if (_item.enclosures && _item.enclosures.length > 0 && _item.enclosures[0].url && _item.enclosures[0].type) {
                         if (_item.enclosures[0].type.indexOf('video/') === 0) {
                             WidgetMedia.medium = MEDIUM_TYPES.VIDEO;
-                        }
-                        else if (_item.enclosures[0].type.indexOf('audio/') === 0) {
+                        } else if (_item.enclosures[0].type.indexOf('audio/') === 0) {
                             WidgetMedia.medium = MEDIUM_TYPES.AUDIO;
-                        }
-                        else if (_item.enclosures[0].type.indexOf('image/') === 0) {
+                        } else if (_item.enclosures[0].type.indexOf('image/') === 0) {
                             WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
-                        }
-                        else {
+                        } else {
                             WidgetMedia.medium = MEDIUM_TYPES.OTHER;
                         }
                         return {
                             type: _item.enclosures[0].type,
                             src: _item.enclosures[0].url
-                        }
-                    }
-                    else {
-                        return null
+                        };
+                    } else {
+                        return null;
                     }
                 };
 
@@ -202,79 +198,65 @@
                         if (_item['media:group']['media:content']['@'] && _item['media:group']['media:content']['@'].type && _item['media:group']['media:content']['@'].url) {
                             if (_item['media:group']['media:content']['@'].type.indexOf('video/') === 0) {
                                 WidgetMedia.medium = MEDIUM_TYPES.VIDEO;
-                            }
-                            else if (_item['media:group']['media:content']['@'].type.indexOf('audio/') === 0) {
+                            } else if (_item['media:group']['media:content']['@'].type.indexOf('audio/') === 0) {
                                 WidgetMedia.medium = MEDIUM_TYPES.AUDIO;
-                            }
-                            else if (_item['media:group']['media:content']['@'].type.indexOf('image/') === 0) {
+                            } else if (_item['media:group']['media:content']['@'].type.indexOf('image/') === 0) {
                                 WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
-                            }
-                            else {
+                            } else {
                                 WidgetMedia.medium = MEDIUM_TYPES.OTHER;
                             }
                             return {
                                 type: _item['media:group']['media:content']['@'].type,
                                 src: _item['media:group']['media:content']['@'].url
-                            }
-                        }
-                        else if (_item['media:group']['media:content']['media:thumbnail'] && _item['media:group']['media:content']['media:thumbnail']['@'] && _item['media:group']['media:content']['media:thumbnail']['@'].url) {
+                            };
+                        } else if (_item['media:group']['media:content']['media:thumbnail'] && _item['media:group']['media:content']['media:thumbnail']['@'] && _item['media:group']['media:content']['media:thumbnail']['@'].url) {
                             WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
                             return {
                                 type: 'image/*',
                                 src: _item['media:group']['media:content']['media:thumbnail']['@'].url
-                            }
-                        }
-                        else {
+                            };
+                        } else {
                             return null;
                         }
-                    }
-                    else if (_item['media:content'] && _item['media:content']['@'] && _item['media:content']['@'].url && _item['media:content']['@'].type) {
+                    } else if (_item['media:content'] && _item['media:content']['@'] && _item['media:content']['@'].url && _item['media:content']['@'].type) {
                         if (_item['media:content']['@'].type.indexOf('video/') === 0) {
                             WidgetMedia.medium = MEDIUM_TYPES.VIDEO;
-                        }
-                        else if (_item['media:content']['@'].type.indexOf('audio/') === 0) {
+                        } else if (_item['media:content']['@'].type.indexOf('audio/') === 0) {
                             WidgetMedia.medium = MEDIUM_TYPES.AUDIO;
-                        }
-                        else if (_item['media:content']['@'].type.indexOf('image/') === 0) {
+                        } else if (_item['media:content']['@'].type.indexOf('image/') === 0) {
                             WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
-                        }
-                        else {
+                        } else {
                             WidgetMedia.medium = MEDIUM_TYPES.OTHER;
                         }
                         return {
                             type: _item['media:content']['@'].type,
                             src: _item['media:content']['@'].url
-                        }
-                    }
-                    else if (_item['media:content'] && _item['media:content']['media:player'] && _item['media:content']['media:player']['@'] && _item['media:content']['media:player']['@'].url) {
+                        };
+                    } else if (_item['media:content'] && _item['media:content']['media:player'] && _item['media:content']['media:player']['@'] && _item['media:content']['media:player']['@'].url) {
                         WidgetMedia.medium = MEDIUM_TYPES.VIDEO;
                         return {
                             type: 'video/*',
                             src: _item['media:content']['media:player']['@'].url
-                        }
-                    }
-                    else if (_item['media:thumbnail'] && _item['media:thumbnail']['@'] && _item['media:thumbnail']['@'].url) {
+                        };
+                    } else if (_item['media:thumbnail'] && _item['media:thumbnail']['@'] && _item['media:thumbnail']['@'].url) {
                         WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
                         return {
                             type: 'image/*',
                             src: _item['media:thumbnail']['@'].url
-                        }
-                    }
-                    else if (_item.image && _item.image.url) {
+                        };
+                    } else if (_item.image && _item.image.url) {
                         WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
                         return {
                             type: 'image/*',
                             src: _item.image.url
-                        }
-                    }
-                    else if (_item.imageSrcUrl) {
+                        };
+                    } else if (_item.imageSrcUrl) {
                         WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
                         return {
                             type: 'image/*',
                             src: _item.imageSrcUrl
-                        }
-                    }
-                    else {
+                        };
+                    } else {
                         return null;
                     }
                 };
@@ -285,11 +267,11 @@
                  * @param _item
                  */
                 var filterItemType = function (_item) {
-                    var _src = ''
-                        , mediaData = checkEnclosuresTag(_item);
+                    var _src = '',
+                        mediaData = checkEnclosuresTag(_item);
 
                     if (!mediaData) {
-                        mediaData = checkMediaTag(_item)
+                        mediaData = checkMediaTag(_item);
                     }
                     if (mediaData) {
                         switch (WidgetMedia.medium) {
@@ -309,13 +291,12 @@
                             case MEDIUM_TYPES.IMAGE:
                                 WidgetMedia.imageUrl = mediaData.src;
                                 break;
-                            default :
+                            default:
                                 //code here for defaults
                                 resetDefaults();
                                 break;
                         }
-                    }
-                    else {
+                    } else {
                         WidgetMedia.medium = MEDIUM_TYPES.OTHER;
                     }
                 };
@@ -448,12 +429,10 @@
                         WidgetMedia.audio.currentTime = e.data.currentTime;
                         WidgetMedia.audio.duration = e.data.duration;
                         $scope.$apply();
-                    }
-                    else if (e.event == "audioEnded") {
+                    } else if (e.event == "audioEnded") {
                         WidgetMedia.audio.playing = false;
                         $scope.$apply();
-                    }
-                    else if (e.event == "pause") {
+                    } else if (e.event == "pause") {
                         WidgetMedia.audio.playing = false;
                         $scope.$apply();
                     }
@@ -530,11 +509,11 @@
 
                 WidgetMedia.bookmark = function ($event) {
                     $event.stopImmediatePropagation();
-                    var isBookmarked = WidgetMedia.item.bookmarked ? true : false;            
+                    var isBookmarked = WidgetMedia.item.bookmarked ? true : false;
                     if (isBookmarked) {
-                      bookmarks.delete($scope, WidgetMedia.item);
+                        bookmarks.delete($scope, WidgetMedia.item);
                     } else {
-                      bookmarks.add($scope, WidgetMedia.item);
+                        bookmarks.add($scope, WidgetMedia.item);
                     }
                 };
 
@@ -547,7 +526,7 @@
                         link: WidgetMedia.item.link
                     };
 
-                    var callback = function(err) {
+                    var callback = function (err) {
                         if (err) {
                             console.warn(err);
                         }
@@ -568,7 +547,7 @@
                     var callback = function (err, data) {
                         if (err) throw err;
                         console.log(data);
-                    }
+                    };
                     // buildfire.input.showTextDialog(options, callback);
                     buildfire.notes.openDialog(options, callback);
                 };
@@ -578,18 +557,18 @@
                     if (WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.AUDIO) {
                         WidgetMedia.playAudio();
                     } else if (WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.VIDEO) {
-                        let retry = setInterval(() => {
+                        var retry = setInterval(function () {
                             if (!WidgetMedia.API || !WidgetMedia.API.isReady || WidgetMedia.API.totalTime === 0) {
-                                return
+                                return;
                             } else {
                                 clearInterval(retry);
                                 WidgetMedia.API.seekTime(WidgetMedia.item.seekTo);
-                                setTimeout(() => {
+                                setTimeout(function () {
                                     WidgetMedia.API.play();
                                 }, 500);
                             }
                         }, 500);
-    
+
                     }
                 });
 
@@ -597,8 +576,7 @@
                 /**
                  * Implementation of pull down to refresh
                  */
-                var onRefresh = Buildfire.datastore.onRefresh(function () {
-                });
+                var onRefresh = Buildfire.datastore.onRefresh(function () {});
 
 
 
@@ -627,7 +605,7 @@
                     callPlayer('ytPlayer', 'pauseVideo');
 
                     // pause Vimeo video (no need to check if there is any vimeo video playing)
-                    callVimeoPlayer('ytPlayer');
+                    callVimeoPlayer('vimeoPlayer');
                 });
 
                 /**
@@ -652,13 +630,13 @@
                     WidgetMedia.playAudio();
                 } else if ($rootScope.deeplinkFirstNav && WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.VIDEO) {
                     $rootScope.deeplinkFirstNav = false;
-                    let retry = setInterval(() => {
+                    var retry = setInterval(function () {
                         if (!WidgetMedia.API || !WidgetMedia.API.isReady || WidgetMedia.API.totalTime === 0) {
-                            return
+                            return;
                         } else {
                             clearInterval(retry);
                             WidgetMedia.API.seekTime(WidgetMedia.item.seekTo);
-                            setTimeout(() => {
+                            setTimeout(function () {
                                 WidgetMedia.API.play();
                             }, 500);
                         }
@@ -666,6 +644,6 @@
 
                 }
 
-            }]
-    )
+            }
+        ]);
 })(window.angular);
