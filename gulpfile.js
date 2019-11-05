@@ -11,7 +11,7 @@ const gulpSequence = require('gulp-sequence');
 const minifyInline = require('gulp-minify-inline');
 const gutil = require('gulp-util');
 
-const destinationFolder= releaseFolder();
+const destinationFolder = releaseFolder();
 
 function releaseFolder() {
     var arr = __dirname.split("/");
@@ -20,21 +20,21 @@ function releaseFolder() {
     return arr.join("/");
 }
 
-console.log(">> Building to " , destinationFolder);
+console.log(">> Building to ", destinationFolder);
 
 const widgetCssFiles = [
     'widget/assets/css/style.css',
     'widget/assets/css/videogular.css',
 ]
 
-const cssTasks=[
-    {name:"widgetCSS", src: widgetCssFiles, dest:"/widget/styles"}
-    ,{name:"controlContentCSS",src:"control/content/**/*.css",dest:"/control/content"}
-    ,{name:"controlDesignCSS",src:"control/design/**/*.css",dest:"/control/design"}
-    ,{name:"controlSettingsCSS",src:"control/settings/**/*.css",dest:"/control/settings"}
+const cssTasks = [
+    {name: "widgetCSS", src: widgetCssFiles, dest: "/widget/styles"}
+    , {name: "controlContentCSS", src: "control/content/**/*.css", dest: "/control/content"}
+    , {name: "controlDesignCSS", src: "control/design/**/*.css", dest: "/control/design"}
+    , {name: "controlSettingsCSS", src: "control/settings/**/*.css", dest: "/control/settings"}
 ];
 
-cssTasks.forEach(function(task){
+cssTasks.forEach(function (task) {
     /*
      Define a task called 'css' the recursively loops through
      the widget and control folders, processes each CSS file and puts
@@ -42,8 +42,8 @@ cssTasks.forEach(function(task){
      note if the order matters you can import each css separately in the array
 
      */
-    gulp.task(task.name, function(){
-        return gulp.src(task.src,{base: '.'})
+    gulp.task(task.name, function () {
+        return gulp.src(task.src, {base: '.'})
 
         /// minify the CSS contents
             .pipe(minifyCSS())
@@ -56,7 +56,7 @@ cssTasks.forEach(function(task){
     });
 });
 
-const widgetJSFiles= [
+const widgetJSFiles = [
     "widget/assets/js/lodash.js",
     "widget/assets/js/jquery.truncate.js",
     "widget/assets/js/ng-videosharing-embed.min.js",
@@ -81,12 +81,11 @@ const widgetJSFiles= [
 
 const jsTasks = [
     // { name: "widgetJS", src: "widget/**/*.js", dest: "/widget" },
-    { name: "widgetJS", src: widgetJSFiles, dest: "/widget" },
-    { name: "controlContentJS", src: "control/content/**/*.js", dest: "/control/content" },
-    { name: "controlDesignJS", src: "control/design/**/*.js", dest: "/control/design" },
-    { name: "controlSettingsJS", src: "control/settings/**/*.js", dest: "/control/settings" }
+    {name: "widgetJS", src: widgetJSFiles, dest: "/widget"},
+    {name: "controlContentJS", src: "control/content/**/*.js", dest: "/control/content"},
+    {name: "controlDesignJS", src: "control/design/**/*.js", dest: "/control/design"},
+    {name: "controlSettingsJS", src: "control/settings/**/*.js", dest: "/control/settings"}
 ];
-
 
 
 gulp.task('lint', () => {
@@ -94,7 +93,7 @@ gulp.task('lint', () => {
     // So, it's best to have gulp ignore the directory as well.
     // Also, Be sure to return the stream from the task;
     // Otherwise, the task may end before the stream has finished.
-    return gulp.src(['widget/**/*.js','control/**/*.js'])
+    return gulp.src(['widget/**/*.js', 'control/**/*.js'])
     // eslint() attaches the lint output to the "eslint" property
     // of the file object so it can be used by other modules.
         .pipe(eslint({
@@ -111,7 +110,7 @@ gulp.task('lint', () => {
                     "warn",
                     "always"
                 ],
-                "no-console":[
+                "no-console": [
                     "off"
                 ]
             }
@@ -124,15 +123,17 @@ gulp.task('lint', () => {
         .pipe(eslint.failAfterError());
 });
 
-jsTasks.forEach(function(task){
-    gulp.task(task.name, function() {
-        return gulp.src(task.src,{base: '.'})
+jsTasks.forEach(function (task) {
+    gulp.task(task.name, function () {
+        return gulp.src(task.src, {base: '.'})
 
 
 
-             /// obfuscate and minify the JS files
+        /// obfuscate and minify the JS files
             .pipe(uglify())
-            .on('error', function (err) { gutil.log(gutil.colors.red('[Error]'), err.toString()); })
+            .on('error', function (err) {
+                gutil.log(gutil.colors.red('[Error]'), err.toString());
+            })
 
             /// merge all the JS files together. If the
             /// order matters you can pass each file to the function
@@ -145,8 +146,8 @@ jsTasks.forEach(function(task){
 
 });
 
-gulp.task('clean',function(){
-    return del([destinationFolder],{force: true});
+gulp.task('clean', function () {
+    return del([destinationFolder], {force: true});
 });
 
 /*
@@ -154,17 +155,17 @@ gulp.task('clean',function(){
  the widget and control folders, processes each html file and puts
  a processes copy in the 'build' folder
  */
-gulp.task('html', function(){
-    return gulp.src(['widget/**/*.html','widget/**/*.htm','control/**/*.html','control/**/*.htm'],{base: '.'})
+gulp.task('html', function () {
+    return gulp.src(['widget/**/*.html', 'widget/**/*.htm', 'control/**/*.html', 'control/**/*.htm'], {base: '.'})
     /// replace all the <!-- build:bundleJSFiles  --> comment bodies
     /// with scripts.min.js with cache buster
         .pipe(htmlReplace({
-            bundleJSFiles:"scripts.min.js?v=" + (new Date().getTime())
-            ,bundleCSSFiles:"styles/styles.min.css?v=" + (new Date().getTime())
+            bundleJSFiles: "scripts.min.js?v=" + (new Date().getTime())
+            , bundleCSSFiles: "styles/styles.min.css?v=" + (new Date().getTime())
         }))
 
         /// then strip the html from any comments
-        .pipe(minHTML({removeComments:true,collapseWhitespace:true}))
+        .pipe(minHTML({removeComments: true, collapseWhitespace: true}))
 
         .pipe(minifyInline())
 
@@ -173,22 +174,30 @@ gulp.task('html', function(){
 });
 
 
+gulp.task('resources', function () {
+    return gulp.src(['resources/*', 'widget/fonticons/**', 'plugin.json'], {base: '.'})
+        .pipe(gulp.dest(destinationFolder));
+});
 
-gulp.task('resources', function(){
-    return gulp.src(['resources/*','widget/fonticons/**','plugin.json'],{base: '.'})
-        .pipe(gulp.dest(destinationFolder ));
+gulp.task('widgetIcons', function () {
+    return gulp.src(['widget/assets/css/icons/*.*'], {base: '.'})
+        .pipe(gulp.dest(destinationFolder));
 });
 
 
-gulp.task('images', function(){
-    return gulp.src(['**/.images/**','control/design/icons/**','control/design/layouts/**'],{base: '.'})
-        .pipe(gulp.dest(destinationFolder ));
+gulp.task('images', function () {
+    return gulp.src(['**/.images/**', 'control/design/icons/**', 'control/design/layouts/**'], {base: '.'})
+        .pipe(gulp.dest(destinationFolder));
 });
 
 
-var buildTasksToRun=['html','resources','images'];
+var buildTasksToRun = ['html', 'resources', 'images', 'widgetIcons'];
 
-cssTasks.forEach(function(task){  buildTasksToRun.push(task.name)});
-jsTasks.forEach(function(task){  buildTasksToRun.push(task.name)});
+cssTasks.forEach(function (task) {
+    buildTasksToRun.push(task.name)
+});
+jsTasks.forEach(function (task) {
+    buildTasksToRun.push(task.name)
+});
 
-gulp.task('build', gulpSequence('lint','clean',buildTasksToRun) );
+gulp.task('build', gulpSequence('lint', 'clean', buildTasksToRun));
