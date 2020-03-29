@@ -291,16 +291,10 @@
                     viewedItems.init();
                     
                     var success = function (result) {
-                        cache.init({
-                            dbName: 'rss.cache',
-                            indexName: 'feed',
-                            objectStoreName: 'feed.cache'
-                        }, function () {
-                            cache.getCache(function (err, data) {
-                                // if the rss feed url has changed, ignore the cache and update when fetched 
-                                if (err || !data || !WidgetHome.data.content || data.rssUrl != WidgetHome.data.content.rssUrl) return;
-                                getFeedDataSuccess(data);
-                            });
+                        cache.getCache(function (err, data) {
+                          // if the rss feed url has changed, ignore the cache and update when fetched 
+                          if (err || !data || !WidgetHome.data.content || data.rssUrl != WidgetHome.data.content.rssUrl) return;
+                          getFeedDataSuccess(data);
                         });
 
                         if (Object.keys(result.data).length > 0) {
