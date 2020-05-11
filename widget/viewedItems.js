@@ -33,7 +33,7 @@ var viewedItems = {
 
 			_this.id = user ? user._id : 'guest';
 
-			let ls_viewedItems = localStorage.getItem('viewedItems');
+			var ls_viewedItems = localStorage.getItem('viewedItems');
 			var viewedItems = ls_viewedItems ? JSON.parse(ls_viewedItems) : null;
 
 			var storageInitialized = viewedItems && (typeof viewedItems === 'undefined' ? 'undefined' : _typeof(viewedItems)) === 'object' ? true : false;
@@ -56,7 +56,7 @@ var viewedItems = {
 	 */
 	get: function get() {
 		try {
-			let ls_viewedItems = localStorage.getItem('viewedItems');
+			var ls_viewedItems = localStorage.getItem('viewedItems');
 			if (!ls_viewedItems) return [];
 			return JSON.parse(ls_viewedItems)[this.id];
 		} catch (e) {
@@ -71,7 +71,7 @@ var viewedItems = {
 	 */
 	_set: function _set(items) {
 		try {
-			let ls_viewedItems = localStorage.getItem('viewedItems');
+			var ls_viewedItems = localStorage.getItem('viewedItems');
 			if (!ls_viewedItems) return [];
 			var _viewedItems2 = JSON.parse(ls_viewedItems);
 			_viewedItems2[this.id] = items;
