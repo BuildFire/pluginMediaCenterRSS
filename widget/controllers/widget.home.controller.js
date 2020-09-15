@@ -373,6 +373,24 @@
                 };
 
                 /**
+                 * @name WidgetHome.getFullTitle() method
+                 * Will used to extract item title
+                 * @param item
+                 * @returns {item.title|*}
+                 */
+                WidgetHome.getFullTitle = function (item) {
+                    if (item) {
+                        if (!item.title && (item.summary || item.description)) {
+                            var html = item.summary ? item.summary : item.description;
+                            item.title=html;
+                            return html;
+                        } else {
+                            return item.title;
+                        }
+                    }
+                };
+
+                /**
                  * @name WidgetHome.getItemSummary() method
                  * Will used to extract item summary
                  * @param item

@@ -6,7 +6,11 @@
   "scripts": {
     "postinstall": "./node_modules/.bin/bower install",
     "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS",
-    "build": "gulp build && cd .. && rm -rf pluginMediaCenterRSS.zip && zip -r pluginMediaCenterRSS_release.zip pluginMediaCenterRSS_release/ && rm -rf pluginMediaCenterRSS_release/"
+    "build": "gulp build && cd .. && rm -rf pluginMediaCenterRSS.zip && zip -r pluginMediaCenterRSS_release.zip pluginMediaCenterRSS_release/ && rm -rf pluginMediaCenterRSS_release/",
+    "preinstall": "npx npm-force-resolutions"
+  },
+  "resolutions": {
+    "graceful-fs": "^4.2.4"
   },
   "author": "",
   "license": "ISC",
