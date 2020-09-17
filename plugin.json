@@ -20,6 +20,6 @@
 ,"widget":{
 
 },
-  "features": [{"name":"BackgroundAudio"}],
+  "features": [{"name":"BackgroundAudio"}, {"name" : "sharing"}],
   "languages" : ["en"]
 }
