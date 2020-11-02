@@ -58,7 +58,12 @@
                  * @type {object}
                  */
                 WidgetMedia.item = ItemDetailsService.getData();
-
+                setTimeout(() => {
+                    var elems = document.getElementsByClassName("wp-caption");
+                    for (var i = 0; i < elems.length; i++) {
+                        elems[i].removeAttribute("style");
+                    }
+                }, 0);
                 /*
                  * WidgetMedia.data is used to hold user's data object which used throughout the app.
                  * @type {object}
@@ -576,7 +581,7 @@
                 /**
                  * Implementation of pull down to refresh
                  */
-                var onRefresh = Buildfire.datastore.onRefresh(function () {});
+                var onRefresh = Buildfire.datastore.onRefresh(function () { });
 
 
 
