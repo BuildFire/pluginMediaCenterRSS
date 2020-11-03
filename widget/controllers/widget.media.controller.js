@@ -58,12 +58,10 @@
                  * @type {object}
                  */
                 WidgetMedia.item = ItemDetailsService.getData();
-                setTimeout(() => {
-                    var elems = document.getElementsByClassName("wp-caption");
-                    for (var i = 0; i < elems.length; i++) {
-                        elems[i].removeAttribute("style");
-                    }
-                }, 0);
+                var regex = /(style=".+?")/gm;
+                
+                WidgetMedia.item.description = WidgetMedia.item.description.replace(regex, '');
+
                 /*
                  * WidgetMedia.data is used to hold user's data object which used throughout the app.
                  * @type {object}
