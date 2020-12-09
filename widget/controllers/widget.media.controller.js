@@ -58,6 +58,9 @@
                  * @type {object}
                  */
                 WidgetMedia.item = ItemDetailsService.getData();
+                var regex = /(style=".+?")/gm;
+                
+                WidgetMedia.item.description = WidgetMedia.item.description.replace(regex, '');
 
                 /*
                  * WidgetMedia.data is used to hold user's data object which used throughout the app.
@@ -576,7 +579,7 @@
                 /**
                  * Implementation of pull down to refresh
                  */
-                var onRefresh = Buildfire.datastore.onRefresh(function () {});
+                var onRefresh = Buildfire.datastore.onRefresh(function () { });
 
 
 
