@@ -165,8 +165,8 @@
 						if (val.url == track.url) audioPlayer.removeFromPlaylist(index);
 						return index;
 					});
-					buildfire.components.toast.showToastMessage({text: "Removed from playlist"}, console.log);
 				}
+				buildfire.components.toast.showToastMessage({text: "Removed from playlist"}, console.log);
 			};
 			NowPlaying.removeTrackFromPlayList = function (index) {
 				audioPlayer.removeFromPlaylist(index);
