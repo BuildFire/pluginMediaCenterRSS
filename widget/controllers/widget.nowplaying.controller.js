@@ -154,7 +154,10 @@
 				audioPlayer.settings.set(NowPlaying.settings);
 			};
 			NowPlaying.addToPlaylist = function (track) {
-				if (track) audioPlayer.addToPlaylist(track);
+				if (track) {
+					audioPlayer.addToPlaylist(track);
+					buildfire.components.toast.showToastMessage({text: "Added to playlist"}, console.log);
+				}
 			};
 			NowPlaying.removeFromPlaylist = function (track) {
 				if (NowPlaying.playList) {
@@ -163,9 +166,11 @@
 						return index;
 					});
 				}
+				buildfire.components.toast.showToastMessage({text: "Removed from playlist"}, console.log);
 			};
 			NowPlaying.removeTrackFromPlayList = function (index) {
 				audioPlayer.removeFromPlaylist(index);
+				buildfire.components.toast.showToastMessage({text: "Removed from playlist"}, console.log);
 			};
 			NowPlaying.getFromPlaylist = function () {
 				audioPlayer.getPlaylist(function (err, data) {
