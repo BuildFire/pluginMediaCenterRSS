@@ -97,7 +97,7 @@
                     "content": {
                         "carouselImages": [],
                         "description": "",
-                        "rssUrl": "http://blog.ted.com/feed"
+                        "rssUrl": "https://blog.ted.com/feed"
                     },
                     "design": {
                         "itemListLayout": 'List_Layout_1',
@@ -140,6 +140,7 @@
                  * @private
                  */
                 var resetDefaults = function () {
+                    console.log("!!!!!!!!!!!!");
                     chunkData = null;
                     nextChunkDataIndex = 0;
                     nextChunk = null;
@@ -148,7 +149,9 @@
                     WidgetHome.items = [];
                     WidgetHome.busy = false;
                     WidgetHome.isItems = true;
-                    ItemDetailsService.setData(null);
+                    if(!$rootScope.preventResetDefaults) {
+                        ItemDetailsService.setData(null);
+                    }
                 };
 
                 /**
@@ -217,6 +220,7 @@
                         });
                         _items = result.data.items;
                         WidgetHome.isItems = true;
+                        $scope.hideandshow = true;
                     } else {
                         WidgetHome.isItems = false;
                     }
@@ -428,6 +432,27 @@
                  * @param index
                  */
                 WidgetHome.goToItem = function (index, item) {
+                    if(WidgetHome.data.readRequiresLogin) {
+                        $rootScope.preventResetDefaults = true;
+                        buildfire.auth.getCurrentUser(function (err, user) {
+                            if (err) return console.error(err);
+                            if (user) {
+                                WidgetHome.proceedToItem(index, item);
+                            } else {
+                                buildfire.auth.login({ allowCancel: true }, function(err, user) {
+                                    if (err) return console.error(err);
+                                    if (user) {
+                                        $rootScope.showFeed = false;
+                                        WidgetHome.proceedToItem(index, item);
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        WidgetHome.proceedToItem(index, item);
+                    }
+                };
+                WidgetHome.proceedToItem = function (index, item) {
                     setTimeout(function () {
                         viewedItems.markViewed($scope, item.guid);
                     }, 500);

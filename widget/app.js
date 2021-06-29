@@ -11,7 +11,6 @@
             "com.2fdevs.videogular.plugins.controls",
             "com.2fdevs.videogular.plugins.overlayplay",
             "videosharing-embed",
-            "ngAnimate",
             "media_RSSModals",
             "ngTouch"
         ])

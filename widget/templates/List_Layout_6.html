@@ -12,10 +12,10 @@
                 ng-click="WidgetHome.goToItem($index, item)" style="cursor: pointer" class="list-item" ng-class="{'viewed' : item.viewed }">
                 <div class="plugin-banner clearfix border-bottom-grey" ng-if="WidgetHome.data.design.showImages == 'Yes'">
                     <div class="plugin-slide text-center" ng-if="item.imageSrcUrl">
-                        <img load-image="16x9" crop-width="{{ deviceWidth }}" crop-height="{{ deviceWidth * (9 / 16) }}" ng-style="{'min-height': deviceWidth * (9 / 16) }" crop-type="crop" data-final-src="{{item.imageSrcUrl}}">
+                        <img load-image="1x1" crop-width="{{ deviceWidth }}" crop-height="{{ deviceHeight * 0.85 }}" ng-style="{'min-height': deviceHeight * 0.85 }" crop-type="crop" data-final-src="{{item.imageSrcUrl}}">
                     </div>
                     <div class="plugin-slide text-center" ng-if="!item.imageSrcUrl">
-                        <img src='../../../styles/media/holder-16x9.png'>
+                        <img src='../../../styles/media/holder-1x1.png'>
                     </div>
                 </div>
                 <div class="list-item-copy padded text-left ">

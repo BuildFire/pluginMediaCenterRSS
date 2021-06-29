@@ -29,8 +29,8 @@ const widgetCssFiles = [
 
 const cssTasks = [
     {name: "widgetCSS", src: widgetCssFiles, dest: "/widget/styles"}
-    , {name: "controlContentCSS", src: "control/content/**/*.css", dest: "/control/content"}
-    , {name: "controlDesignCSS", src: "control/design/**/*.css", dest: "/control/design"}
+    , {name: "controlContentCSS", src: "control/content/**/*.css", dest: "/control/content/styles"}
+    , {name: "controlDesignCSS", src: "control/design/**/*.css", dest: "/control/design/styles"}
     , {name: "controlSettingsCSS", src: "control/settings/**/*.css", dest: "/control/settings"}
 ];
 

@@ -21,7 +21,7 @@
             "content": {
               "carouselImages": [],
               "description": "",
-              "rssUrl": "http://blog.ted.com/feed"
+              "rssUrl": "https://blog.ted.com/feed"
             },
             "design": {
               "itemListLayout": LAYOUTS.itemListLayouts[0].name,
@@ -33,18 +33,6 @@
           , tmrDelay = null;
 
         DesignHome.FEED_IMAGES = FEED_IMAGES;
-
-        /*
-         * DesignHome.isSaved is used to show/hide Success alert message when data saved successfully. Its default value is false.
-         * @type {boolean}
-         */
-        DesignHome.isSaved = false;
-
-        /*
-         * DesignHome.isNotSaved is used to show/hide Error alert message when data not saved. Its default value is false.
-         * @type {boolean}
-         */
-        DesignHome.isNotSaved = false;
 
         /*
          * DesignHome.layouts is used to list out available item list layouts or item details layouts
@@ -75,18 +63,10 @@
           }
           var success = function (result) {
               console.info('Saved data result: ', result);
-              DesignHome.isSaved = true;
-              $timeout(function () {
-                DesignHome.isSaved = false;
-              }, 1000);
               updateMasterItem(newObj);
             }
             , error = function (err) {
               console.error('Error while saving data : ', err);
-              DesignHome.isNotSaved = true;
-              $timeout(function () {
-                DesignHome.isNotSaved = false;
-              }, 1000);
             };
           DataStore.save(newObj, tag).then(success, error);
         };
