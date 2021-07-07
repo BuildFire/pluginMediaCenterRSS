@@ -140,7 +140,6 @@
                  * @private
                  */
                 var resetDefaults = function () {
-                    console.log("!!!!!!!!!!!!");
                     chunkData = null;
                     nextChunkDataIndex = 0;
                     nextChunk = null;
@@ -432,8 +431,8 @@
                  * @param index
                  */
                 WidgetHome.goToItem = function (index, item) {
+                    $rootScope.preventResetDefaults = true;
                     if(WidgetHome.data.readRequiresLogin) {
-                        $rootScope.preventResetDefaults = true;
                         buildfire.auth.getCurrentUser(function (err, user) {
                             if (err) return console.error(err);
                             if (user) {

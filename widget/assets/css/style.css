@@ -1596,12 +1596,12 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	position: absolute; 
 	bottom: 0; 
 	width: 100vw; 
-	height: 5rem;  
+	height: calc(5rem + env(safe-area-inset-bottom)/3);  
 	background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
 }
 .hideAndShow {
 	animation-name: show;
-	animation-duration: 0.5s;
+	animation-duration: 0.3s;
 	animation-fill-mode: forwards;
 }
 @keyframes show {
@@ -1613,4 +1613,7 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 		opacity: 1;
 		transform: scale(1);
 	}
+}
+#fullscreenImageDiv {
+	position: relative;
 }

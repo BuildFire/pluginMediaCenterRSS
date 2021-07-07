@@ -317,7 +317,7 @@
                         WidgetMedia.scrollableContainer = document.querySelectorAll('.slide')[1];
                         WidgetMedia.scrollHandler = function() {       
                             if ((window.innerHeight - WidgetMedia.scrollableContainer.scrollTop) >= 0 ) {
-                                document.getElementById('newImage').style.opacity = (window.innerHeight - WidgetMedia.scrollableContainer.scrollTop) / window.innerHeight;
+                                document.getElementById('fullscreenImageDiv').style.opacity = (window.innerHeight - WidgetMedia.scrollableContainer.scrollTop) / window.innerHeight;
                             }
                         };
                         WidgetMedia.scrollableContainer.addEventListener('scroll', WidgetMedia.scrollHandler);
@@ -335,7 +335,6 @@
                         if (WidgetMedia.data && WidgetMedia.data.design) {
                             $rootScope.backgroundImage = WidgetMedia.data.design.itemListBgImage;
                             $rootScope.backgroundImageItem = WidgetMedia.data.design.itemDetailsBgImage;
-                            $rootScope.data.design.itemListLayout = event.data.design.itemListLayout;
                             initScrollHandler();
                         }
                         console.log('$rootScope.backgroundImage', $rootScope.backgroundImage);
