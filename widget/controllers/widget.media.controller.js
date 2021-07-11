@@ -313,7 +313,7 @@
                     if (WidgetMedia.scrollHandler &&  WidgetMedia.scrollableContainer) {
                         WidgetMedia.scrollableContainer.removeEventListener('scroll', WidgetMedia.scrollHandler);
                     }
-                    if (WidgetMedia.data.design.itemDetailsLayout === 'Feed_Layout_3') {
+                    if (WidgetMedia.data && WidgetMedia.data.design && WidgetMedia.data.design.itemDetailsLayout === 'Feed_Layout_3') {
                         WidgetMedia.scrollableContainer = document.querySelectorAll('.slide')[1];
                         WidgetMedia.scrollHandler = function() {       
                             if ((window.innerHeight - WidgetMedia.scrollableContainer.scrollTop) >= 0 ) {
@@ -363,6 +363,9 @@
                     currentRssUrl = $rootScope.data.currentRssUrl;
                     $rootScope.showFeed = false;
                     initScrollHandler();
+                    if (WidgetMedia.data && WidgetMedia.data.design && WidgetMedia.data.design.itemDetailsLayout === 'Feed_Layout_3') {
+                        buildfire.spinner.show();
+                    }
                 };
 
                 /**

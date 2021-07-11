@@ -121,6 +121,10 @@
               if (newObj.default == true) {
                 delete newObj.default;
 
+                if (newObj.content.rssUrl == _defaultData.content.rssUrl) {
+                  newObj.content.rssUrl = '';
+                  ContentHome.rssFeedUrl = '';
+                }
 
               }
               console.log('0>>>>>', newObj, ContentHome.masterData);
