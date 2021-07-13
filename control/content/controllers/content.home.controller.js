@@ -21,7 +21,7 @@
             "content": {
               "carouselImages": [],
               "description": "",
-              "rssUrl": "http://blog.ted.com/feed"
+              "rssUrl": "https://blog.ted.com/feed"
             },
             "design": {
               "itemListLayout": LAYOUTS.itemListLayouts[0].name,
@@ -48,18 +48,6 @@
          * @type {boolean}
          */
         ContentHome.isInValidUrl = false;
-
-        /* /!*
-         * ContentHome.isSaved is used to show/hide Success alert message when data saved successfully. Its default value is false.
-         * @type {boolean}
-         *!/
-         ContentHome.isSaved = false;*/
-
-        /*
-         * ContentHome.isNotSaved is used to show/hide Error alert message when data not saved. Its default value is false.
-         * @type {boolean}
-         */
-        ContentHome.isNotSaved = false;
 
         /*
          * ContentHome.isValidateButtonClicked is used to disable validate button when clicked to validate RSS feed url and enabled when response has received. Its default value is false.
@@ -108,18 +96,10 @@
           }
           var success = function (result) {
               console.info('Saved data result: ', result);
-              /*  ContentHome.isSaved = true;
-               $timeout(function () {
-               ContentHome.isSaved = false;
-               }, 1000);*/
               updateMasterItem(newObj);
             }
             , error = function (err) {
               console.error('Error while saving data : ', err);
-              ContentHome.isNotSaved = true;
-              $timeout(function () {
-                ContentHome.isNotSaved = false;
-              }, 1000);
             };
           DataStore.save(newObj, tag).then(success, error);
         };

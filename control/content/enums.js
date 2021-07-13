@@ -40,11 +40,14 @@
         {name: "List_Layout_1"},
         {name: "List_Layout_2"},
         {name: "List_Layout_3"},
-        {name: "List_Layout_4"}
+        {name: "List_Layout_4"},
+        {name: "List_Layout_5"},
+        {name: "List_Layout_6"},
       ],
       itemDetailsLayouts: [
         {name: "Feed_Layout_1"},
-        {name: "Feed_Layout_2"}
+        {name: "Feed_Layout_2"},
+        {name: "Feed_Layout_3"}
       ]
     });
 })(window.angular);

@@ -1,5 +1,14 @@
 <div class="holder padding-zero customBackground" ng-class="{'hideAndShow': hideandshow}">
   <div class="media-center-plugin layout1-detail">
+    <div  id="fullscreenImageDiv" ng-if="WidgetMedia.item.imageSrcUrl">
+      <div id="articleTitle">
+        <h3>{{ WidgetMedia.item.title }}</h3>
+      </div>
+      <img ng-if="WidgetMedia.item.imageSrcUrl" load-image="" crop-width="{{ deviceWidth }}" crop-height="{{ deviceHeight }}" crop-type="crop" data-final-src="{{ WidgetMedia.item.imageSrcUrl }}">
+      <div id="downArrow">
+        <div class="down-arrow"></div>
+      </div>
+    </div>
     <div ng-switch="WidgetMedia.medium" class="media-center-banner clearfix">
       <div ng-switch-when="VIDEO" class="videogular-container" ng-style="{'min-height': (9 * deviceWidth / 16) + 'px' }">
         <videogular ng-if="WidgetMedia.isVideoPlayerSupported" vg-player-ready="WidgetMedia.onPlayerReady($API)"
@@ -41,8 +50,8 @@
         </div>
       </div>
     </div>
-    <div class="text-left padded padding-bottom-zero clearfix ">
-      <h4 class="main-title margin-top-zero" style="font-size: 16px;" ng-bind-html="WidgetMedia.getTitle(WidgetMedia.item)"></h4>
+    <div class="text-left padded padding-bottom-zero clearfix">
+      <h4 ng-if="!WidgetMedia.item.imageSrcUrl" class="main-title margin-top-zero" style="font-size: 16px;" ng-bind-html="WidgetMedia.getTitle(WidgetMedia.item)"></h4>
 
       <p class="item-author" ng-if="WidgetMedia.item.author">By : {{WidgetMedia.item.author}}</p>
       <p class="item-date" ng-if="WidgetMedia.getItemPublishDate(WidgetMedia.item)">{{WidgetMedia.getItemPublishDate(WidgetMedia.item)}}</p>
@@ -60,7 +69,7 @@
         </a>
       </div>
       <div class="li-actions">
-        <i class="share glyphicon glyphicon glyphicon-edit"  ng-click="WidgetMedia.addNote()" ng-click="" role="button"></i>
+        <i class="share glyphicon glyphicon-edit"  ng-click="WidgetMedia.addNote()" role="button"></i>
         <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetMedia.share()" role="button"></i>
         <i class="glyphicon icon bookmark" style="font-family: 'Glyphicons Halflings' !important;" ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }"
           ng-click="WidgetMedia.bookmark($event)" role="button"></i>

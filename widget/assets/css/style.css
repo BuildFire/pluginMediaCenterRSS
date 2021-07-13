@@ -1561,3 +1561,61 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 .layout1-detail .audio-player-holder img{
 	max-height: 400px;
 }
+.down-arrow {
+    width: 2rem;
+    height: 2rem;
+    position: absolute;
+	right: 0;
+    left: 0;
+	margin: auto;
+    border-left: .375rem solid #fff;
+    border-top: .375rem solid #fff;
+    border-bottom: .375rem solid transparent;
+    border-right: .375rem solid transparent;
+    transform: rotate(225deg);
+    animation: bounce 1s infinite linear;
+}
+@keyframes bounce {
+    0%{margin-top:1.5rem}
+    50%{margin-top:1rem}
+    100%{margin-top:1.5rem}
+}
+#articleTitle {
+	text-align: center;
+    position: absolute;
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+	width: 100vw;
+	padding-bottom: 40px;
+}
+#articleTitle h3 {
+	color: white !important;
+	line-height: 1.5;
+	padding: 0 16px;
+}
+#downArrow {
+	position: absolute; 
+	bottom: 0; 
+	width: 100vw; 
+	height: calc(5rem + env(safe-area-inset-bottom)/3);  
+	background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+}
+.hideAndShow {
+	animation-name: show;
+	animation-duration: 0.3s;
+	animation-fill-mode: forwards;
+}
+@keyframes show {
+	0% {
+		opacity: 0;
+		transform: scale(0.1);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+#fullscreenImageDiv {
+	position: relative;
+	height: 100vh;
+	overflow: hidden;
+}

@@ -16,6 +16,9 @@
 
                 buildfire.auth.onLogout(function () {
                     bookmarks.sync($scope);
+                    if (WidgetMedia.data.readRequiresLogin) {
+                        Location.goToHome();
+                    }
                 });
                 /*
                  * Private variables
@@ -37,7 +40,7 @@
                     "content": {
                         "carouselImages": [],
                         "description": "",
-                        "rssUrl": "http://blog.ted.com/feed"
+                        "rssUrl": "https://blog.ted.com/feed"
                     },
                     "design": {
                         "itemListLayout": 'List_Layout_1',
@@ -61,6 +64,8 @@
                 var regex = /(style=".+?")/gm;
                 
                 WidgetMedia.item.description = WidgetMedia.item.description.replace(regex, '');
+                
+                $rootScope.preventResetDefaults = false;
 
                 /*
                  * WidgetMedia.data is used to hold user's data object which used throughout the app.
@@ -304,6 +309,21 @@
                     }
                 };
 
+                var initScrollHandler = function () {
+                    if (WidgetMedia.scrollHandler &&  WidgetMedia.scrollableContainer) {
+                        WidgetMedia.scrollableContainer.removeEventListener('scroll', WidgetMedia.scrollHandler);
+                    }
+                    if (WidgetMedia.data && WidgetMedia.data.design && WidgetMedia.data.design.itemDetailsLayout === 'Feed_Layout_3') {
+                        WidgetMedia.scrollableContainer = document.querySelectorAll('.slide')[1];
+                        WidgetMedia.scrollHandler = function() {       
+                            if ((window.innerHeight - WidgetMedia.scrollableContainer.scrollTop) >= 0 ) {
+                                document.getElementById('fullscreenImageDiv').style.opacity = (window.innerHeight - WidgetMedia.scrollableContainer.scrollTop) / window.innerHeight;
+                            }
+                        };
+                        WidgetMedia.scrollableContainer.addEventListener('scroll', WidgetMedia.scrollHandler);
+                    }
+                }
+
                 /**
                  * onUpdateCallback() private method
                  * Will be called when DataStore.onUpdate() have been made.
@@ -312,18 +332,23 @@
                 var onUpdateCallback = function (event) {
                     if (event && event.tag === TAG_NAMES.RSS_FEED_INFO) {
                         WidgetMedia.data = event.data;
-                        if (WidgetMedia.data.design) {
+                        if (WidgetMedia.data && WidgetMedia.data.design) {
                             $rootScope.backgroundImage = WidgetMedia.data.design.itemListBgImage;
                             $rootScope.backgroundImageItem = WidgetMedia.data.design.itemDetailsBgImage;
+                            initScrollHandler();
                         }
                         console.log('$rootScope.backgroundImage', $rootScope.backgroundImage);
                         console.log('$rootScope.backgroundImageItem', $rootScope.backgroundImageItem);
                         if (WidgetMedia.data.content && (!WidgetMedia.data.content.rssUrl || WidgetMedia.data.content.rssUrl !== currentRssUrl)) {
-                            resetDefaults();
-                            currentRssUrl = WidgetMedia.data.content.rssUrl;
-                            $rootScope.showFeed = true;
-                            Buildfire.history.pop();
-                            Location.goTo('#/');
+                            if ($rootScope.data.design.itemDetailsLayout == WidgetMedia.data.design.itemDetailsLayout) {
+                                resetDefaults();
+                                currentRssUrl = WidgetMedia.data.content.rssUrl;
+                                $rootScope.showFeed = true;
+                                Buildfire.history.pop();
+                                Location.goTo('#/');
+                            } else {
+                                $rootScope.data.design.itemDetailsLayout = WidgetMedia.data.design.itemDetailsLayout;
+                            }
                         }
                     }
                 };
@@ -334,8 +359,13 @@
                  */
                 var init = function () {
                     WidgetMedia.data = $rootScope.data;
+                    $scope.hideandshow = true;
                     currentRssUrl = $rootScope.data.currentRssUrl;
                     $rootScope.showFeed = false;
+                    initScrollHandler();
+                    if (WidgetMedia.data && WidgetMedia.data.design && WidgetMedia.data.design.itemDetailsLayout === 'Feed_Layout_3') {
+                        buildfire.spinner.show();
+                    }
                 };
 
                 /**
@@ -593,6 +623,9 @@
                         Buildfire.history.pop();
                         Location.goToHome();
                     });
+                    if (WidgetMedia.scrollHandler &&  WidgetMedia.scrollableContainer) {
+                        WidgetMedia.scrollableContainer.removeEventListener('scroll', WidgetMedia.scrollHandler);
+                    }
                     //WidgetMedia.pause();
                     //ItemDetailsService.setData(null);
                     if (WidgetMedia.data && WidgetMedia.data.design)

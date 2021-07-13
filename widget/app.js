@@ -11,7 +11,6 @@
             "com.2fdevs.videogular.plugins.controls",
             "com.2fdevs.videogular.plugins.overlayplay",
             "videosharing-embed",
-            "ngAnimate",
             "media_RSSModals",
             "ngTouch"
         ])
@@ -113,7 +112,11 @@
             return {
                 restrict: 'A',
                 link: function (scope, element, attrs) {
-                    element.attr("src", "../../../styles/media/holder-" + attrs.loadImage + ".gif");
+                    if(attrs.loadImage) {
+                        element.attr("src", "../../../styles/media/holder-" + attrs.loadImage + ".gif");
+                    } else {
+                        element.attr("src", "");
+                    }
 
                     attrs.$observe('finalSrc', function () {
                         var _img = attrs.finalSrc;
@@ -140,6 +143,7 @@
                     function replaceImg(finalSrc) {
                         var elem = $("<img>");
                         elem[0].onload = function () {
+                            buildfire.spinner.hide();
                             element.attr("src", finalSrc);
                             elem.remove();
                         };

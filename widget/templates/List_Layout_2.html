@@ -1,4 +1,4 @@
-<div class="holder padding-zero customBackground">
+<div class="holder padding-zero customBackground" ng-class="{'hideAndShow': hideandshow}">
     <div class="media-center-plugin layout2">
         <div class="media-center-banner clearfix">
             <div id="carousel" ng-if="WidgetHome.data.content.carouselImages.length" build-fire-carousel="" ng-style="WidgetHome.data.content.carouselImages.length > 0 ? {'min-height': (9 * deviceWidth / 16) + 'px' } : {}"></div>
