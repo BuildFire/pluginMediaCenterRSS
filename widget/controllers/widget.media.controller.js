@@ -63,7 +63,7 @@
                 WidgetMedia.item = ItemDetailsService.getData();
                 var regex = /(style=".+?")/gm;
                 
-                WidgetMedia.item.description = WidgetMedia.item.description.replace(regex, '');
+                WidgetMedia.item.description = (WidgetMedia && WidgetMedia.item && WidgetMedia.item.description) ? WidgetMedia.item.description.replace(regex, '') : "";
                 
                 $rootScope.preventResetDefaults = false;
 
