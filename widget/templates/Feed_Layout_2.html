@@ -47,24 +47,28 @@
 			</div>
 		</div>
 		<div class="item-actions">
-			<div class="link-list">
-        <a class="media-action" ng-click="WidgetMedia.playAudio()" ng-if="WidgetMedia.medium == 'AUDIO'">
-          <i class="btn btn-success share glyphicon glyphicon-volume-up"></i>
-        </a>
-        <a class="media-action video" ng-click="WidgetMedia.API.play()" ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">
-          <i class="btn btn-success share glyphicon glyphicon-play"></i>
-        </a>
-        <a ng-if="WidgetMedia.item.link" ng-click="WidgetMedia.openLink(WidgetMedia.item.link)" target="_blank">
-          <i class="share glyphicon glyphicon-screenshot"></i>
-        </a>
-      </div>
 			<div class="li-actions">
-				<i class="share glyphicon glyphicon-edit"  ng-click="WidgetMedia.addNote()" role="button"></i>
-				<i class="share glyphicon glyphicon-share-alt" ng-click="WidgetMedia.share()" role="button"></i>
-				<i class="glyphicon icon bookmark" style="font-family: 'Glyphicons Halflings' !important;" ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }"
-				 ng-click="WidgetMedia.bookmark($event)" role="button"></i>
+			  <i ng-if="WidgetMedia.item.link" ng-click="WidgetMedia.openLink(WidgetMedia.item.link)" target="_blank" class="material-icons" aria-hidden="true" id="startIcon"
+				  style="font-size: 20px !important; letter-spacing: normal;">insert_link</i>
+			  <i class="share material-icons" ng-click="WidgetMedia.addNote()" ng-click=""
+				role="button" style="font-size: 20px !important;">border_color</i>
+			  <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetMedia.share()" role="button"></i>
+			  <i class="glyphicon icon bookmark" style="font-family: 'Glyphicons Halflings' !important;"
+				ng-class="{ 'glyphicon-star-empty' : !WidgetMedia.item.bookmarked, 'glyphicon-star' : WidgetMedia.item.bookmarked }"
+				ng-click="WidgetMedia.bookmark($event)" role="button"></i>
 			</div>
-		</div>
+			<div class="link-list">
+			  <a class="media-action" ng-click="WidgetMedia.playAudio()" ng-if="WidgetMedia.medium == 'AUDIO'">
+				<i class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
+				  style="font-size: 2em !important;">play_arrow</i>
+			  </a>
+			  <a class="media-action video" ng-click="WidgetMedia.API.play()"
+				ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">
+				<i class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
+				  style="font-size: 2em !important; letter-spacing: normal;">play_arrow</i>
+			  </a>
+			</div>
+		  </div>
 		<div class="padded">
 			<p ng-bind-html="WidgetMedia.item.description|removeHtmlStyle:WidgetMedia.imageUrl|safeHtml"></p>
 		</div>

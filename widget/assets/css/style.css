@@ -475,6 +475,11 @@ videogular vg-controls, [videogular] vg-controls
 }
 
 /* Link Items */
+
+.link-list {
+	padding-right: 1em;
+}
+
 .link-list a {
 	color: inherit;
 	text-decoration: none;
@@ -496,8 +501,8 @@ videogular vg-controls, [videogular] vg-controls
 }
 
 .link-list a.media-action i {
-	width: 70px;
-	height: 40px;
+	width: 44px;
+	height: 44px;
 	font-size: 22px;
 	padding: 0;
 	display: flex;
@@ -1619,3 +1624,10 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	height: 100vh;
 	overflow: hidden;
 }
+
+.material-icons {
+    font-size: 5em !important;
+    font-family: 'Material Icons' !important;
+    -webkit-font-feature-settings: 'liga' !important;
+    display: none;
+  }
