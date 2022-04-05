@@ -203,8 +203,11 @@
                  */
                 var checkMediaTag = function (_item) {
                     if (_item['media:group'] && _item['media:group']['media:content']) {
-                        if (_item['media:group']['media:content']['@'] && _item['media:group']['media:content']['@'].type && _item['media:group']['media:content']['@'].url) {
-                            if (_item['media:group']['media:content']['@'].type.indexOf('video/') === 0) {
+                        if (_item['media:group']['media:content']['@'] && _item['media:group']['media:content']['@'].type && _item['media:group']['media:content']['@'].url) {                            
+                            if (_item['media:group']['media:content']['@'].type.indexOf('video/') === 0
+                            || (_item['media:group']['media:content']['@'].type.indexOf("application/x-shockwave-flash") === 0
+                            && _item['media:group']['media:content']['@'].url.indexOf('youtube') > 0)) {
+                                
                                 WidgetMedia.medium = MEDIUM_TYPES.VIDEO;
                             } else if (_item['media:group']['media:content']['@'].type.indexOf('audio/') === 0) {
                                 WidgetMedia.medium = MEDIUM_TYPES.AUDIO;
