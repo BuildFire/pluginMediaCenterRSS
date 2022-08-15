@@ -84,7 +84,7 @@
                  *  */
                 var view = null,
                     _items = [],
-                    limit = 15,
+                    limit = 50,
                     chunkData = null,
                     nextChunkDataIndex = 0,
                     nextChunk = null,
