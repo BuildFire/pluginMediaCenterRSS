@@ -1502,9 +1502,6 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 .layout3 .list-item-date{
 	font-size: .8em;
 }
-.layout3 .plugin-slide img, .layout3 .plugin-slide{
-	width: 100% !important;
-}
 /* Layout 4 */
 .layout4 .list-item-container{
 	padding: 0 8px;
@@ -1631,3 +1628,16 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
     -webkit-font-feature-settings: 'liga' !important;
     display: none;
   }
+
+  .plugin-slider .plugin-slide,
+.plugin-slider.owl-carousel .owl-stage-outer,
+.plugin-slider.owl-carousel .owl-stage,
+.plugin-slider.owl-carousel .owl-item{
+	min-height: inherit !important;
+}
+.plugin-slider .plugin-slide img{
+    
+	height: 100% !important;
+	object-fit: cover !important;
+	min-height: inherit !important;
+}
