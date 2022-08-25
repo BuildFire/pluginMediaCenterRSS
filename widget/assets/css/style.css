@@ -1628,16 +1628,3 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
     -webkit-font-feature-settings: 'liga' !important;
     display: none;
   }
-
-  .plugin-slider .plugin-slide,
-.plugin-slider.owl-carousel .owl-stage-outer,
-.plugin-slider.owl-carousel .owl-stage,
-.plugin-slider.owl-carousel .owl-item{
-	min-height: inherit !important;
-}
-.plugin-slider .plugin-slide img{
-    
-	height: 100% !important;
-	object-fit: cover !important;
-	min-height: inherit !important;
-}
