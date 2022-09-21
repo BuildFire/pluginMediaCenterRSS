@@ -478,20 +478,7 @@
                 WidgetHome.share = function ($event, item) {
                     $event.stopImmediatePropagation();
 
-                    var options = {
-                        subject: item.title,
-                        text: item.title + ", by " + item.author,
-                        // image: item.image.url,
-                        link: item.link
-                    };
-
-                    var callback = function (err) {
-                        if (err) {
-                            console.warn(err);
-                        }
-                    };
-
-                    buildfire.device.share(options, callback);
+                    ItemDetailsService.share(item);
                 };
 
                 var initAuthUpdate = function () {

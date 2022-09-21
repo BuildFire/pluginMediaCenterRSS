@@ -122,10 +122,37 @@
         _setData = function (newData) {
           //You could also set specific attribute of the form data instead
           itemData = newData;
+        },
+        _share = function (item) {
+          console.log(item)
+          let link = {};
+          link.title = item.title;
+          link.description = item.title + ", by " + item.author;
+          link.imageUrl = item.image && item.image.url ? item.image.url : null;
+          
+          link.data = {
+            link: item.guid,
+          };
+          
+          buildfire.deeplink.generateUrl(link, (err, result) => {
+            if (err) {
+              console.error(err);
+            } else {
+              console.log(result.url);
+              var options = {
+                subject: link.title,
+                text: link.description,
+                image: link.imageUrl,
+                link: result.url
+              };
+              buildfire.device.share(options, console.log);
+            }
+          });
         };
       return {
         getData: _getData,
-        setData: _setData
+        setData: _setData,
+        share: _share
       };
     });
 })(window.angular, window.buildfire, window._);
