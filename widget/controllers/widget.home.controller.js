@@ -231,7 +231,6 @@
                     bookmarks.sync($scope);
                     handleBookmarkNav();
 
-                    Buildfire.spinner.hide();
                     isInit = false;
 
                     function checkFeedEquality(currentItems, fetchedItems) {
@@ -507,9 +506,6 @@
                         nextChunkDataIndex = nextChunkDataIndex + 1;
                         nextChunk = null;
                         WidgetHome.busy = false;
-                        if (!isInit) Buildfire.spinner.hide();
-                    } else {
-                        if (!isInit) Buildfire.spinner.hide();
                     }
                     bookmarks.sync($scope);
                     viewedItems.sync($scope.WidgetHome.items);
