@@ -27,13 +27,13 @@
                  * @type {string}
                  * @private
                  *
-                 * audioPlayer is an instance of Buildfire.services.media.audioPlayer component
+                 * audioPlayer is an instance of buildfire.services.media.audioPlayer component
                  *  @private
                  *
                  */
                 var WidgetMedia = this,
                     currentRssUrl = null,
-                    audioPlayer = Buildfire.services.media.audioPlayer;
+                    audioPlayer = buildfire.services.media.audioPlayer;
                 WidgetMedia.loadingVideo = false;
 
                 var _data = {
@@ -347,7 +347,7 @@
                                 resetDefaults();
                                 currentRssUrl = WidgetMedia.data.content.rssUrl;
                                 $rootScope.showFeed = true;
-                                Buildfire.history.pop();
+                                buildfire.history.pop();
                                 Location.goTo('#/');
                             } else {
                                 $rootScope.data.design.itemDetailsLayout = WidgetMedia.data.design.itemDetailsLayout;
@@ -536,7 +536,7 @@
                 };
 
                 WidgetMedia.openLink = function (link) {
-                    Buildfire.navigation.openWindow(link, '_system');
+                    buildfire.navigation.openWindow(link, '_system');
                 };
 
                 WidgetMedia.videoLoaded = function () {
@@ -612,7 +612,7 @@
                 /**
                  * Implementation of pull down to refresh
                  */
-                var onRefresh = Buildfire.datastore.onRefresh(function () { });
+                var onRefresh = buildfire.datastore.onRefresh(function () { });
 
 
 
@@ -622,8 +622,8 @@
                 $scope.$on("$destroy", function () {
                     DataStore.clearListener();
                     onRefresh.clear();
-                    Buildfire.datastore.onRefresh(function () {
-                        Buildfire.history.pop();
+                    buildfire.datastore.onRefresh(function () {
+                        buildfire.history.pop();
                         Location.goToHome();
                     });
                     if (WidgetMedia.scrollHandler &&  WidgetMedia.scrollableContainer) {
