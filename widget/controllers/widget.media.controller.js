@@ -10,11 +10,11 @@
                 $rootScope.deviceHeight = window.innerHeight;
                 $rootScope.deviceWidth = window.innerWidth;
 
-                buildfire.auth.onLogin(function () {
+                Buildfire.auth.onLogin(function () {
                     bookmarks.sync($scope);
                 });
 
-                buildfire.auth.onLogout(function () {
+                Buildfire.auth.onLogout(function () {
                     bookmarks.sync($scope);
                     if (WidgetMedia.data.readRequiresLogin) {
                         Location.goToHome();
@@ -27,13 +27,13 @@
                  * @type {string}
                  * @private
                  *
-                 * audioPlayer is an instance of buildfire.services.media.audioPlayer component
+                 * audioPlayer is an instance of Buildfire.services.media.audioPlayer component
                  *  @private
                  *
                  */
                 var WidgetMedia = this,
                     currentRssUrl = null,
-                    audioPlayer = buildfire.services.media.audioPlayer;
+                    audioPlayer = Buildfire.services.media.audioPlayer;
                 WidgetMedia.loadingVideo = false;
 
                 var _data = {
@@ -347,7 +347,7 @@
                                 resetDefaults();
                                 currentRssUrl = WidgetMedia.data.content.rssUrl;
                                 $rootScope.showFeed = true;
-                                buildfire.history.pop();
+                                Buildfire.history.pop();
                                 Location.goTo('#/');
                             } else {
                                 $rootScope.data.design.itemDetailsLayout = WidgetMedia.data.design.itemDetailsLayout;
@@ -367,7 +367,7 @@
                     $rootScope.showFeed = false;
                     initScrollHandler();
                     if (WidgetMedia.data && WidgetMedia.data.design && WidgetMedia.data.design.itemDetailsLayout === 'Feed_Layout_3') {
-                        buildfire.spinner.show();
+                        Buildfire.spinner.show();
                     }
                 };
 
@@ -479,7 +479,7 @@
                  * will be called when you click play button
                  */
                 WidgetMedia.playAudio = function () {
-                    buildfire.history.push('Now Playing', {});
+                    Buildfire.history.push('Now Playing', {});
                     Location.goTo('#/nowplaying');
 
                     /* WidgetMedia.audio.playing = true;
@@ -536,7 +536,7 @@
                 };
 
                 WidgetMedia.openLink = function (link) {
-                    buildfire.navigation.openWindow(link, '_system');
+                    Buildfire.navigation.openWindow(link, '_system');
                 };
 
                 WidgetMedia.videoLoaded = function () {
@@ -568,7 +568,7 @@
                         }
                     };
 
-                    buildfire.device.share(options, callback);
+                    Buildfire.device.share(options, callback);
                 };
 
                 WidgetMedia.addNote = function () {
@@ -584,11 +584,11 @@
                         if (err) throw err;
                         console.log(data);
                     };
-                    // buildfire.input.showTextDialog(options, callback);
-                    buildfire.notes.openDialog(options, callback);
+                    // Buildfire.input.showTextDialog(options, callback);
+                    Buildfire.notes.openDialog(options, callback);
                 };
 
-                buildfire.notes && buildfire.notes.onSeekTo && buildfire.notes.onSeekTo(function (data) {
+                Buildfire.notes && Buildfire.notes.onSeekTo && Buildfire.notes.onSeekTo(function (data) {
                     WidgetMedia.item.seekTo = data.time;
                     if (WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.AUDIO) {
                         WidgetMedia.playAudio();
@@ -612,7 +612,7 @@
                 /**
                  * Implementation of pull down to refresh
                  */
-                var onRefresh = buildfire.datastore.onRefresh(function () { });
+                var onRefresh = Buildfire.datastore.onRefresh(function () { });
 
 
 
@@ -622,8 +622,8 @@
                 $scope.$on("$destroy", function () {
                     DataStore.clearListener();
                     onRefresh.clear();
-                    buildfire.datastore.onRefresh(function () {
-                        buildfire.history.pop();
+                    Buildfire.datastore.onRefresh(function () {
+                        Buildfire.history.pop();
                         Location.goToHome();
                     });
                     if (WidgetMedia.scrollHandler &&  WidgetMedia.scrollableContainer) {
