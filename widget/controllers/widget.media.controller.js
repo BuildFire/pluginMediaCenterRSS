@@ -10,11 +10,11 @@
                 $rootScope.deviceHeight = window.innerHeight;
                 $rootScope.deviceWidth = window.innerWidth;
 
-                buildfire.auth.onLogin(function () {
+                Buildfire.auth.onLogin(function () {
                     bookmarks.sync($scope);
                 });
 
-                buildfire.auth.onLogout(function () {
+                Buildfire.auth.onLogout(function () {
                     bookmarks.sync($scope);
                     if (WidgetMedia.data.readRequiresLogin) {
                         Location.goToHome();
@@ -367,7 +367,7 @@
                     $rootScope.showFeed = false;
                     initScrollHandler();
                     if (WidgetMedia.data && WidgetMedia.data.design && WidgetMedia.data.design.itemDetailsLayout === 'Feed_Layout_3') {
-                        buildfire.spinner.show();
+                        Buildfire.spinner.show();
                     }
                 };
 
@@ -479,7 +479,7 @@
                  * will be called when you click play button
                  */
                 WidgetMedia.playAudio = function () {
-                    buildfire.history.push('Now Playing', {});
+                    Buildfire.history.push('Now Playing', {});
                     Location.goTo('#/nowplaying');
 
                     /* WidgetMedia.audio.playing = true;
@@ -568,7 +568,7 @@
                         }
                     };
 
-                    buildfire.device.share(options, callback);
+                    Buildfire.device.share(options, callback);
                 };
 
                 WidgetMedia.addNote = function () {
@@ -584,11 +584,11 @@
                         if (err) throw err;
                         console.log(data);
                     };
-                    // buildfire.input.showTextDialog(options, callback);
-                    buildfire.notes.openDialog(options, callback);
+                    // Buildfire.input.showTextDialog(options, callback);
+                    Buildfire.notes.openDialog(options, callback);
                 };
 
-                buildfire.notes && buildfire.notes.onSeekTo && buildfire.notes.onSeekTo(function (data) {
+                Buildfire.notes && Buildfire.notes.onSeekTo && Buildfire.notes.onSeekTo(function (data) {
                     WidgetMedia.item.seekTo = data.time;
                     if (WidgetMedia.item && WidgetMedia.item.seekTo && WidgetMedia.medium === MEDIUM_TYPES.AUDIO) {
                         WidgetMedia.playAudio();

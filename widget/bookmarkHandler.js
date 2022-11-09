@@ -58,6 +58,7 @@ var bookmarks = {
         buildfire.bookmarks ? buildfire.bookmarks.getAll(cb) : cb(null, []);
     },
     sync: function sync($scope) {
+        buildfire.spinner.show();
         this._getAll(function (bookmarks) {
             console.log(bookmarks);
 

@@ -143,7 +143,6 @@
                     function replaceImg(finalSrc) {
                         var elem = $("<img>");
                         elem[0].onload = function () {
-                            buildfire.spinner.hide();
                             element.attr("src", finalSrc);
                             elem.remove();
                         };
