@@ -2,7 +2,7 @@
   "name": "pluginPluginMediaCenterRSS",
   "version": "0.0.1",
   "description": "",
-  "supportSite": "http://learn.appdocumentation.com/plugin-tutorials/media-center-rss-feed-plugin-tutorial",
+  "supportSite": "https://learn.appdocumentation.com/en/articles/805555-media-center-rss-feed-feature-tutorial",
   "scripts": {
     "postinstall": "./node_modules/.bin/bower install",
     "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS",
