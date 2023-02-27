@@ -144,7 +144,11 @@
     })
     .filter('secondsToDateTime', [function () {
       return function (seconds) {
-        return new Date(1970, 0, 1).setSeconds(seconds);
+			let duration= new Date(seconds * 1000).toISOString().slice(11, 19);
+			if(duration.substring(0,3) == '00:'){
+				return duration.substring(3);
+			}
+			return duration;
       };
     }]);
 })(window.angular, window.buildfire, window.location, jQuery);
