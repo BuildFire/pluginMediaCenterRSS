@@ -144,11 +144,18 @@
     })
     .filter('secondsToDateTime', [function () {
       return function (seconds) {
-			let duration= new Date(seconds * 1000).toISOString().slice(11, 19);
-			if(duration.substring(0,3) == '00:'){
-				return duration.substring(3);
-			}
-			return duration;
+		var hours = Math.floor(seconds / 3600);
+		seconds %= 3600;
+		var minutes = Math.floor(seconds / 60);
+		var second = Math.floor(seconds % 60);
+		// strings with leading zeroes:
+		minutes = String(minutes).padStart(2, "0");
+		hours = String(hours).padStart(2, "0");
+		second = String(second).padStart(2, "0");
+		if(hours == '00'){
+			return( minutes + ":" + second);
+		}
+		return(hours + ":" + minutes + ":" + second);
       };
     }]);
 })(window.angular, window.buildfire, window.location, jQuery);
