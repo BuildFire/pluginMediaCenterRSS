@@ -55,7 +55,8 @@
 							first = false;
 						}
 						NowPlaying.currentTime = e.data.currentTime;
-						NowPlaying.duration = Math.floor(e.data.duration);
+						NowPlaying.duration = e.data.duration;
+						NowPlaying.maxRange = Math.floor(e.data.duration);
 						break;
 					case 'audioEnded':
 						NowPlaying.playing = false;
