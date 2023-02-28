@@ -200,7 +200,7 @@
                 };
                 var getFeedDataSuccess = function (result) {
                     // compare the first item, last item, and length of the cached feed vs fetched feed
-
+					Buildfire.spinner.hide();
                     var isUnchanged = checkFeedEquality(_items, result.data.items);
                     console.warn(isUnchanged);
                     

@@ -66,6 +66,7 @@ var bookmarks = {
             bookmarks.forEach(function (bookmark) {
                 bookmarkIds.push(bookmark.id);
             });
+			buildfire.spinner.hide();
 
             if ($scope.WidgetHome) {
                 $scope.WidgetHome.items.map(function (item) {

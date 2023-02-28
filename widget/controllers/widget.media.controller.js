@@ -463,7 +463,7 @@
                 audioPlayer.onEvent(function (e) {
                     if (e.event == "timeUpdate") {
                         WidgetMedia.audio.currentTime = e.data.currentTime;
-                        WidgetMedia.audio.duration = e.data.duration;
+                        WidgetMedia.audio.duration = Math.floor(e.data.duration);
                         $scope.$apply();
                     } else if (e.event == "audioEnded") {
                         WidgetMedia.audio.playing = false;

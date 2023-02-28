@@ -55,7 +55,7 @@
 							first = false;
 						}
 						NowPlaying.currentTime = e.data.currentTime;
-						NowPlaying.duration = e.data.duration;
+						NowPlaying.duration = Math.floor(e.data.duration);
 						break;
 					case 'audioEnded':
 						NowPlaying.playing = false;
