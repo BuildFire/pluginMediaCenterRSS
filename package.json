@@ -31,6 +31,7 @@
     "gulp-minify-inline": "^1.1.0",
     "gulp-sequence": "^1.0.0",
     "gulp-strip-comments": "^2.5.2",
+    "gulp-terser": "^2.1.0",
     "gulp-uglify": "^3.0.1",
     "gulp-util": "^3.0.8",
     "jasmine-core": "^2.3.4",

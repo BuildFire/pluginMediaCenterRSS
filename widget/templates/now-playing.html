@@ -41,18 +41,18 @@
                 <!--<div ng-if="NowPlaying.currentTime">{{NowPlaying.currentTime | secondsToDateTime |date: 'mm:ss'}}</div>-->
                 <div class="audio-plyer"><input type="range"
                                                  min="0.0"
-                                                 max="{{NowPlaying.duration}}"
+                                                 max="{{NowPlaying.maxRange}}"
                                                  ng-model="NowPlaying.currentTime"
                                                  ng-change="NowPlaying.changeTime(NowPlaying.currentTime)"/>
                 </div>
                 <div ng-if="NowPlaying.currentTime!=0" class="time-indicator" style="float:left">
-                    <span>{{NowPlaying.currentTime | secondsToDateTime |date: 'mm:ss'}}</span>
+                    <span>{{NowPlaying.currentTime | secondsToDateTime}}</span>
                 </div>
                 <div ng-if="NowPlaying.currentTime==0" class="time-indicator" style="float: left;">
                     <span>{{"--:--"}}</span>
                 </div>
                 <div ng-if="NowPlaying.duration" class="time-indicator" style="float: right;">
-                    <span>{{(NowPlaying.duration | secondsToDateTime | date: 'mm:ss')}}</span>
+                    <span>{{(NowPlaying.duration | secondsToDateTime)}}</span>
                 </div>
                 <div ng-if="!NowPlaying.duration" class="time-indicator" style="float: right;">
                     <span>{{"--:--"}}</span>

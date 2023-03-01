@@ -144,7 +144,18 @@
     })
     .filter('secondsToDateTime', [function () {
       return function (seconds) {
-        return new Date(1970, 0, 1).setSeconds(seconds);
+		var hours = Math.floor(seconds / 3600);
+		seconds %= 3600;
+		var minutes = Math.floor(seconds / 60);
+		var second = Math.floor(seconds % 60);
+		// strings with leading zeroes:
+		minutes = String(minutes).padStart(2, "0");
+		hours = String(hours).padStart(2, "0");
+		second = String(second).padStart(2, "0");
+		if(hours == '00'){
+			return( minutes + ":" + second);
+		}
+		return(hours + ":" + minutes + ":" + second);
       };
     }]);
 })(window.angular, window.buildfire, window.location, jQuery);

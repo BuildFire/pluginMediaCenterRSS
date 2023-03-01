@@ -5,7 +5,7 @@ const minifyCSS = require('gulp-csso');
 const concat = require('gulp-concat');
 const strip = require('gulp-strip-comments');
 const htmlReplace = require('gulp-html-replace');
-const uglify = require('gulp-uglify');
+const uglifyTerser  = require('gulp-terser');
 const eslint = require('gulp-eslint');
 const gulpSequence = require('gulp-sequence');
 const minifyInline = require('gulp-minify-inline');
@@ -130,7 +130,7 @@ jsTasks.forEach(function (task) {
 
 
         /// obfuscate and minify the JS files
-            .pipe(uglify())
+            .pipe(uglifyTerser())
             .on('error', function (err) {
                 gutil.log(gutil.colors.red('[Error]'), err.toString());
             })
