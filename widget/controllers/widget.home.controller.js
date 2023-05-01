@@ -164,7 +164,7 @@
                         length = 0,
                         imageUrl = '';
                     if (item.image && item.image.url) {
-                        return item.image.url;
+												imageUrl = item.image.url;
                     } else if (item.enclosures && item.enclosures.length > 0) {
                         length = item.enclosures.length;
                         for (i = 0; i < length; i++) {
@@ -173,8 +173,11 @@
                                 break;
                             }
                         }
-                        return imageUrl;
-                    } else {
+                    } 
+										if(imageUrl){
+											return imageUrl;
+										}
+										else {
                         if (item['media:thumbnail'] && item['media:thumbnail']['@'] && item['media:thumbnail']['@'].url) {
                             return item['media:thumbnail']['@'].url;
                         } else if (item['media:group'] && item['media:group']['media:content'] && item['media:group']['media:content']['media:thumbnail'] && item['media:group']['media:content']['media:thumbnail']['@'] && item['media:group']['media:content']['media:thumbnail']['@'].url) {
