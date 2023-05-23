@@ -1,30 +1,84 @@
 <div class="holder padding-zero customBackground" ng-class="{'hideAndShow': hideandshow}">
 	<div class="media-center-plugin list-layout layout4">
-    <!------------ CAROUSEL ------------>
+		<!------------ CAROUSEL ------------>
 		<div class="media-center-banner clearfix">
-			<div id="carousel" ng-if="WidgetHome.data.content.carouselImages.length" build-fire-carousel="" ng-style="WidgetHome.data.content.carouselImages.length > 0 ? {'min-height': (9 * deviceWidth / 16) + 'px' } : {}"></div>
+			<div id="carousel" ng-if="WidgetHome.data.content.carouselImages.length" build-fire-carousel=""
+				ng-style="WidgetHome.data.content.carouselImages.length > 0 ? {'min-height': (9 * deviceWidth / 16) + 'px' } : {}">
+			</div>
 		</div>
-    <!-------------- TEXT -------------->
+		<!-------------- TEXT -------------->
 		<div class="text-left padded padding-bottom-zero clearfix">
 			<p ng-if="WidgetHome.showDescription(WidgetHome.data.content.description)" style="word-break: break-word"
-			 ng-bind-html="WidgetHome.data.content.description | safeHtml"></p>
+				ng-bind-html="WidgetHome.data.content.description | safeHtml"></p>
 		</div>
-    <!------------ CONTAINER ----------->    
+		<!------------ TABS ----------->
+		<div class="mdc-tab-bar" role="tablist" ng-if="WidgetHome.data.content.feeds.length > 1"
+			ng-init="WidgetHome.initializeTabs()">
+			<div class="mdc-tab-scroller">
+				<div class="mdc-tab-scroller__scroll-area">
+					<div class="mdc-tab-scroller__scroll-content">
+						<button class="mdc-tab" role="tab" aria-selected="true" tabindex="0"
+							ng-repeat="tab in WidgetHome.data.content.feeds">
+							<span class="mdc-tab__content">
+								<span class="mdc-tab__text-label">
+									<span class="tab-title">{{tab.title}}</span>
+									<span class="content-available" ng-if="WidgetHome.checkIfFeedChanged(tab.id)">
+										&#8226;
+									</span>
+								</span>
+							</span>
+							<span class="mdc-tab-indicator">
+								<span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+							</span>
+							<span class="mdc-tab__ripple"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!------------ SKELETON ----------->
+		<div ng-if="WidgetHome.loading">
+			<div class="skeleton-row row">
+				<div class="bf-skeleton-loader grid-block"></div>
+				<div class="bf-skeleton-loader grid-block"></div>
+			</div>
+			<div class="skeleton-row row">
+				<div class="bf-skeleton-loader grid-block"></div>
+				<div class="bf-skeleton-loader grid-block"></div>
+			</div>
+			<div class="skeleton-row row">
+				<div class="bf-skeleton-loader grid-block"></div>
+				<div class="bf-skeleton-loader grid-block"></div>
+			</div>
+		</div>
+		<!------------ CONTAINER ----------->
 		<div class="padded padding-zero">
-			<div class="list-layout" ng-if="WidgetHome.data" infinite-scroll="WidgetHome.loadMore()" infinite-scroll-distance="1" infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
-		
-				<!--------- LIST ITEM REPEAT ------->    
-				<div ng-show="WidgetHome.isItems" ng-click="WidgetHome.goToItem($index, item)" class="list-item col-xs-6 col-md-4 pull-left" ng-class="{'viewed' : item.viewed }" ng-repeat="item in WidgetHome.items" ng-class-even="list-item-even" ng-class-odd="list-item-odd" trigger-ng-repeat-render="">
-					<div class="list-item-media text-center overflow-hidden" ng-if="WidgetHome.data.design.showImages == 'Yes'">
+			<div class="list-layout" ng-if="WidgetHome.data && !WidgetHome.loading" infinite-scroll="WidgetHome.loadMore()"
+				infinite-scroll-distance="1" infinite-scroll-disabled="WidgetHome.busy"
+				data-infinite-container=".infinite-scroll-parent">
+
+				<!--------- LIST ITEM REPEAT ------->
+				<div ng-show="WidgetHome.isItems" ng-click="WidgetHome.goToItem($index, item)"
+					class="list-item col-xs-6 col-md-4 pull-left" ng-class="{'viewed' : item.viewed }"
+					ng-repeat="item in WidgetHome.items" ng-class-even="list-item-even" ng-class-odd="list-item-odd"
+					trigger-ng-repeat-render="">
+					<div class="list-item-media text-center overflow-hidden"
+						ng-if="WidgetHome.data.design.showImages == 'Yes'">
 						<div class="list-media-holder" style="cursor: pointer">
 							<div class="li-actions">
-								<i class="share glyphicon glyphicon-share-alt" ng-click="WidgetHome.share($event, item)" role="button"></i>
-								<i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }"
-								 ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
+								<i class="share glyphicon glyphicon-share-alt" ng-click="WidgetHome.share($event, item)"
+									role="button"></i>
+								<i class="bookmark"
+									ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }"
+									ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
 							</div>
-							<img ng-if="item.imageSrcUrl" ng-style="{ 'height': (deviceWidth / 2) -30 }" load-image="1x1" crop-width="{{ (deviceWidth / 2) - 30 }}" crop-height="{{ (deviceWidth / 2) - 30 }}" crop-type="crop"
-							 data-final-src="{{ item.imageSrcUrl }}" ng-style="{'min-height': (deviceWidth / 2) - 30}"/>
-							<img ng-if="!item.imageSrcUrl" ng-style="{ 'height': (deviceWidth / 2) -30 }" src="../../../styles/media/holder-1x1.png" />
+							<img ng-if="item.imageSrcUrl" ng-style="{ 'height': (deviceWidth / 2) -30 }"
+								load-image="1x1" crop-width="{{ (deviceWidth / 2) - 30 }}"
+								crop-height="{{ (deviceWidth / 2) - 30 }}" crop-type="crop"
+								data-final-src="{{ item.imageSrcUrl }}"
+								ng-style="{'min-height': (deviceWidth / 2) - 30}" />
+							<img ng-if="!item.imageSrcUrl" ng-style="{ 'height': (deviceWidth / 2) -30 }"
+								src="../../../styles/media/holder-1x1.png" />
 						</div>
 					</div>
 					<div class="list-item-copy text-left" style="cursor: pointer">

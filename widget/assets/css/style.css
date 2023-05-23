@@ -1627,4 +1627,69 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
     font-family: 'Material Icons' !important;
     -webkit-font-feature-settings: 'liga' !important;
     display: none;
-  }
+}
+.mdc-tab-bar {
+	margin-bottom: 20px;
+}
+
+.bf-skeleton-loader.skeleton-avatar {
+	border-radius: 0 !important;
+}
+
+.mdc-tab--active .mdc-tab__text-label {
+	color: black !important;
+}
+
+.mdc-tab__text-label {
+	white-space: nowrap;
+	font-size: 14px !important;
+	display: flex !important;
+	align-items: center;
+	gap: 10px;
+}
+
+.mdc-tab__text-label>span.tab-title {
+	max-width: 150px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.mdc-tab__text-label>.content-available {
+	font-size: 25px;
+	font-weight: bold;
+	color: var(--bf-theme-primary)
+}
+
+.mdc-tab-indicator__content.mdc-tab-indicator__content--underline {
+	border-color: var(--bf-theme-primary) !important;
+}
+
+.mdc-tab__ripple::before,
+.mdc-tab__ripple::after {
+	background-color: unset !important;
+}
+
+.skeleton-row {
+	display: flex;
+	justify-content: space-between;
+	margin: 20px 0;
+}
+
+.skeleton-sentences {
+	padding: 20px;
+}
+
+.grid-block {
+	height: 130px;
+	width: 140px;
+}
+
+.medium-grid-block {
+	height: 200px;
+	width: 140px;
+}
+
+.large-grid-block {
+	height: 300px;
+	width: 100%;
+}

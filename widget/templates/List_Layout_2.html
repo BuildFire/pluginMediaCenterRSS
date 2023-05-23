@@ -1,21 +1,92 @@
 <div class="holder padding-zero customBackground" ng-class="{'hideAndShow': hideandshow}">
     <div class="media-center-plugin layout2">
         <div class="media-center-banner clearfix">
-            <div id="carousel" ng-if="WidgetHome.data.content.carouselImages.length" build-fire-carousel="" ng-style="WidgetHome.data.content.carouselImages.length > 0 ? {'min-height': (9 * deviceWidth / 16) + 'px' } : {}"></div>
+            <div id="carousel" ng-if="WidgetHome.data.content.carouselImages.length" build-fire-carousel=""
+                ng-style="WidgetHome.data.content.carouselImages.length > 0 ? {'min-height': (9 * deviceWidth / 16) + 'px' } : {}">
+            </div>
         </div>
-        <div ng-if="WidgetHome.showDescription(WidgetHome.data.content.description)" class="text-left padded padding-bottom-zero clearfix">
+        <div ng-if="WidgetHome.showDescription(WidgetHome.data.content.description)"
+            class="text-left padded padding-bottom-zero clearfix">
             <p style="word-break: break-word" ng-bind-html='WidgetHome.data.content.description | safeHtml'></p>
         </div>
         <div>
-            <div class="list-layout" ng-if="WidgetHome.data" infinite-scroll="WidgetHome.loadMore()"
-                infinite-scroll-distance="1" infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
-                <div ng-show="WidgetHome.isItems" class="list-item" ng-class="{'viewed' : item.viewed }" ng-repeat="item in  WidgetHome.items" trigger-ng-repeat-render="" ng-click="WidgetHome.goToItem($index, item)" style="cursor: pointer">
-
-                    <div ng-if="item.imageSrcUrl && WidgetHome.data.design.showImages == 'Yes'" class="list-media-holder">
-                        <div class="li-actions">
-                            <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetHome.share($event, item)" role="button"></i>
+            <!------------ TABS ----------->
+            <div class="mdc-tab-bar" role="tablist" ng-if="WidgetHome.data.content.feeds.length > 1"
+                ng-init="WidgetHome.initializeTabs()">
+                <div class="mdc-tab-scroller">
+                    <div class="mdc-tab-scroller__scroll-area">
+                        <div class="mdc-tab-scroller__scroll-content">
+                            <button class="mdc-tab" role="tab" aria-selected="true" tabindex="0"
+                                ng-repeat="tab in WidgetHome.data.content.feeds">
+                                <span class="mdc-tab__content">
+                                    <span class="mdc-tab__text-label">
+                                        <span class="tab-title">{{tab.title}}</span>
+                                        <span class="content-available" ng-if="WidgetHome.checkIfFeedChanged(tab.id)">
+                                            &#8226;
+                                        </span>
+                                    </span>
+                                </span>
+                                <span class="mdc-tab-indicator">
+                                    <span
+                                        class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                                </span>
+                                <span class="mdc-tab__ripple"></span>
+                            </button>
                         </div>
-                        <img load-image="16x9" crop-width="220" crop-height="120" crop-type="crop" data-final-src="{{item.imageSrcUrl}}">
+                    </div>
+                </div>
+            </div>
+            <!------------ SKELETON ----------->
+            <div ng-if="WidgetHome.loading">
+                <div class="bf-skeleton-container">
+                    <div class="skeleton-list-item-avatar-two-line"><span
+                            class="bf-skeleton-loader skeleton-avatar"></span>
+                        <div class="skeleton-sentences"><span class="bf-skeleton-loader skeleton-text"></span><span
+                                class="bf-skeleton-loader skeleton-text"></span></div>
+                    </div>
+                    <div class="skeleton-list-item-avatar-two-line"><span
+                            class="bf-skeleton-loader skeleton-avatar"></span>
+                        <div class="skeleton-sentences"><span class="bf-skeleton-loader skeleton-text"></span><span
+                                class="bf-skeleton-loader skeleton-text"></span></div>
+                    </div>
+                    <div class="skeleton-list-item-avatar-two-line"><span
+                            class="bf-skeleton-loader skeleton-avatar"></span>
+                        <div class="skeleton-sentences"><span class="bf-skeleton-loader skeleton-text"></span><span
+                                class="bf-skeleton-loader skeleton-text"></span></div>
+                    </div>
+                    <div class="skeleton-list-item-avatar-two-line"><span
+                            class="bf-skeleton-loader skeleton-avatar"></span>
+                        <div class="skeleton-sentences"><span class="bf-skeleton-loader skeleton-text"></span><span
+                                class="bf-skeleton-loader skeleton-text"></span></div>
+                    </div>
+                    <div class="skeleton-list-item-avatar-two-line"><span
+                            class="bf-skeleton-loader skeleton-avatar"></span>
+                        <div class="skeleton-sentences"><span class="bf-skeleton-loader skeleton-text"></span><span
+                                class="bf-skeleton-loader skeleton-text"></span></div>
+                    </div>
+                    <div class="skeleton-list-item-avatar-two-line"><span
+                            class="bf-skeleton-loader skeleton-avatar"></span>
+                        <div class="skeleton-sentences"><span class="bf-skeleton-loader skeleton-text"></span><span
+                                class="bf-skeleton-loader skeleton-text"></span></div>
+                    </div>
+                </div>
+            </div>
+            <!------------ CONTAINER ----------->
+            <div class="list-layout" ng-if="WidgetHome.data && !WidgetHome.loading"
+                infinite-scroll="WidgetHome.loadMore()" infinite-scroll-distance="1"
+                infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
+                <div ng-show="WidgetHome.isItems" class="list-item" ng-class="{'viewed' : item.viewed }"
+                    ng-repeat="item in  WidgetHome.items" trigger-ng-repeat-render=""
+                    ng-click="WidgetHome.goToItem($index, item)" style="cursor: pointer">
+
+                    <div ng-if="item.imageSrcUrl && WidgetHome.data.design.showImages == 'Yes'"
+                        class="list-media-holder">
+                        <div class="li-actions">
+                            <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetHome.share($event, item)"
+                                role="button"></i>
+                        </div>
+                        <img load-image="16x9" crop-width="220" crop-height="120" crop-type="crop"
+                            data-final-src="{{item.imageSrcUrl}}">
                     </div>
 
                     <div class="ellipsis" style="flex: auto">
@@ -31,7 +102,9 @@
                             <span class="list-item-date">{{WidgetHome.getItemPublishDate(item)}}</span>
 
                             <div class="li-actions">
-                                <i class="glyphicon bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
+                                <i class="glyphicon bookmark"
+                                    ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }"
+                                    ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
                             </div>
 
                         </div>

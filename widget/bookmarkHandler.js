@@ -60,8 +60,6 @@ var bookmarks = {
     sync: function sync($scope) {
         buildfire.spinner.show();
         this._getAll(function (bookmarks) {
-            console.log(bookmarks);
-
             var bookmarkIds = [];
             bookmarks.forEach(function (bookmark) {
                 bookmarkIds.push(bookmark.id);

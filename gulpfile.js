@@ -31,7 +31,7 @@ const cssTasks = [
     {name: "widgetCSS", src: widgetCssFiles, dest: "/widget/styles"}
     , {name: "controlContentCSS", src: "control/content/**/*.css", dest: "/control/content/styles"}
     , {name: "controlDesignCSS", src: "control/design/**/*.css", dest: "/control/design/styles"}
-    , {name: "controlSettingsCSS", src: "control/settings/**/*.css", dest: "/control/settings"}
+    , {name: "controlSettingsCSS", src: "control/content/assets/css/base.css", dest: "/control/settings/styles"}
 ];
 
 cssTasks.forEach(function (task) {
@@ -72,7 +72,7 @@ const widgetJSFiles = [
     "widget/filters.js",
     "widget/viewedItems.js",
     "widget/bookmarkHandler.js",
-    "widget/cache.js",
+    "widget/cacheManager.js",
     "widget/controllers/widget.home.controller.js",
     "widget/controllers/widget.media.controller.js",
     "widget/controllers/widget.nowplaying.controller.js"

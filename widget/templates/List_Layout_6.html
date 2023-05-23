@@ -1,18 +1,65 @@
 <div class="holder padding-zero customBackground" ng-class="{'hideAndShow': hideandshow}">
     <div class="media-center-plugin layout3">
         <div class="plugin-banner clearfix">
-            <div id="carousel" ng-if="WidgetHome.data.content.carouselImages.length" build-fire-carousel="" ng-style="WidgetHome.data.content.carouselImages.length > 0 ? {'min-height': (9 * deviceWidth / 16) + 'px' } : {}"></div>
+            <div id="carousel" ng-if="WidgetHome.data.content.carouselImages.length" build-fire-carousel=""
+                ng-style="WidgetHome.data.content.carouselImages.length > 0 ? {'min-height': (9 * deviceWidth / 16) + 'px' } : {}">
+            </div>
         </div>
-        <div ng-if="WidgetHome.showDescription(WidgetHome.data.content.description)" class="text-left padded padding-bottom-zero clearfix">
+        <div ng-if="WidgetHome.showDescription(WidgetHome.data.content.description)"
+            class="text-left padded padding-bottom-zero clearfix">
             <p style="word-break: break-word" ng-bind-html='WidgetHome.data.content.description | safeHtml'></p>
         </div>
-        <div ng-if="WidgetHome.data" infinite-scroll="WidgetHome.loadMore()" infinite-scroll-distance="1"
+        <!------------ TABS ----------->
+        <div class="mdc-tab-bar" role="tablist" ng-if="WidgetHome.data.content.feeds.length > 1"
+            ng-init="WidgetHome.initializeTabs()">
+            <div class="mdc-tab-scroller">
+                <div class="mdc-tab-scroller__scroll-area">
+                    <div class="mdc-tab-scroller__scroll-content">
+                        <button class="mdc-tab" role="tab" aria-selected="true" tabindex="0"
+                            ng-repeat="tab in WidgetHome.data.content.feeds">
+                            <span class="mdc-tab__content">
+                                <span class="mdc-tab__text-label">
+                                    <span class="tab-title">{{tab.title}}</span>
+                                    <span class="content-available" ng-if="WidgetHome.checkIfFeedChanged(tab.id)">
+                                        &#8226;
+                                    </span>
+                                </span>
+                            </span>
+                            <span class="mdc-tab-indicator">
+                                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                            </span>
+                            <span class="mdc-tab__ripple"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!------------ SKELETON ----------->
+        <div ng-if="WidgetHome.loading">
+            <div ng-if="WidgetHome.loading">
+                <div class="skeleton-row row">
+                    <div class="bf-skeleton-loader large-grid-block"></div>
+                </div>
+                <div class="skeleton-row row">
+                    <div class="bf-skeleton-loader large-grid-block"></div>
+                </div>
+                <div class="skeleton-row row">
+                    <div class="bf-skeleton-loader large-grid-block"></div>
+                </div>
+            </div>
+        </div>
+        <!------------ CONTAINER ----------->
+        <div ng-if="WidgetHome.data && !WidgetHome.loading" infinite-scroll="WidgetHome.loadMore()" infinite-scroll-distance="1"
             infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
             <div ng-show="WidgetHome.isItems" ng-repeat="item in  WidgetHome.items" trigger-ng-repeat-render=""
-                ng-click="WidgetHome.goToItem($index, item)" style="cursor: pointer" class="list-item" ng-class="{'viewed' : item.viewed }">
-                <div class="plugin-banner clearfix border-bottom-grey" ng-if="WidgetHome.data.design.showImages == 'Yes'">
+                ng-click="WidgetHome.goToItem($index, item)" style="cursor: pointer" class="list-item"
+                ng-class="{'viewed' : item.viewed }">
+                <div class="plugin-banner clearfix border-bottom-grey"
+                    ng-if="WidgetHome.data.design.showImages == 'Yes'">
                     <div class="plugin-slide text-center" ng-if="item.imageSrcUrl">
-                        <img load-image="1x1" crop-width="{{ deviceWidth }}" crop-height="{{ deviceHeight * 0.85 }}" ng-style="{'min-height': deviceHeight * 0.85 }" crop-type="crop" data-final-src="{{item.imageSrcUrl}}">
+                        <img load-image="1x1" crop-width="{{ deviceWidth }}" crop-height="{{ deviceHeight * 0.85 }}"
+                            ng-style="{'min-height': deviceHeight * 0.85 }" crop-type="crop"
+                            data-final-src="{{item.imageSrcUrl}}">
                     </div>
                     <div class="plugin-slide text-center" ng-if="!item.imageSrcUrl">
                         <img src='../../../styles/media/holder-1x1.png'>
@@ -25,8 +72,10 @@
                     <div class="li-footer">
                         <span class="list-item-date">{{WidgetHome.getItemPublishDate(item)}}</span>
                         <div class="li-actions">
-                            <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetHome.share($event, item)" role="button"></i>
-                            <i class="glyphicon bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }"
+                            <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetHome.share($event, item)"
+                                role="button"></i>
+                            <i class="glyphicon bookmark"
+                                ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }"
                                 ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
                         </div>
                     </div>

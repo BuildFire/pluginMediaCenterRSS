@@ -3,27 +3,85 @@
   <div class="media-center-plugin layout1">
     <!------------ CAROUSEL ------------>
     <div class="media-center-banner clearfix">
-      <div id="carousel" ng-if="WidgetHome.data.content.carouselImages.length" build-fire-carousel="" ng-style="WidgetHome.data.content.carouselImages.length > 0 ? {'min-height': (9 * deviceWidth / 16) + 'px' } : {}"></div>
+      <div id="carousel" ng-if="WidgetHome.data.content.carouselImages.length" build-fire-carousel=""
+        ng-style="WidgetHome.data.content.carouselImages.length > 0 ? {'min-height': (9 * deviceWidth / 16) + 'px' } : {}">
+      </div>
     </div>
     <!-------------- TEXT -------------->
     <div class="text-left padded padding-bottom-zero clearfix">
-      <p style="word-break: break-word" ng-bind-html="WidgetHome.data.content.description | safeHtml" ng-if="WidgetHome.showDescription(WidgetHome.data.content.description)"></p>
+      <p style="word-break: break-word" ng-bind-html="WidgetHome.data.content.description | safeHtml"
+        ng-if="WidgetHome.showDescription(WidgetHome.data.content.description)"></p>
     </div>
-    <!------------ CONTAINER ----------->    
+    <!------------ TABS ----------->
+    <div class="mdc-tab-bar" role="tablist" ng-if="WidgetHome.data.content.feeds.length > 1"
+      ng-init="WidgetHome.initializeTabs()">
+      <div class="mdc-tab-scroller">
+        <div class="mdc-tab-scroller__scroll-area">
+          <div class="mdc-tab-scroller__scroll-content">
+            <button class="mdc-tab" role="tab" aria-selected="true" tabindex="0"
+              ng-repeat="tab in WidgetHome.data.content.feeds">
+              <span class="mdc-tab__content">
+                <span class="mdc-tab__text-label">
+                  <span class="tab-title">{{tab.title}}</span>
+                  <span class="content-available" ng-if="WidgetHome.checkIfFeedChanged(tab.id)">
+                    &#8226;
+                  </span>
+                </span>
+              </span>
+              <span class="mdc-tab-indicator">
+                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+              </span>
+              <span class="mdc-tab__ripple"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!------------ SKELETON ----------->
+    <div ng-if="WidgetHome.loading">
+      <div class="skeleton-row row">
+        <div class="bf-skeleton-loader grid-block"></div>
+        <div class="bf-skeleton-loader grid-block"></div>
+      </div>
+      <div class="skeleton-row row">
+        <div class="bf-skeleton-loader grid-block"></div>
+        <div class="bf-skeleton-loader grid-block"></div>
+      </div>
+      <div class="skeleton-row row">
+        <div class="bf-skeleton-loader grid-block"></div>
+        <div class="bf-skeleton-loader grid-block"></div>
+      </div>
+    </div>
+    <!------------ CONTAINER ----------->
     <div class="padded padding-top-zero">
-      <div class="list-layout row" ng-if="WidgetHome.data" infinite-scroll="WidgetHome.loadMore()" infinite-scroll-distance="1" infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
-        <!--------- LIST ITEM REPEAT -------> 
-        <div ng-show="WidgetHome.isItems" ng-click="WidgetHome.goToItem($index, item)" class="list-item col-xs-6 col-md-4 pull-left" ng-class="{'viewed' : item.viewed }" ng-repeat="item in WidgetHome.items" ng-class-even="list-item-even" ng-class-odd="list-item-odd" trigger-ng-repeat-render="">
-          <div class="list-item-media border-radius-three text-center overflow-hidden" ng-if="WidgetHome.data.design.showImages == 'Yes'">
+      <div class="list-layout row" ng-if="WidgetHome.data && !WidgetHome.loading"
+        infinite-scroll="WidgetHome.loadMore()" infinite-scroll-distance="1" infinite-scroll-disabled="WidgetHome.busy"
+        data-infinite-container=".infinite-scroll-parent">
+
+        <!--------- LIST ITEM REPEAT ------->
+        <div ng-show="WidgetHome.isItems" ng-click="WidgetHome.goToItem($index, item)"
+          class="list-item col-xs-6 col-md-4 pull-left " ng-class="{'viewed' : item.viewed }"
+          ng-repeat="item in WidgetHome.items" ng-class-even="list-item-even" ng-class-odd="list-item-odd"
+          trigger-ng-repeat-render="">
+          <div class="list-item-media border-radius-three text-center overflow-hidden"
+            ng-if="WidgetHome.data.design.showImages == 'Yes'">
             <div class="list-media-holder" style="cursor: pointer">
               <!-- ACTIONS -->
               <div class="li-actions">
-                <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetHome.share($event, item)" role="button"></i>
-                <i class="bookmark" ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }" ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
+                <i class="share glyphicon glyphicon-share-alt" ng-click="WidgetHome.share($event, item)"
+                  role="button"></i>
+                <i class="bookmark"
+                  ng-class="{ 'glyphicon-star-empty' : !item.bookmarked, 'glyphicon-star' : item.bookmarked }"
+                  ng-click="WidgetHome.bookmark($event, item)" role="button"></i>
               </div>
               <!-- IMAGE -->
-              <img ng-if="item.imageSrcUrl" ng-style="{ 'height': ((deviceWidth / 2) -30 ) * (9 / 16) }" load-image="16x9" crop-width="{{ (deviceWidth / 2) - 30 }}" crop-height="{{ ((deviceWidth / 2) -30 ) * (9 / 16) }}" crop-type="crop" data-final-src="{{ item.imageSrcUrl }}" ng-style="{ 'min-height': ((deviceWidth / 2) -30 ) * (9 / 16) }"/>
-              <img ng-if="!item.imageSrcUrl" ng-style="{ 'height': ((deviceWidth / 2) -30 ) * (9 / 16) }" src='../../../styles/media/holder-16x9.png' />
+              <img ng-if="item.imageSrcUrl" ng-style="{ 'height': ((deviceWidth / 2) -30 ) * (9 / 16) }"
+                load-image="16x9" crop-width="{{ (deviceWidth / 2) - 30 }}"
+                crop-height="{{ ((deviceWidth / 2) -30 ) * (9 / 16) }}" crop-type="crop"
+                data-final-src="{{ item.imageSrcUrl }}"
+                ng-style="{ 'min-height': ((deviceWidth / 2) -30 ) * (9 / 16) }" />
+              <img ng-if="!item.imageSrcUrl" ng-style="{ 'height': ((deviceWidth / 2) -30 ) * (9 / 16) }"
+                src='../../../styles/media/holder-16x9.png' />
             </div>
           </div>
           <!-- INFO -->
@@ -38,7 +96,7 @@
         <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>
         <label class="pull-left">RSS Feed doesn't have any items</label>.
       </div>
-    </div>    
+    </div>
     <!-- EMPTY STATE -->
     <div ng-hide="WidgetHome.isItems" class="items-info">
       <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>
