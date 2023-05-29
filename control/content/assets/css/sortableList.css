@@ -3,6 +3,11 @@
     flex-direction: column;
     gap: 0.5rem;
     margin-bottom: 20px;
+    min-height: 150px;
+}
+
+.dropdown-menu {
+    min-width: unset !important;
 }
 
 .sortable-list-item {

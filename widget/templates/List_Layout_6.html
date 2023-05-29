@@ -11,12 +11,12 @@
         </div>
         <!------------ TABS ----------->
         <div class="mdc-tab-bar" role="tablist" ng-if="WidgetHome.data.content.feeds.length > 1"
-            ng-init="WidgetHome.initializeTabs()">
+            ng-class="{'safe-area-fix': WidgetHome.isSafeArea()}" ng-init="WidgetHome.initializeTabs()">
             <div class="mdc-tab-scroller">
                 <div class="mdc-tab-scroller__scroll-area">
                     <div class="mdc-tab-scroller__scroll-content">
                         <button class="mdc-tab" role="tab" aria-selected="true" tabindex="0"
-                            ng-repeat="tab in WidgetHome.data.content.feeds">
+                            ng-repeat="tab in WidgetHome.data.content.feeds track by $index">
                             <span class="mdc-tab__content">
                                 <span class="mdc-tab__text-label">
                                     <span class="tab-title">{{tab.title}}</span>
@@ -25,7 +25,8 @@
                                     </span>
                                 </span>
                             </span>
-                            <span class="mdc-tab-indicator">
+                            <span class="mdc-tab-indicator"
+                                ng-class="{'mdc-tab-indicator--active': WidgetHome.activeTab == $index}">
                                 <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
                             </span>
                             <span class="mdc-tab__ripple"></span>
@@ -49,8 +50,9 @@
             </div>
         </div>
         <!------------ CONTAINER ----------->
-        <div ng-if="WidgetHome.data && !WidgetHome.loading" infinite-scroll="WidgetHome.loadMore()" infinite-scroll-distance="1"
-            infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
+        <div ng-if="WidgetHome.data && !WidgetHome.loading" infinite-scroll="WidgetHome.loadMore()"
+            infinite-scroll-distance="1" infinite-scroll-disabled="WidgetHome.busy"
+            data-infinite-container=".infinite-scroll-parent">
             <div ng-show="WidgetHome.isItems" ng-repeat="item in  WidgetHome.items" trigger-ng-repeat-render=""
                 ng-click="WidgetHome.goToItem($index, item)" style="cursor: pointer" class="list-item"
                 ng-class="{'viewed' : item.viewed }">

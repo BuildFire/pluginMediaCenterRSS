@@ -16,7 +16,7 @@
     display: block;
     width: 80%;
     left: 10%;
-    top: calc(100% - 50%);
+    top: 200px;
     box-shadow: grey 5px 5px 15px;
     outline: 9999px solid #ffffffaa;
     z-index: 999;

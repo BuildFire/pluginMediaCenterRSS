@@ -1693,3 +1693,11 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	height: 300px;
 	width: 100%;
 }
+
+.mdc-tab-indicator {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.safe-area-fix {
+	padding-top: 25px;
+}

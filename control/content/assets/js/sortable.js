@@ -45,6 +45,7 @@ buildfire.components.sortableList = class SortableList {
             appearance: {
                 title: null,
                 info: null,
+                addButtonText: "Add Item",
             },
             settings: {
                 showSearchBar: false,
@@ -170,8 +171,6 @@ buildfire.components.sortableList = class SortableList {
 
     onSortOptionChange() { }
 
-    onImageClick() { }
-
     //=======================================================================================
     initializeHeader() {
         if (this.options.appearance.title) {
@@ -238,7 +237,7 @@ buildfire.components.sortableList = class SortableList {
     initializeAddButton() {
         if (this.options.addButtonOptions.length) {
             let dropdown = this._createUIElement('div', 'dropdown dropdown-button-success', null, null),
-                btn = this._createUIElement('button', 'btn btn-success  btn-add sort-dropdown2', `<span class="pull-left">Add Item</span>
+                btn = this._createUIElement('button', 'btn btn-success  btn-add sort-dropdown2', `<span class="pull-left">${this.options.appearance.addButtonText}</span>
             <span class="chevron icon-chevron-down pull-right"></span>`, null),
                 list = this._createUIElement('ul', 'dropdown-menu extended', null, null);
             list.role = 'menu';
@@ -266,7 +265,7 @@ buildfire.components.sortableList = class SortableList {
             dropdown.appendChild(list);
             this.#state.actionsContainer.appendChild(dropdown);
         } else {
-            let button = this._createUIElement('button', 'btn btn-success btn-add sort-dropdown2', '<span>Add Item</span>', null);
+            let button = this._createUIElement('button', 'btn btn-success btn-add sort-dropdown2', `<span>${this.options.appearance.addButtonText}</span>`, null);
             this.#state.actionsContainer.appendChild(button);
 
             button.onclick = () => {
@@ -446,7 +445,6 @@ buildfire.components.sortableList = class SortableList {
 
         }
         let preferences = this.onItemRender({ item: item });
-        this.onItemRender({ item: item });
         if (preferences && preferences.columns)
             renderColumns(preferences.columns);
 
@@ -478,6 +476,7 @@ buildfire.components.sortableList = class SortableList {
         this.items = this.items.filter((el, ind) => ind !== index);
         let node = this.#state.itemsContainer.querySelector(`[arrayindex="${encodeURI(index)}"`);
         if (node) node.remove();
+        this.reIndexRows();
     }
     //=======================================================================================
     _createUIElement(tag, className, innerHTML = null, src = null) {

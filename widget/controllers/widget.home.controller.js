@@ -100,6 +100,7 @@
                         "rssUrl": null,
                         "feeds": [
                             {
+                                id: "default",
                                 title: "Feed",
                                 type: "rss",
                                 url: "https://blog.ted.com/feed"
@@ -121,7 +122,6 @@
                 WidgetHome.data = null;
                 WidgetHome.view = null;
                 WidgetHome.feedsCache = {};
-                WidgetHome.changedFeeds = {};
                 WidgetHome.currentFeed = null;
 
                 /**
@@ -272,6 +272,18 @@
                         window.location.reload();
                     }
                 };
+                buildfire.appearance.titlebar.isVisible(null, (err, isVisible) => {
+                    if (err) return console.error(err);
+                    isVisible = false;
+                    WidgetHome.isTittlebarVisible = isVisible;
+                });
+
+                WidgetHome.isSafeArea = () => {
+                    if (!WidgetHome.isTittlebarVisible && WidgetHome.data.content && !(WidgetHome.data.content.description || WidgetHome.data.content.carouselImages.length)) {
+                        return true;
+                    }
+                    else return false;
+                }
 
                 WidgetHome.fetchFeed = (feed) => {
                     buildfire.appearance.ready();
@@ -329,7 +341,7 @@
                 }
 
                 WidgetHome.checkIfFeedChanged = (feedId) => {
-                    if (WidgetHome.changedFeeds[feedId] && WidgetHome.changedFeeds[feedId].isChanged) {
+                    if (WidgetHome.feedsCache[feedId] && WidgetHome.feedsCache[feedId].isChanged) {
                         return true;
                     }
                     else return false;
@@ -337,19 +349,21 @@
 
                 WidgetHome.initializeTabs = () => {
                     setTimeout(() => {
+                        WidgetHome.activeTab = 0;
                         let tabs = document.querySelector('.mdc-tab-bar');
                         if (!tabs) return;
                         tabs.classList.remove('hidden');
                         const tabBar = new mdc.tabBar.MDCTabBar(tabs);
-                        tabBar.activateTab(0);
                         tabBar.listen('MDCTabBar:activated', (event) => {
+                            WidgetHome.activeTab = event.detail.index;
                             WidgetHome.currentFeed = WidgetHome.data.content.feeds[event.detail.index];
                             WidgetHome.items = [];
                             _items = [];
                             WidgetHome.renderFeedItems();
-                            WidgetHome.changedFeeds[WidgetHome.currentFeed.id].isChanged = false;
+                            WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged = false;
+                            cacheManager.setItem(WidgetHome.currentFeed.id, WidgetHome.feedsCache[WidgetHome.currentFeed.id], () => { });
                         });
-                    }, 100);
+                    }, 0);
                 }
 
                 WidgetHome.renderFeedItems = function () {
@@ -358,8 +372,6 @@
                     WidgetHome.items = [];
                     nextChunkDataIndex = 0;
                     _items = allItems;
-                    WidgetHome.isItems = true;
-                    $scope.hideandshow = true;
                     chunkData = Underscore.chunk(_items, limit);
                     totalChunks = chunkData.length;
                     WidgetHome.loadMore();
@@ -371,9 +383,9 @@
 
                     if (!currentItems[0] || !currentItems[0].guid) return false;
 
-                    var sameLength = currentItems.length === fetchedItems.length;
-                    var firstItemUnchanged = currentItems[0].guid === fetchedItems[0].guid;
-                    var lastItemUnchanged = currentItems[currentItems.length - 1].guid === fetchedItems[fetchedItems.length - 1].guid;
+                    let sameLength = currentItems.length === fetchedItems.length;
+                    let firstItemUnchanged = currentItems[0].guid === fetchedItems[0].guid;
+                    let lastItemUnchanged = currentItems[currentItems.length - 1].guid === fetchedItems[fetchedItems.length - 1].guid;
                     return sameLength && firstItemUnchanged && lastItemUnchanged;
                 }
 
@@ -387,13 +399,12 @@
                     DataStore.get(TAG_NAMES.RSS_FEED_INFO).then((settings) => {
                         WidgetHome.processDatastore(settings);
                         WidgetHome.loading = true;
-
                         if (!Object.keys(settings.data).length) {
                             settings.data = WidgetHome.data;
                         }
 
                         //if settings data contains rssUrl proceed with old logic
-                        if (!settings.data.content.feeds.length && settings.data.content.rssUrl) {
+                        if (!settings.data.content.feeds?.length && settings.data.content.rssUrl) {
                             cacheManager.getItem().then((data) => {
                                 if (!data || !WidgetHome.data.content || data.rssUrl != WidgetHome.data.content.rssUrl) return;
                                 getFeedDataSuccess(data);
@@ -404,11 +415,16 @@
                         }
                         //if settings data has feeds proceed with new logic
                         else if (settings.data.content.feeds && !settings.data.content.rssUrl) {
+                            if (!settings.data.content.feeds.length) {
+                                WidgetHome.isItems = false;
+                                WidgetHome.loading = false;
+                            }
                             let cachePromises = [], dataPromises = [];
                             settings.data.content.feeds.map((feed) => {
                                 cachePromises.push(cacheManager.getItem(feed.id).then(r => ({ id: feed.id, result: r })));
                                 dataPromises.push(WidgetHome.fetchFeedResults(feed).then(r => ({ id: feed.id, result: r })));
                             });
+                            WidgetHome.initializeTabs();
 
                             WidgetHome.currentFeed = settings.data.content?.feeds[0];
                             if (!WidgetHome.currentFeed) return;
@@ -420,21 +436,17 @@
                                 WidgetHome.loading = false;
                                 if (!$scope.$$phase) $scope.$digest();
                                 WidgetHome.renderFeedItems();
-
                                 Promise.all(dataPromises).then(dataResults => {
                                     dataResults.forEach((el) => {
                                         let isUnchanged = WidgetHome.checkFeedEquality(WidgetHome.feedsCache[el.id].items ?? [], el.result.data.items);
                                         WidgetHome.feedsCache[el.id] = {
                                             items: el.result.data.items ?? [],
-                                        };
-                                        WidgetHome.changedFeeds[el.id] = {
-                                            isChanged: !isUnchanged
+                                            isChanged: WidgetHome.feedsCache[el.id]?.isChanged == true ? true : !isUnchanged
                                         };
                                         if (!$scope.$$phase) $scope.$digest();
                                         cacheManager.setItem(el.id, WidgetHome.feedsCache[el.id], () => { });
                                     });
-
-                                    if (WidgetHome.changedFeeds[WidgetHome.currentFeed.id].isChanged)
+                                    if (WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged)
                                         WidgetHome.renderFeedItems();
                                 }).catch((err) => console.error(err));
                             }).catch((err) => {

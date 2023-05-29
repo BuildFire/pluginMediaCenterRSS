@@ -3,8 +3,8 @@
 (function (angular) {
   angular
     .module('mediaCenterRSSPluginContent')
-    .controller('ContentHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'TAG_NAMES', 'LAYOUTS', 'FeedParseService', '$timeout',
-      function ($scope, DataStore, Buildfire, TAG_NAMES, LAYOUTS, FeedParseService, $timeout) {
+    .controller('ContentHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'TAG_NAMES', 'LAYOUTS', 'FeedParseService', '$timeout', 'Utils',
+      function ($scope, DataStore, Buildfire, TAG_NAMES, LAYOUTS, FeedParseService, $timeout, Utils) {
         /*
          * Private variables
          *
@@ -16,12 +16,6 @@
          * @private
          *
          *  */
-
-        const uuidv4 = () => {
-          return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-          );
-        }
         var ContentHome = this
           , _defaultData = {
             "content": {
@@ -30,7 +24,7 @@
               "rssUrl": null, // "https://blog.ted.com/feed",
               "feeds": [
                 {
-                  id: uuidv4(),
+                  id: Utils._nanoid(),
                   title: "Feed",
                   type: "rss",
                   url: "https://blog.ted.com/feed"
@@ -68,7 +62,6 @@
          * @type {boolean}
          */
         ContentHome.isValidateButtonClicked = false;
-        ContentHome.subPage = new SubPage("rssFeedDialog");
 
         ContentHome.subPages = {
           rss: new SubPage("rssFeedDialog"),
@@ -129,7 +122,7 @@
             hideDelete: false
           }, (values) => {
             let feed = {
-              id: uuidv4()
+              id: Utils._nanoid()
             };
             switch (type) {
               case "rss":
@@ -235,6 +228,7 @@
           ContentHome.sortableList = new buildfire.components.sortableList("#feeds", {
             appearance: {
               title: 'Feeds',
+              addButtonText: "Add Feed"
             },
             settings: {
               showAddButton: true
@@ -251,7 +245,8 @@
                 {
                   title: "Feed",
                   type: "rss",
-                  subtitle: "RSS Feed"
+                  subtitle: "RSS Feed",
+                  url: "https://blog.ted.com/feed"
                 },
               ]);
             } else {
@@ -285,7 +280,7 @@
                   if (err) console.error(err);
                   if (isConfirmed) {
                     let index = ContentHome.sortableList.items.map(e => e.title).indexOf(options.item.title);
-                    ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter((el, ind) => ind !== index);
+                    ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter((el, ind) => el.id !== options.item.id);
                     ContentHome.sortableList.remove(index);
                     $scope.$digest();
                   }
@@ -377,7 +372,7 @@
                 ContentHome.rssFeedUrl = ContentHome.data.content.rssUrl;
                 ContentHome.data.content.feeds = [];
                 ContentHome.data.content.feeds.push({
-                  id: uuidv4(),
+                  id: Utils._nanoid(),
                   title: "Feed",
                   type: "rss",
                   url: ContentHome.data.content.rssUrl

@@ -14,12 +14,13 @@
     </div>
     <!------------ TABS ----------->
     <div class="mdc-tab-bar" role="tablist" ng-if="WidgetHome.data.content.feeds.length > 1"
-      ng-init="WidgetHome.initializeTabs()">
+       ng-class="{'safe-area-fix': WidgetHome.isSafeArea()}"
+       ng-init="WidgetHome.initializeTabs()">
       <div class="mdc-tab-scroller">
         <div class="mdc-tab-scroller__scroll-area">
           <div class="mdc-tab-scroller__scroll-content">
             <button class="mdc-tab" role="tab" aria-selected="true" tabindex="0"
-              ng-repeat="tab in WidgetHome.data.content.feeds">
+              ng-repeat="tab in WidgetHome.data.content.feeds track by $index">
               <span class="mdc-tab__content">
                 <span class="mdc-tab__text-label">
                   <span class="tab-title">{{tab.title}}</span>
@@ -28,7 +29,7 @@
                   </span>
                 </span>
               </span>
-              <span class="mdc-tab-indicator">
+              <span class="mdc-tab-indicator" ng-class="{'mdc-tab-indicator--active': WidgetHome.activeTab == $index}">
                 <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
               </span>
               <span class="mdc-tab__ripple"></span>
@@ -51,6 +52,14 @@
         <div class="bf-skeleton-loader grid-block"></div>
         <div class="bf-skeleton-loader grid-block"></div>
       </div>
+      <div class="skeleton-row row">
+        <div class="bf-skeleton-loader grid-block"></div>
+        <div class="bf-skeleton-loader grid-block"></div>
+      </div>
+      <div class="skeleton-row row">
+        <div class="bf-skeleton-loader grid-block"></div>
+        <div class="bf-skeleton-loader grid-block"></div>
+      </div>
     </div>
     <!------------ CONTAINER ----------->
     <div class="padded padding-top-zero">
@@ -61,8 +70,7 @@
         <!--------- LIST ITEM REPEAT ------->
         <div ng-show="WidgetHome.isItems" ng-click="WidgetHome.goToItem($index, item)"
           class="list-item col-xs-6 col-md-4 pull-left " ng-class="{'viewed' : item.viewed }"
-          ng-repeat="item in WidgetHome.items" ng-class-even="list-item-even" ng-class-odd="list-item-odd"
-          trigger-ng-repeat-render="">
+          ng-repeat="item in WidgetHome.items" ng-class-even="list-item-even" ng-class-odd="list-item-odd">
           <div class="list-item-media border-radius-three text-center overflow-hidden"
             ng-if="WidgetHome.data.design.showImages == 'Yes'">
             <div class="list-media-holder" style="cursor: pointer">
@@ -94,13 +102,8 @@
       <!-- EMPTY STATE -->
       <div ng-hide="WidgetHome.isItems" class="items-info">
         <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>
-        <label class="pull-left">RSS Feed doesn't have any items</label>.
+        <label class="pull-left"> 	&nbsp;RSS Feed doesn't have any items</label>.
       </div>
-    </div>
-    <!-- EMPTY STATE -->
-    <div ng-hide="WidgetHome.isItems" class="items-info">
-      <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>
-      <label class="pull-left">RSS Feed doesn't have any items</label>.
     </div>
   </div>
 </div>

@@ -21,7 +21,7 @@
       "layouts": [
         {
           "name": "Layout",
-          "imageUrl": "resources/List_Layout_1.png",
+          "imageUrl": "resources/layout1.png",
           "cssPath": "widget/styles/styles.min.css"
         }
       ]

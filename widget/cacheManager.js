@@ -173,7 +173,7 @@ let cacheManager = {
     },
     getMobile: function (key, callback) {
         let options = {};
-        
+
         if (key == 'undefined') {
             options = {
                 path: "/data/pluginMediaCenterRss/",
@@ -186,7 +186,7 @@ let cacheManager = {
             };
         }
         function fileRead(err, data) {
-            if (err || !data) return callback(err, null);
+            if (err || !data || data == undefined || data == "undefined")  return callback(err, null);
             return callback(null, JSON.parse(data));
         }
 

@@ -45,7 +45,7 @@ class SubPage {
 			this.container.querySelector(".spSaveButton").disabled = false;
 		};
 
-		this.container.addEventListener("change", (e) => {
+		this.container.addEventListener("input", (e) => {
 			let values = getElementsValues();
 			let hasAllValues = Object.values(values).every((v) => v);
 			let btnSave = this.container.querySelector(".spSaveButton");
@@ -80,7 +80,7 @@ class SubPage {
 	close() {
 		this.container.classList.remove("activeFull");
 		this.container.classList.remove("activeDialog");
-		this.container.removeEventListener("change", () => {});
+		this.container.removeEventListener("input", () => {});
 
 		let nodes = this.container.querySelectorAll("input");
 		nodes.forEach(node => {

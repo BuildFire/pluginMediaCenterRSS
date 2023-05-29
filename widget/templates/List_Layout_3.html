@@ -10,13 +10,13 @@
             <p style="word-break: break-word" ng-bind-html='WidgetHome.data.content.description | safeHtml'></p>
         </div>
         <!------------ TABS ----------->
-        <div class="mdc-tab-bar " role="tablist" ng-if="WidgetHome.data.content.feeds.length > 1"
-            ng-init="WidgetHome.initializeTabs()">
+        <div class="mdc-tab-bar" role="tablist" ng-if="WidgetHome.data.content.feeds.length > 1"
+            ng-class="{'safe-area-fix': WidgetHome.isSafeArea()}" ng-init="WidgetHome.initializeTabs()">
             <div class="mdc-tab-scroller">
                 <div class="mdc-tab-scroller__scroll-area">
                     <div class="mdc-tab-scroller__scroll-content">
                         <button class="mdc-tab" role="tab" aria-selected="true" tabindex="0"
-                            ng-repeat="tab in WidgetHome.data.content.feeds">
+                            ng-repeat="tab in WidgetHome.data.content.feeds track by $index">
                             <span class="mdc-tab__content">
                                 <span class="mdc-tab__text-label">
                                     <span class="tab-title">{{tab.title}}</span>
@@ -25,7 +25,8 @@
                                     </span>
                                 </span>
                             </span>
-                            <span class="mdc-tab-indicator">
+                            <span class="mdc-tab-indicator"
+                                ng-class="{'mdc-tab-indicator--active': WidgetHome.activeTab == $index}">
                                 <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
                             </span>
                             <span class="mdc-tab__ripple"></span>
