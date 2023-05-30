@@ -91,7 +91,7 @@ buildfire.components.sortableList = class SortableList {
         this.initializeHeader();
         this.initializeSearchBar();
         this.initializeActions();
-
+        
         this.selector.appendChild(this.#state.itemsContainer);
 
         setTimeout(() => {
@@ -324,7 +324,9 @@ buildfire.components.sortableList = class SortableList {
     }
     //=======================================================================================
     renderItem(item, index) {
-        let rowExists = this.#state.itemsContainer.querySelector(`[arrayindex="${encodeURI(index)}"`),
+        let preferences = this.onItemRender({ item: item });
+
+        let rowExists = this.#state.itemsContainer.querySelector(`#item_${encodeURI(this._getMappingKeyValue(item, preferences.idKey))}`),
             itemRow = null;
 
         if (rowExists) {
@@ -334,6 +336,7 @@ buildfire.components.sortableList = class SortableList {
             itemRow = document.createElement("div");
         }
 
+        itemRow.id = `item_${this._getMappingKeyValue(item, preferences.idKey)}`;
         itemRow.setAttribute("arrayIndex", index);
 
         var dragHandle = document.createElement("span"),
@@ -368,94 +371,108 @@ buildfire.components.sortableList = class SortableList {
             };
         }
 
+        const createToggle = (key) => {
+            let toggle = this._createUIElement('div', 'button-switch'),
+                input = this._createUIElement('input', null),
+                label = this._createUIElement('label', 'label-success');
+
+            input.type = 'checkbox';
+            input.id = 'toggle_' + this._getMappingKeyValue(item, preferences.idKey);
+            label.setAttribute('for', 'toggle_' + this._getMappingKeyValue(item, preferences.idKey));
+            input.checked = this._getMappingKeyValue(item, key) ? this._getMappingKeyValue(item, key) : false;
+            input.onclick = () => this.onItemActionClick({ item: item, action: 'toggle' });
+
+            toggle.appendChild(input);
+            toggle.appendChild(label);
+            itemRow.appendChild(toggle);
+        }
+
         const renderColumns = (columns) => {
             columns.forEach((element) => {
-                if (element.type == 'anchor') {
-                    let div = this._createUIElement("div", 'anchor-holder', null, null, null);
-                    let anchor = this._createUIElement('a', 'title ellipsis', this._getMappingKeyValue(item, element.title), null);
-                    anchor.onclick = () => this.onItemClick({ item, column: element });
-                    div.appendChild(anchor);
-
-                    if (element.subtitle) {
-                        let subtitle = this._createUIElement('span', 'subtitle ellipsis', this._getMappingKeyValue(item, element.subtitle), null);
-                        div.appendChild(subtitle);
-                    }
-                    itemRow.appendChild(div);
-                }
                 if (element.type == 'image') {
-                    createImage(this._getMappingKeyValue(item, element.title), () => {
+                    createImage(this._getMappingKeyValue(item, element.titleKey), () => {
                         this.onItemClick({ item, column: element });
                     });
-                }
-                if (element.type == 'text') {
-                    let span = this._createUIElement('span', 'title ellipsis', this._getMappingKeyValue(item, element.title), null);
-                    if (element.subtitle) {
-                        let subtitle = this._createUIElement('span', 'subtitle ellipsis', this._getMappingKeyValue(item, element.subtitle), null);
-                        span.appendChild(subtitle);
+                } else {
+                    let div = null;
+                    if (element.type == 'anchor') {
+                        div = this._createUIElement("div", 'anchor-holder', null, null, null);
+                        let anchor = this._createUIElement('a', 'title ellipsis', this._getMappingKeyValue(item, element.titleKey), null);
+                        anchor.onclick = () => this.onItemClick({ item, column: element });
+                        div.appendChild(anchor);
+                    } else {
+                        let className = element.type == 'title' ? 'title bold ellipsis' : 'title ellipsis';
+                        let value = element.type == "date" ?
+                            new Date(this._getMappingKeyValue(item, element.titleKey)).toDateString() : this._getMappingKeyValue(item, element.titleKey)
+                        div = this._createUIElement('div', className, null, null, value);
+                        if (element.subtitleKey) {
+                            let subtitle = this._createUIElement('div', 'subtitle ellipsis', this._getMappingKeyValue(item, element.subtitleKey), null);
+                            div.appendChild(subtitle);
+                        }
+                        div.onclick = () => this.onItemClick({ item, column: element });
+                        itemRow.appendChild(div);
                     }
-                    span.onclick = () => this.onItemClick({ item, column: element });
-                    itemRow.appendChild(span);
-                }
-                else if (element.type == 'date') {
-                    let date = this._createUIElement('span', 'title ellipsis', new Date(this._getMappingKeyValue(item, element.title)).toDateString(), null);
-                    if (element.subtitle) {
-                        let subtitle = this._createUIElement('span', 'subtitle ellipsis', this._getMappingKeyValue(item, element.subtitle), null);
-                        date.appendChild(subtitle);
-                    }
-                    date.onclick = () => this.onItemClick({ item, column: element });
-                    itemRow.appendChild(date);
+                    itemRow.appendChild(div);
                 }
             });
         }
 
         const renderActions = () => {
             this.#state.itemActionsPresets.forEach((element) => {
-                if (element.action == 'toggle' && !this.options.itemActions.disableToggle) {
-                    let toggle = this._createUIElement('div', 'button-switch'),
-                        input = this._createUIElement('input', null),
-                        label = this._createUIElement('label', 'label-success');
-
-                    input.type = 'checkbox';
-                    input.id = 'toggle_' + index;
-                    label.setAttribute('for', 'toggle_' + index);
-                    toggle.appendChild(input);
-                    toggle.appendChild(label);
-                    itemRow.appendChild(toggle);
-
-                    input.onclick = () => this.onItemActionClick({ item: item, action: 'toggle' });
+                if (element.action == 'toggle' && preferences.itemActions.toggleKey) { 
+                    createToggle(preferences.itemActions.toggleKey);
                 }
                 else if (element.action == 'custom') {
-                    this.options.itemActions.custom.length && this.options.itemActions.custom.forEach((element) => {
-                        let button = this._createUIElement('button', `btn btn--icon icon ${element.theme} ${element.icon}`, null, null);
-                        button.onclick = () => this.onItemActionClick({ item: item, action: element.action });
-                        itemRow.appendChild(button);
-                    });
+                    if (preferences.itemActions.custom && preferences.itemActions.custom.length) {
+                        preferences.itemActions.custom.forEach((element) => {
+                            if (element.action === "toggle") {
+                            } else {
+                                let button = this._createUIElement('button', `btn btn--icon icon ${element.theme} ${element.icon}`, null, null);
+                                button.onclick = () => this.onItemActionClick({ item: item, action: element.action });
+                                itemRow.appendChild(button);
+                            }
+                        });
+                    }
                 }
-                else if (element.action == 'edit' && !this.options.itemActions.disableEdit) {
+                else if (element.action == 'edit' && !preferences.itemActions.disableEdit) {
                     let button = this._createUIElement('button', 'btn btn--icon icon primary ' + element.icon, null, null);
                     button.onclick = () => this.onItemActionClick({ item: item, action: element.action });
                     itemRow.appendChild(button);
                 }
-                else if (element.action == 'delete' && !this.options.itemActions.disableDelete) {
+                else if (element.action == 'delete' && !preferences.itemActions.disableDelete) {
                     let button = this._createUIElement('button', 'btn btn--icon icon danger ' + element.icon, null, null);
                     button.onclick = () => this.onItemActionClick({ item: item, action: element.action });
                     itemRow.appendChild(button);
                 }
             });
-
         }
-        let preferences = this.onItemRender({ item: item });
-        if (preferences && preferences.columns)
-            renderColumns(preferences.columns);
 
-        renderActions();
+        preferences.columns && renderColumns(preferences.columns);
+
+        preferences.itemActions && renderActions();
 
         if (rowExists) {
             this.#state.itemsContainer.replaceChild(rowExists, itemRow);
         } else this.#state.itemsContainer.appendChild(itemRow);
     }
     //=======================================================================================
+    clear() {
+        this.#state.itemsContainer.innerHTML = '';
+        this.items = [];
+    }
     refresh() {
+        this.#state.headerContainer.remove();
+        this.#state.actionsContainer.remove();
+        
+        this.#state.refreshing = true;
+        this.init();
+    }
+    reset() {
+        this.#state.headerContainer.innerHTML = '';
+        this.#state.searchBarContainer.innerHTML = '';
+        this.#state.actionsContainer.innerHTML = '';
+
+        this.refresh();
         this.#state.itemsContainer.innerHTML = '';
         this.items.forEach((item) => this.renderItem(item));
     }
@@ -479,10 +496,11 @@ buildfire.components.sortableList = class SortableList {
         this.reIndexRows();
     }
     //=======================================================================================
-    _createUIElement(tag, className, innerHTML = null, src = null) {
+    _createUIElement(tag, className, innerHTML = null, src = null, textContent = null) {
         let element = document.createElement(tag);
         className ? element.className = className : null;
-        innerHTML ? element.innerHTML = innerHTML : null;
+        innerHTML && !textContent ? element.innerHTML = innerHTML : null;
+        textContent ? element.textContent = textContent : null;
         if (tag == 'img') element.src = src;
         return element;
     }

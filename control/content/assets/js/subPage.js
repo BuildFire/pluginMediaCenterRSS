@@ -22,6 +22,7 @@ class SubPage {
 	}
 
 	showDialog(options, saveCallback, deleteCallback) {
+		document.body.scroll(0, 0);
 		let btnSave = this.container.querySelector(".spSaveButton");
 		btnSave.onclick = () => {
 			let values = getElementsValues();
@@ -78,8 +79,6 @@ class SubPage {
 	}
 
 	close() {
-		this.container.classList.remove("activeFull");
-		this.container.classList.remove("activeDialog");
 		this.container.removeEventListener("input", () => {});
 
 		let nodes = this.container.querySelectorAll("input");
@@ -98,5 +97,8 @@ class SubPage {
 			googleErrorMessage.innerHTML = "";
 			googleErrorMessage.style.display = "none";
 		}
+
+		this.container.classList.remove("activeFull");
+		this.container.classList.remove("activeDialog");
 	}
 }

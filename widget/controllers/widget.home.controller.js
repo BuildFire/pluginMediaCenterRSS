@@ -274,7 +274,6 @@
                 };
                 buildfire.appearance.titlebar.isVisible(null, (err, isVisible) => {
                     if (err) return console.error(err);
-                    isVisible = false;
                     WidgetHome.isTittlebarVisible = isVisible;
                 });
 
@@ -384,9 +383,17 @@
                     if (!currentItems[0] || !currentItems[0].guid) return false;
 
                     let sameLength = currentItems.length === fetchedItems.length;
-                    let firstItemUnchanged = currentItems[0].guid === fetchedItems[0].guid;
-                    let lastItemUnchanged = currentItems[currentItems.length - 1].guid === fetchedItems[fetchedItems.length - 1].guid;
-                    return sameLength && firstItemUnchanged && lastItemUnchanged;
+
+                    let currentItemsString = currentItems.map(element => {
+                        return element.guid + element.link
+                    }).sort().toString();
+                    currentItemsString = currentItemsString.toString();
+
+                    let fetchedItemsString = fetchedItems.map(element => {
+                        return element.guid + element.link
+                    }).sort().toString();
+
+                    return sameLength && currentItemsString === fetchedItemsString;
                 }
 
                 WidgetHome.prepareFeedImages = (id) => {

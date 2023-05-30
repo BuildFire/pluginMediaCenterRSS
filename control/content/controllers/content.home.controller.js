@@ -24,7 +24,7 @@
               "rssUrl": null, // "https://blog.ted.com/feed",
               "feeds": [
                 {
-                  id: Utils._nanoid(),
+                  id: "default",
                   title: "Feed",
                   type: "rss",
                   url: "https://blog.ted.com/feed"
@@ -202,6 +202,7 @@
                     ContentHome.data.content.feeds[index].title = values.rssFeedTitle;
                     ContentHome.data.content.feeds[index].url = values.rssFeedUrl;
                     ContentHome.subPages[item.type].close();
+                    ContentHome.sortableList.update(index, ContentHome.prepareFeeds([ContentHome.data.content.feeds[index]])[0]);
                   }
                 });
                 break;
@@ -213,6 +214,7 @@
                   ContentHome.data.content.feeds[index].title = values.googleFeedTitle;
                   ContentHome.data.content.feeds[index].keywords = values.googleFeedKeywords;
                   ContentHome.subPages[item.type].close();
+                  ContentHome.sortableList.update(index, ContentHome.prepareFeeds([ContentHome.data.content.feeds[index]])[0]);
                 }
                 break;
               default: break;
@@ -243,6 +245,7 @@
             if (ContentHome.data.default || !ContentHome.data.default && ContentHome.data.rssUrl) {
               callback([
                 {
+                  id: "default",
                   title: "Feed",
                   type: "rss",
                   subtitle: "RSS Feed",
@@ -254,12 +257,18 @@
             }
           }
           ContentHome.sortableList.onItemRender = function (options) {
-            let columns = [
-              { id: 1, title: "title", subtitle: "subtitle", type: "text" },
-            ];
-            return { columns };
+            let obj = {
+              idKey: "id",
+              columns: [
+                { id: 1, titleKey: "title", subtitleKey: "subtitle", type: "title" },
+              ],
+              itemActions: {
+                disableDelete: false,
+                disableEdit: false
+              }
+            }
+            return obj;
           };
-
 
           ContentHome.sortableList.onAddButtonClick = function (options) {
             if (ContentHome.data.content.feeds.length >= 5)
@@ -331,13 +340,10 @@
             tmrDelay = setTimeout(function () {
               if (newObj.default == true) {
                 delete newObj.default;
-
                 if (newObj.content.rssUrl == _defaultData.content.rssUrl) {
                   newObj.content.rssUrl = '';
                   ContentHome.rssFeedUrl = '';
                 }
-                ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter(el => el.url !== "https://blog.ted.com/feed" );
-                ContentHome.sortableList.remove(0);
               } else {
                 ContentHome.data.content.feeds = ContentHome.clearUpFeeds(ContentHome.data.content.feeds);
               }
