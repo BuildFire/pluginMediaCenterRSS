@@ -76,7 +76,7 @@
             <div class="list-layout" ng-if="WidgetHome.data && !WidgetHome.loading"
                 infinite-scroll="WidgetHome.loadMore()" infinite-scroll-distance="1"
                 infinite-scroll-disabled="WidgetHome.busy" data-infinite-container=".infinite-scroll-parent">
-                <div ng-show="WidgetHome.isItems" class="list-item" ng-class="{'viewed' : item.viewed }"
+                <div ng-show="WidgetHome.isItems" class="list-item" ng-class="{'viewed' : item.viewed, 'no-border': WidgetHome.data.content.feeds.length > 1 }"
                     ng-repeat="item in  WidgetHome.items" trigger-ng-repeat-render=""
                     ng-click="WidgetHome.goToItem($index, item)" style="cursor: pointer">
 
@@ -113,10 +113,7 @@
                     </div>
 
                 </div>
-                <div ng-hide="WidgetHome.isItems" class="items-info">
-                    <a href="javaScript:void(0);" class="btn-info-icon btn-primary pull-left"></a>
-                    <label class="pull-left">RSS Feed doesn't have any items.</label>
-                </div>
+                <div ng-hide="WidgetHome.isItems" class="items-info empty_state"></div>
             </div>
         </div>
     </div>

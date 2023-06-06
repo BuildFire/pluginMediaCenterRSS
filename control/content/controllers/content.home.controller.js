@@ -344,6 +344,8 @@
                   newObj.content.rssUrl = '';
                   ContentHome.rssFeedUrl = '';
                 }
+                ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter(el => el.id !== "default" );
+                ContentHome.sortableList.remove(0);
               } else {
                 ContentHome.data.content.feeds = ContentHome.clearUpFeeds(ContentHome.data.content.feeds);
               }

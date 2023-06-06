@@ -22,7 +22,7 @@
         {
           "name": "Layout",
           "imageUrl": "resources/layout1.png",
-          "cssPath": "widget/styles/styles.min.css"
+          "cssPath": "widget/styles/injection.css"
         }
       ]
     }

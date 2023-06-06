@@ -5,7 +5,7 @@ const minifyCSS = require('gulp-csso');
 const concat = require('gulp-concat');
 const strip = require('gulp-strip-comments');
 const htmlReplace = require('gulp-html-replace');
-const uglifyTerser  = require('gulp-terser');
+const uglifyTerser = require('gulp-terser');
 const eslint = require('gulp-eslint');
 const gulpSequence = require('gulp-sequence');
 const minifyInline = require('gulp-minify-inline');
@@ -33,6 +33,18 @@ const cssTasks = [
     , {name: "controlDesignCSS", src: "control/design/**/*.css", dest: "/control/design/styles"}
     , {name: "controlSettingsCSS", src: "control/content/assets/css/base.css", dest: "/control/settings/styles"}
 ];
+
+const cssInjection = [
+    { name: "cssInjection", src: "widget/assets/css/injection.css", dest: "widget/styles/injection.css", dest: "/widget/styles" }
+];
+
+cssInjection.forEach(function (task) {
+    gulp.task(task.name, function () {
+        return gulp.src(task.src, { base: '.' })
+            .pipe(concat('injection.css'))
+            .pipe(gulp.dest(destinationFolder + task.dest))
+    });
+});
 
 cssTasks.forEach(function (task) {
     /*
@@ -193,11 +205,11 @@ gulp.task('images', function () {
 
 var buildTasksToRun = ['html', 'resources', 'images', 'widgetIcons'];
 
-cssTasks.forEach(function (task) {
+[...cssInjection, ...cssTasks].forEach(function (task) {
     buildTasksToRun.push(task.name)
 });
 jsTasks.forEach(function (task) {
     buildTasksToRun.push(task.name)
 });
 
-gulp.task('build', gulpSequence('lint', 'clean', buildTasksToRun));
+gulp.task('build', gulpSequence( 'clean', buildTasksToRun));

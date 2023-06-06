@@ -80,7 +80,8 @@ class SubPage {
 
 	close() {
 		this.container.removeEventListener("input", () => {});
-
+		let btnSave = this.container.querySelector(".spSaveButton");
+		btnSave.disabled = true;
 		let nodes = this.container.querySelectorAll("input");
 		nodes.forEach(node => {
 			node.value = null;

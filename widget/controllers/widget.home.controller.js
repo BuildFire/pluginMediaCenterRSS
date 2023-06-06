@@ -26,26 +26,49 @@
                  * Handles incoming bookmark navigation
                  */
                 var handleBookmarkNav = function handleBookmarkNav() {
+
                     if ($scope.first) {
-                        buildfire.deeplink.getData(function (data) {
+                        const processDeeplink = (data) => {
                             if (data && data.link) {
                                 var targetGuid = data.link;
-                                var itemLinks = _items.map(function (item) {
-                                    return item.guid
-                                });
-                                var index = itemLinks.indexOf(targetGuid);
-                                if (index < 0) {
-                                    console.warn('bookmarked item not found.');
+
+                                if(WidgetHome.data.content.feeds?.length) {
+                                    Object.keys(WidgetHome.feedsCache).forEach(key => {
+                                        console.log(WidgetHome.feedsCache[key])
+                                        let feedItem = WidgetHome.feedsCache[key].items.find(el => el.guid == targetGuid),
+                                        index = WidgetHome.feedsCache[key].items.indexOf(feedItem);
+                                        if(feedItem) {
+                                            if (data.timeIndex) {
+                                                WidgetHome.feedsCache[key].items[index].seekTo = data.timeIndex;
+                                            }
+                                            $rootScope.deeplinkFirstNav = true;
+                                            WidgetHome.goToItem(index, feedItem);
+                                        }
+                                    });
                                 } else {
-                                    if (data.timeIndex) {
-                                        _items[index].seekTo = data.timeIndex;
+                                    var itemLinks = _items.map(function (item) {
+                                        return item.guid
+                                    });
+                                    var index = itemLinks.indexOf(targetGuid);
+                                    if (index < 0) {
+                                        console.warn('bookmarked item not found.');
+                                    } else {
+                                        if (data.timeIndex) {
+                                            _items[index].seekTo = data.timeIndex;
+                                        }
+                                        $rootScope.deeplinkFirstNav = true;
+                                        WidgetHome.goToItem(index, _items[index]);
                                     }
-                                    $rootScope.deeplinkFirstNav = true;
-                                    WidgetHome.goToItem(index, _items[index]);
+                                    $scope.first = false;
                                 }
-                                $scope.first = false;
                                 if (!$scope.$$phase) $scope.$apply();
                             }
+                        }
+                        buildfire.deeplink.getData(function (data) {
+                            processDeeplink(data);
+                        });
+                        buildfire.deeplink.onUpdate(function (data) {
+                            processDeeplink(data);
                         });
                     }
                 };
@@ -356,8 +379,6 @@
                         tabBar.listen('MDCTabBar:activated', (event) => {
                             WidgetHome.activeTab = event.detail.index;
                             WidgetHome.currentFeed = WidgetHome.data.content.feeds[event.detail.index];
-                            WidgetHome.items = [];
-                            _items = [];
                             WidgetHome.renderFeedItems();
                             WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged = false;
                             cacheManager.setItem(WidgetHome.currentFeed.id, WidgetHome.feedsCache[WidgetHome.currentFeed.id], () => { });
@@ -367,19 +388,25 @@
 
                 WidgetHome.renderFeedItems = function () {
                     let allItems = WidgetHome.feedsCache[WidgetHome.currentFeed.id].items;
+                    console.log(WidgetHome.feedsCache[WidgetHome.currentFeed.id])
                     WidgetHome.prepareFeedImages(WidgetHome.currentFeed.id);
                     WidgetHome.items = [];
                     nextChunkDataIndex = 0;
+                    console.log(allItems)
+                    if(allItems?.length) {
+                        WidgetHome.isItems = true;
+                    } else  WidgetHome.isItems = false;
                     _items = allItems;
                     chunkData = Underscore.chunk(_items, limit);
                     totalChunks = chunkData.length;
                     WidgetHome.loadMore();
-                        viewedItems.sync(WidgetHome.items);
+                    viewedItems.sync(WidgetHome.items);
                     bookmarks.sync($scope);
+                    if(!$scope.$$phase)$scope.$digest();
                 }
 
                 WidgetHome.checkFeedEquality = function (currentItems, fetchedItems) {
-
+                    if (!(currentItems[0] && currentItems[0].guid) && !fetchedItems.length) return true;
                     if (!currentItems[0] || !currentItems[0].guid) return false;
 
                     let sameLength = currentItems.length === fetchedItems.length;
@@ -392,7 +419,9 @@
                     let fetchedItemsString = fetchedItems.map(element => {
                         return element.guid + element.link
                     }).sort().toString();
-
+                    // console.log("sameLength: " + sameLength)
+                    // console.log("currentItemsString: " + currentItemsString)
+                    // console.log("fetchedItemsString: " + fetchedItemsString)
                     return sameLength && currentItemsString === fetchedItemsString;
                 }
 
@@ -443,12 +472,14 @@
                                 WidgetHome.loading = false;
                                 if (!$scope.$$phase) $scope.$digest();
                                 WidgetHome.renderFeedItems();
+                                handleBookmarkNav();
                                 Promise.all(dataPromises).then(dataResults => {
                                     dataResults.forEach((el) => {
                                         let isUnchanged = WidgetHome.checkFeedEquality(WidgetHome.feedsCache[el.id].items ?? [], el.result.data.items);
+                                        console.log("isUnchanged", el, isUnchanged)
                                         WidgetHome.feedsCache[el.id] = {
                                             items: el.result.data.items ?? [],
-                                            isChanged: WidgetHome.feedsCache[el.id]?.isChanged == true ? true : !isUnchanged
+                                            isChanged: !isUnchanged
                                         };
                                         if (!$scope.$$phase) $scope.$digest();
                                         cacheManager.setItem(el.id, WidgetHome.feedsCache[el.id], () => { });
@@ -636,8 +667,8 @@
                         WidgetHome.items.push.apply(WidgetHome.items, nextChunk);
                         nextChunkDataIndex = nextChunkDataIndex + 1;
                         nextChunk = null;
-                    bookmarks.sync($scope);
-                    viewedItems.sync($scope.WidgetHome.items);
+                        bookmarks.sync($scope);
+                        viewedItems.sync($scope.WidgetHome.items);
                     }
                     WidgetHome.busy = false;
                     if (!$scope.$$phase) $scope.$digest();

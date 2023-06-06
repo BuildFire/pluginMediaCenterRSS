@@ -1450,6 +1450,9 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	padding: 8px;
 	border-top: 1px solid #efefef;
 }
+.layout2 .list-layout .list-item.no-border:first-child {
+	border-top: none;
+}
 .layout2 .list-media-holder{
 	width: 110px;
 	height: 60px;
@@ -1700,4 +1703,18 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 
 .safe-area-fix {
 	padding-top: 25px;
+}
+
+.list-layout {
+	overflow: auto;
+}
+
+.empty_state {
+	margin: 0;
+    height: 50vh;
+	/* background-image: url('../../../../../styles/media/empty.svg') !important; //localhost */
+	background-image: url('../../../../styles/media/empty.svg') !important;
+    background-repeat: no-repeat !important;
+    background-attachment: absolute !important;
+    background-position: center !important;
 }

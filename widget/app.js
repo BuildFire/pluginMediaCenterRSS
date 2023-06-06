@@ -150,5 +150,24 @@
                     }
                 }
             };
-        });
+        })
+        .directive("keepScroll", function() {
+            return {
+              link : function(scope,el,attr, ctrl) {
+                var scrollHeight;
+          
+                scope.$watchCollection('WidgetHome.items', function(n,o) {
+                  // Instantiate scrollHeight when the list is
+                  // done loading.
+                  scrollHeight = scrollHeight || el[0].scrollHeight;
+                  // Adjust scrollTop if scrollHeight has changed (items
+                  // have been removed)
+                  el[0].scrollTop = el[0].scrollTop - (scrollHeight - el[0].scrollHeight);
+                  // Remember current scrollHeight for next change.
+                  scrollHeight = el[0].scrollHeight;
+                });
+              }
+          
+            };
+          });
 })(window.angular, window.buildfire);

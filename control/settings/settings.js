@@ -1,11 +1,37 @@
 let settings = null;
+let _defaultData = {
+    "content": {
+        "carouselImages": [],
+        "description": "",
+        "rssUrl": null, // "https://blog.ted.com/feed",
+        "feeds": [
+            {
+                id: "default",
+                title: "Feed",
+                type: "rss",
+                url: "https://blog.ted.com/feed"
+            }
+        ]
+    },
+    "design": {
+        "itemListLayout": "List_Layout_1",
+        "itemDetailsLayout": "Feed_Layout_1",
+        "itemListBgImage": "",
+        "itemDetailsBgImage": ""
+    },
+    "default": true
+}
 
 window.onload = () => {
     buildfire.datastore.get("RssFeedInfo", (err, result) => {
-        if(err) return console.error(err);
+        if (err) return console.error(err);
         settings = result.data;
+        if (!Object.keys(settings).length) {
+            settings = _defaultData;
+        }
         
-        if(settings?.readRequiresLogin) {
+        readRequiresLogin.disabled = false;
+        if (settings?.readRequiresLogin) {
             readRequiresLogin.checked = true;
         }
     });
@@ -13,5 +39,5 @@ window.onload = () => {
 
 const saveSettings = () => {
     settings.readRequiresLogin = readRequiresLogin.checked;
-    buildfire.datastore.save(settings, "RssFeedInfo", () => {});
+    buildfire.datastore.save(settings, "RssFeedInfo", () => { });
 }
