@@ -388,11 +388,9 @@
 
                 WidgetHome.renderFeedItems = function () {
                     let allItems = WidgetHome.feedsCache[WidgetHome.currentFeed.id].items;
-                    console.log(WidgetHome.feedsCache[WidgetHome.currentFeed.id])
                     WidgetHome.prepareFeedImages(WidgetHome.currentFeed.id);
                     WidgetHome.items = [];
                     nextChunkDataIndex = 0;
-                    console.log(allItems)
                     if(allItems?.length) {
                         WidgetHome.isItems = true;
                     } else  WidgetHome.isItems = false;
@@ -476,7 +474,6 @@
                                 Promise.all(dataPromises).then(dataResults => {
                                     dataResults.forEach((el) => {
                                         let isUnchanged = WidgetHome.checkFeedEquality(WidgetHome.feedsCache[el.id].items ?? [], el.result.data.items);
-                                        console.log("isUnchanged", el, isUnchanged)
                                         WidgetHome.feedsCache[el.id] = {
                                             items: el.result.data.items ?? [],
                                             isChanged: !isUnchanged

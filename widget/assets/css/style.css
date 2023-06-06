@@ -1712,7 +1712,6 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 .empty_state {
 	margin: 0;
     height: 50vh;
-	/* background-image: url('../../../../../styles/media/empty.svg') !important; //localhost */
 	background-image: url('../../../../styles/media/empty.svg') !important;
     background-repeat: no-repeat !important;
     background-attachment: absolute !important;

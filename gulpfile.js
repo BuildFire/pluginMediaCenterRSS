@@ -212,4 +212,4 @@ jsTasks.forEach(function (task) {
     buildTasksToRun.push(task.name)
 });
 
-gulp.task('build', gulpSequence( 'clean', buildTasksToRun));
+gulp.task('build', gulpSequence('lint', 'clean', buildTasksToRun));
