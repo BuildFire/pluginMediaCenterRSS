@@ -5,7 +5,7 @@ const minifyCSS = require('gulp-csso');
 const concat = require('gulp-concat');
 const strip = require('gulp-strip-comments');
 const htmlReplace = require('gulp-html-replace');
-const uglifyTerser  = require('gulp-terser');
+const uglifyTerser = require('gulp-terser');
 const eslint = require('gulp-eslint');
 const gulpSequence = require('gulp-sequence');
 const minifyInline = require('gulp-minify-inline');
@@ -31,8 +31,20 @@ const cssTasks = [
     {name: "widgetCSS", src: widgetCssFiles, dest: "/widget/styles"}
     , {name: "controlContentCSS", src: "control/content/**/*.css", dest: "/control/content/styles"}
     , {name: "controlDesignCSS", src: "control/design/**/*.css", dest: "/control/design/styles"}
-    , {name: "controlSettingsCSS", src: "control/settings/**/*.css", dest: "/control/settings"}
+    , {name: "controlSettingsCSS", src: "control/content/assets/css/base.css", dest: "/control/settings/styles"}
 ];
+
+const cssInjection = [
+    { name: "cssInjection", src: "widget/assets/css/layout1.css", dest: "widget/styles/layout1.css", dest: "/widget/styles" }
+];
+
+cssInjection.forEach(function (task) {
+    gulp.task(task.name, function () {
+        return gulp.src(task.src, { base: '.' })
+            .pipe(concat('layout1.css'))
+            .pipe(gulp.dest(destinationFolder + task.dest))
+    });
+});
 
 cssTasks.forEach(function (task) {
     /*
@@ -72,7 +84,7 @@ const widgetJSFiles = [
     "widget/filters.js",
     "widget/viewedItems.js",
     "widget/bookmarkHandler.js",
-    "widget/cache.js",
+    "widget/cacheManager.js",
     "widget/controllers/widget.home.controller.js",
     "widget/controllers/widget.media.controller.js",
     "widget/controllers/widget.nowplaying.controller.js"
@@ -193,7 +205,7 @@ gulp.task('images', function () {
 
 var buildTasksToRun = ['html', 'resources', 'images', 'widgetIcons'];
 
-cssTasks.forEach(function (task) {
+[...cssInjection, ...cssTasks].forEach(function (task) {
     buildTasksToRun.push(task.name)
 });
 jsTasks.forEach(function (task) {

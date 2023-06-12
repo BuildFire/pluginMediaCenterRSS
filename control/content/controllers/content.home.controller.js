@@ -3,8 +3,8 @@
 (function (angular) {
   angular
     .module('mediaCenterRSSPluginContent')
-    .controller('ContentHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'TAG_NAMES', 'LAYOUTS', 'FeedParseService', '$timeout',
-      function ($scope, DataStore, Buildfire, TAG_NAMES, LAYOUTS, FeedParseService, $timeout) {
+    .controller('ContentHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'TAG_NAMES', 'LAYOUTS', 'FeedParseService', '$timeout', 'Utils',
+      function ($scope, DataStore, Buildfire, TAG_NAMES, LAYOUTS, FeedParseService, $timeout, Utils) {
         /*
          * Private variables
          *
@@ -21,7 +21,15 @@
             "content": {
               "carouselImages": [],
               "description": "",
-              "rssUrl": "https://blog.ted.com/feed"
+              "rssUrl": null, // "https://blog.ted.com/feed",
+              "feeds": [
+                {
+                  id: "default",
+                  title: "Feed",
+                  type: "rss",
+                  url: "https://blog.ted.com/feed"
+                }
+              ]
             },
             "design": {
               "itemListLayout": LAYOUTS.itemListLayouts[0].name,
@@ -32,7 +40,7 @@
             "default": true
           }
           , tmrDelay = null;
-          ContentHome.errorMessage = false;
+        ContentHome.errorMessage = false;
         /*
          * ContentHome.editor used to add, edit and delete images from your carousel.It will create a new instance of the buildfire carousel editor component.
          */
@@ -54,6 +62,11 @@
          * @type {boolean}
          */
         ContentHome.isValidateButtonClicked = false;
+
+        ContentHome.subPages = {
+          rss: new SubPage("rssFeedDialog"),
+          google: new SubPage("googleFeedDialog"),
+        }
 
 
         /*
@@ -85,6 +98,213 @@
          */
         ContentHome.rssFeedUrl = '';
 
+        ContentHome.prepareFeeds = (feeds) => {
+          return feeds.map(el => {
+            return {
+              subtitle: el.type == "rss" ? "RSS Feed" : "Google Feed",
+              ...el,
+            }
+          });
+        }
+        ContentHome.clearUpFeeds = (feeds) => {
+          return feeds.map(el => {
+            delete el.subtitle;
+            return {
+              ...el
+            }
+          });
+        }
+
+        ContentHome.showAddDialog = (type) => {
+          ContentHome.subPages[type].showDialog({
+            title: type == 'rss' ? "New RSS Feed" : "New Google Feed",
+            saveText: 'Save',
+            hideDelete: false
+          }, (values) => {
+            let feed = {
+              id: Utils._nanoid()
+            };
+            switch (type) {
+              case "rss":
+                feed.title = values.rssFeedTitle;
+                feed.type = "rss";
+                feed.url = values.rssFeedUrl;
+                feed.subtitle = "RSS Feed";
+                break;
+              case "google":
+                feed.title = values.googleFeedTitle;
+                feed.type = "google";
+                feed.keywords = values.googleFeedKeywords;
+                feed.subtitle = "Google Feed";
+                break;
+              default:
+                break;
+            }
+
+            const addFeed = () => {
+              if (!ContentHome.data.content.feeds)
+                ContentHome.data.content.feeds = [feed];
+              else ContentHome.data.content.feeds.push(feed);
+
+              ContentHome.subPages[type].close();
+              if (!$scope.$$phase) $scope.$digest();
+              ContentHome.sortableList.append(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
+            }
+
+            if (type === 'rss') {
+              ContentHome.validateFeedUrl(values.rssFeedUrl, (errors) => {
+                if (errors) ContentHome.subPages[type].showInvalidFeedMessage("rss", errors);
+                else {
+                  addFeed();
+                }
+              });
+            } else if (type === 'google'){
+              let excededMaximumKeywords = values.googleFeedKeywords.split(',').length > 2;
+              if(excededMaximumKeywords) {
+                ContentHome.subPages[type].showInvalidFeedMessage("google", "Maximum of two keywords is allowed");
+              } else addFeed();
+            }
+          }, () => {
+            ContentHome.subPages[type].close();
+          });
+        }
+
+        ContentHome.showEditDialog = (item) => {
+          let values = {};
+
+          switch (item.type) {
+            case "rss":
+              values = {
+                rssFeedTitle: item.title,
+                rssFeedUrl: item.url,
+              }
+              break;
+            case "google":
+              values = {
+                googleFeedTitle: item.title,
+                googleFeedKeywords: item.keywords,
+              }
+              break;
+            default: break;
+          }
+          ContentHome.subPages[item.type].showDialog({
+            title: item.type == 'rss' ? "Edit RSS Feed" : "Edit Google Feed",
+            values: values,
+            saveText: 'Save',
+            hideDelete: false
+          }, (values) => {
+            let index = ContentHome.data.content.feeds.findIndex(el => el.id == item.id);
+            switch (item.type) {
+              case "rss":
+                ContentHome.validateFeedUrl(values.rssFeedUrl, (errors) => {
+                  if (errors) ContentHome.subPages[item.type].showInvalidFeedMessage("rss", errors);
+                  else {
+                    ContentHome.data.content.feeds[index].title = values.rssFeedTitle;
+                    ContentHome.data.content.feeds[index].url = values.rssFeedUrl;
+                    ContentHome.subPages[item.type].close();
+                    ContentHome.sortableList.update(index, ContentHome.prepareFeeds([ContentHome.data.content.feeds[index]])[0]);
+                  }
+                });
+                break;
+              case "google":
+                let excededMaximumKeywords = values.googleFeedKeywords.split(',').length > 2;
+                if(excededMaximumKeywords) {
+                  ContentHome.subPages[item.type].showInvalidFeedMessage("google", "Maximum of two keywords is allowed");
+                } else {
+                  ContentHome.data.content.feeds[index].title = values.googleFeedTitle;
+                  ContentHome.data.content.feeds[index].keywords = values.googleFeedKeywords;
+                  ContentHome.subPages[item.type].close();
+                  ContentHome.sortableList.update(index, ContentHome.prepareFeeds([ContentHome.data.content.feeds[index]])[0]);
+                }
+                break;
+              default: break;
+            }
+            
+            $scope.$digest();
+          }, () => {
+            ContentHome.subPages[item.type].close();
+          });
+        }
+
+        ContentHome.initSortableList = function () {
+          ContentHome.sortableList = new buildfire.components.sortableList("#feeds", {
+            appearance: {
+              title: 'Feeds',
+              addButtonText: "Add Feed"
+            },
+            settings: {
+              showAddButton: true
+            },
+            addButtonOptions: [
+              { id: 1, title: "RSS Feed", type: "rss" },
+              { id: 2, title: "Google Feed", type: "google" }
+            ],
+          });
+
+          ContentHome.sortableList.onDataRequest = function (options, callback) {
+            if (ContentHome.data.default || !ContentHome.data.default && ContentHome.data.rssUrl) {
+              callback([
+                {
+                  id: "default",
+                  title: "Feed",
+                  type: "rss",
+                  subtitle: "RSS Feed",
+                  url: "https://blog.ted.com/feed"
+                },
+              ]);
+            } else {
+              callback(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
+            }
+          }
+          ContentHome.sortableList.onItemRender = function (options) {
+            let obj = {
+              idKey: "id",
+              columns: [
+                { id: 1, titleKey: "title", subtitleKey: "subtitle", type: "title" },
+              ],
+              itemActions: {
+                disableDelete: false,
+                disableEdit: false
+              }
+            }
+            return obj;
+          };
+
+          ContentHome.sortableList.onAddButtonClick = function (options) {
+            if (ContentHome.data.content.feeds.length >= 5)
+              return buildfire.dialog.toast({ message: "A maximum of 5 feeds is allowed", type: "danger" });
+
+            ContentHome.showAddDialog(options.option.type);
+          }
+
+          ContentHome.sortableList.onItemActionClick = (options) => {
+            delete options.item.subtitle;
+
+            switch (options.action) {
+              case "edit":
+                ContentHome.showEditDialog(options.item);
+                break;
+              case "delete":
+                buildfire.dialog.confirm({ message: "Are you sure you want to delete this feed?" }, (err, isConfirmed) => {
+                  if (err) console.error(err);
+                  if (isConfirmed) {
+                    let index = ContentHome.sortableList.items.map(e => e.title).indexOf(options.item.title);
+                    ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter((el, ind) => el.id !== options.item.id);
+                    ContentHome.sortableList.remove(index);
+                    $scope.$digest();
+                  }
+                })
+                break;
+              default: break;
+            }
+          }
+
+          ContentHome.sortableList.onOrderChange = (options) => {
+            ContentHome.data.content.feeds = options.items;
+            if (!$scope.$$phase) $scope.$digest();
+          }
+        }
+
         /* saveData(data, tag) private function
          * It will Call the Datastore.save method to save the data object
          * @param data: data to save in datastore.
@@ -95,9 +315,9 @@
             return;
           }
           var success = function (result) {
-              console.info('Saved data result: ', result);
-              updateMasterItem(newObj);
-            }
+            console.info('Saved data result: ', result);
+            updateMasterItem(newObj);
+          }
             , error = function (err) {
               console.error('Error while saving data : ', err);
             };
@@ -120,12 +340,14 @@
             tmrDelay = setTimeout(function () {
               if (newObj.default == true) {
                 delete newObj.default;
-
                 if (newObj.content.rssUrl == _defaultData.content.rssUrl) {
                   newObj.content.rssUrl = '';
                   ContentHome.rssFeedUrl = '';
                 }
-
+                ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter(el => el.id !== "default" );
+                ContentHome.sortableList.remove(0);
+              } else {
+                ContentHome.data.content.feeds = ContentHome.clearUpFeeds(ContentHome.data.content.feeds);
               }
               console.log('0>>>>>', newObj, ContentHome.masterData);
               saveData(JSON.parse(angular.toJson(newObj)), TAG_NAMES.RSS_FEED_INFO);
@@ -139,29 +361,39 @@
          */
         var init = function () {
           var success = function (result) {
-              console.info('Init success result:', result);
-              if (Object.keys(result.data).length > 0) {
-                updateMasterItem(result.data);
-                ContentHome.data = result.data;
+            console.info('Init success result:', result);
+            if (Object.keys(result.data).length > 0) {
+              updateMasterItem(result.data);
+              ContentHome.data = result.data;
+            }
+            if (!ContentHome.data) {
+              updateMasterItem(_defaultData);
+              ContentHome.data = angular.copy(_defaultData);
+            } else {
+              if (ContentHome.data.content && !ContentHome.data.content.carouselImages) {
+                ContentHome.editor.loadItems([]);
               }
-              if (!ContentHome.data) {
-                updateMasterItem(_defaultData);
-                ContentHome.data = angular.copy(_defaultData);
-              } else {
-                if (ContentHome.data.content && !ContentHome.data.content.carouselImages) {
-                  ContentHome.editor.loadItems([]);
-                }
-                else {
-                  ContentHome.editor.loadItems(ContentHome.data.content.carouselImages);
-                }
-                if (ContentHome.data.content.rssUrl)
-                  ContentHome.rssFeedUrl = ContentHome.data.content.rssUrl;
+              else {
+                ContentHome.editor.loadItems(ContentHome.data.content.carouselImages);
               }
-              //updateMasterItem(ContentHome.data);
-              if (tmrDelay) {
-                clearTimeout(tmrDelay);
+              if (ContentHome.data.content.rssUrl) {
+                ContentHome.rssFeedUrl = ContentHome.data.content.rssUrl;
+                ContentHome.data.content.feeds = [];
+                ContentHome.data.content.feeds.push({
+                  id: Utils._nanoid(),
+                  title: "Feed",
+                  type: "rss",
+                  url: ContentHome.data.content.rssUrl
+                });
+                ContentHome.data.content.rssUrl = null;
               }
             }
+            //updateMasterItem(ContentHome.data);
+            ContentHome.initSortableList();
+            if (tmrDelay) {
+              clearTimeout(tmrDelay);
+            }
+          }
             , error = function (err) {
               console.error('Error while getting data', err);
               if (tmrDelay) {
@@ -264,18 +496,19 @@
         /**
          * ContentHome.validateFeedUrl function will called when you click validate button to check Rss feed url is either valid or not.
          */
-        ContentHome.validateFeedUrl = function () {
+        ContentHome.validateFeedUrl = function (feedUrl, callback) {
           Buildfire.spinner.show();
           var success = function () {
-              ContentHome.isValidUrl = true;
-              ContentHome.isValidateButtonClicked = false;
-              ContentHome.data.content.rssUrl = ContentHome.rssFeedUrl;
-              searchEngine.indexFeed(ContentHome.data.content.rssUrl);
-              Buildfire.spinner.hide();
-              $timeout(function () {
-                ContentHome.isValidUrl = false;
-              }, 3000);
-            }
+            ContentHome.isValidUrl = true;
+            ContentHome.isValidateButtonClicked = false;
+            ContentHome.data.content.rssUrl = ContentHome.rssFeedUrl;
+            searchEngine.indexFeed(ContentHome.data.content.rssUrl);
+            Buildfire.spinner.hide();
+            callback(null);
+            $timeout(function () {
+              ContentHome.isValidUrl = false;
+            }, 3000);
+          }
             , error = function (err) {
               switch (err.code) {
                 case 'ETIMEDOUT': {
@@ -303,6 +536,7 @@
               }
               ContentHome.isInValidUrl = true;
               ContentHome.isValidateButtonClicked = false;
+              callback(ContentHome.errorMessage);
               Buildfire.spinner.hide();
               $timeout(function () {
                 ContentHome.errorMessage = false;
@@ -310,7 +544,7 @@
               }, 3000);
             };
           ContentHome.isValidateButtonClicked = true;
-          FeedParseService.validateFeedUrl(ContentHome.rssFeedUrl).then(success, error);
+          FeedParseService.validateFeedUrl(feedUrl).then(success, error);
         };
 
         /**

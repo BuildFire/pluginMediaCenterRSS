@@ -58,15 +58,11 @@ var bookmarks = {
         buildfire.bookmarks ? buildfire.bookmarks.getAll(cb) : cb(null, []);
     },
     sync: function sync($scope) {
-        buildfire.spinner.show();
         this._getAll(function (bookmarks) {
-            console.log(bookmarks);
-
             var bookmarkIds = [];
             bookmarks.forEach(function (bookmark) {
                 bookmarkIds.push(bookmark.id);
             });
-			buildfire.spinner.hide();
 
             if ($scope.WidgetHome) {
                 $scope.WidgetHome.items.map(function (item) {
