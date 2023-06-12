@@ -35,13 +35,13 @@ const cssTasks = [
 ];
 
 const cssInjection = [
-    { name: "cssInjection", src: "widget/assets/css/injection.css", dest: "widget/styles/injection.css", dest: "/widget/styles" }
+    { name: "cssInjection", src: "widget/assets/css/layout1.css", dest: "widget/styles/layout1.css", dest: "/widget/styles" }
 ];
 
 cssInjection.forEach(function (task) {
     gulp.task(task.name, function () {
         return gulp.src(task.src, { base: '.' })
-            .pipe(concat('injection.css'))
+            .pipe(concat('layout1.css'))
             .pipe(gulp.dest(destinationFolder + task.dest))
     });
 });
