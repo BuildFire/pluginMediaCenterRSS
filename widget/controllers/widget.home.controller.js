@@ -440,7 +440,12 @@
                         //if settings data contains rssUrl proceed with old logic
                         if (!settings.data.content.feeds?.length && settings.data.content.rssUrl) {
                             cacheManager.getItem().then((data) => {
-                                if (!data || !WidgetHome.data.content || data.rssUrl != WidgetHome.data.content.rssUrl) return;
+                                if (!data || !WidgetHome.data.content || data.rssUrl != WidgetHome.data.content.rssUrl) {
+                                    WidgetHome.isItems = false;
+                                    WidgetHome.loading = false;
+                                    if (!$scope.$$phase) $scope.$digest();
+                                    return;
+                                }
                                 getFeedDataSuccess(data);
                             });
                             currentRssUrl = WidgetHome.data.content.rssUrl;
