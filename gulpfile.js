@@ -5,11 +5,12 @@ const minifyCSS = require('gulp-csso');
 const concat = require('gulp-concat');
 const strip = require('gulp-strip-comments');
 const htmlReplace = require('gulp-html-replace');
-const uglifyTerser = require('gulp-terser');
+const uglify = require('gulp-uglify');
 const eslint = require('gulp-eslint');
 const gulpSequence = require('gulp-sequence');
 const minifyInline = require('gulp-minify-inline');
 const gutil = require('gulp-util');
+const babel = require('gulp-babel');
 
 const destinationFolder = releaseFolder();
 
@@ -109,14 +110,17 @@ gulp.task('lint', () => {
     // eslint() attaches the lint output to the "eslint" property
     // of the file object so it can be used by other modules.
         .pipe(eslint({
-            "env": {
-                "browser": true,
-                "es6": true
-            },
-            "extends": "eslint:recommended",
-            "parserOptions": {
-                "sourceType": "module"
-            },
+			"env": {
+				"browser": true,
+				"es6": true
+			},
+			"extends": "eslint:recommended",
+			"parser": "@babel/eslint-parser",
+			"parserOptions": {
+				"sourceType": "module",
+				"ecmaVersion": 9,
+				"requireConfigFile": false,
+			},
             "rules": {
                 "semi": [
                     "warn",
@@ -142,7 +146,11 @@ jsTasks.forEach(function (task) {
 
 
         /// obfuscate and minify the JS files
-            .pipe(uglifyTerser())
+            .pipe(babel({
+                presets: ['@babel/env'],
+                plugins: ["@babel/plugin-proposal-class-properties"]
+            }))
+            .pipe(uglify())
             .on('error', function (err) {
                 gutil.log(gutil.colors.red('[Error]'), err.toString());
             })
