@@ -160,6 +160,7 @@ let cacheManager = {
             options = {
                 path: "/data/pluginMediaCenterRss/",
                 fileName: "cache_" + this.instanceId + ".txt",
+                content: JSON.stringify(data),
             }
         } else {
             options = {
