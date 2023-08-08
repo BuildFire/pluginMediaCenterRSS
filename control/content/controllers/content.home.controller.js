@@ -219,7 +219,7 @@
                 break;
               default: break;
             }
-            
+
             $scope.$digest();
           }, () => {
             ContentHome.subPages[item.type].close();
@@ -280,9 +280,8 @@
                 buildfire.dialog.confirm({ message: "Are you sure you want to delete this feed?" }, (err, isConfirmed) => {
                   if (err) console.error(err);
                   if (isConfirmed) {
-                    let index = ContentHome.sortableList.items.map(e => e.title).indexOf(options.item.title);
                     ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter((el, ind) => el.id !== options.item.id);
-                    ContentHome.sortableList.remove(index);
+                    ContentHome.sortableList.remove(options.item.id);
                     $scope.$digest();
                   }
                 })
