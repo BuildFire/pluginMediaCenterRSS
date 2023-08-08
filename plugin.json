@@ -1,25 +1,43 @@
 {
-  "author":"BuildFire"
-,"pluginName":"Media Center RSS Feed"
-,"pluginDescription":"Sync your RSS feeds to give your users interactive, educational, content. Import your feed once and your new posts will automatically pulled in. Keywords: MP4, stream, music, podcast, radio"
-,"pluginKeywords":"news,pod cast,podcast"
-,"supportEmail":"support@buildfire.com"
-,"supportSite":"https://learn.appdocumentation.com/en/articles/805555-media-center-rss-feed-feature-tutorial"
-,"offlineModeEnabled": true
-,"control":{
-  "content":{
-    "enabled":true
-  }
-, "design":{
-    "enabled":true
-  }
-, "settings":{
-    "enabled":false
-  }
-}
-,"widget":{
-
-},
-  "features": [{"name":"BackgroundAudio"}, {"name" : "sharing"}],
-  "languages" : ["en"]
+  "author": "BuildFire",
+  "pluginName": "Media Center RSS Feed",
+  "pluginDescription": "Sync your RSS feeds to give your users interactive, educational, content. Import your feed once and your new posts will automatically pulled in. Keywords: MP4, stream, music, podcast, radio",
+  "pluginKeywords": "news,pod cast,podcast",
+  "supportEmail": "support@buildfire.com",
+  "supportSite": "https://learn.appdocumentation.com/en/articles/805555-media-center-rss-feed-feature-tutorial",
+  "offlineModeEnabled": true,
+  "control": {
+    "content": {
+      "enabled": true
+    },
+    "design": {
+      "enabled": true
+    },
+    "settings": {
+      "enabled": true
+    },
+    "cssInjection": {
+      "enabled": true,
+      "layouts": [
+        {
+          "name": "Layout",
+          "imageUrl": "resources/layout1.png",
+          "cssPath": "widget/styles/layout1.css"
+        }
+      ]
+    }
+  },
+  "widget": {},
+  "enableOfflineSupport": true,
+  "features": [
+    {
+      "name": "BackgroundAudio"
+    },
+    {
+      "name": "sharing"
+    }
+  ],
+  "languages": [
+    "en"
+  ]
 }

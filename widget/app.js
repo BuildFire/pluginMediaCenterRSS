@@ -150,5 +150,5 @@
                     }
                 }
             };
-        });
+        })
 })(window.angular, window.buildfire);

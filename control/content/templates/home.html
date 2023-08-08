@@ -1,42 +1,3 @@
-<div class="item clearfix row">
-  <div class="labels col-md-3 padding-right-zero pull-left">
-    <span>RSS URL</span>
-  </div>
-  <div class="main pull-right col-md-9 padding-left-zero row">
-    <div class="pull-left col-md-8 padding-zero">
-      <input type="text" class="form-control"
-             ng-model="ContentHome.rssFeedUrl"
-             placeholder="Enter your RSS URL"
-             ng-change="ContentHome.clearData()">
-    </div>
-    <div class="col-md-4 pull-right">
-      <a class="btn btn-primary pull-right stretch"
-         ng-disabled="!ContentHome.rssFeedUrl || ContentHome.isValidateButtonClicked"
-         ng-click="ContentHome.validateFeedUrl()">Submit</a>
-    </div>
-  </div>
-</div>
-<div class="item clearfix row">
-  <div class="main pull-right col-md-9">
-    <div class="alert alert-success alert-sm text-center margin-top-ten" ng-show="ContentHome.isValidUrl">Feed URL submitted, but validation may be required.
-    </div>
-    <div class="alert alert-danger alert-sm text-center margin-top-ten" ng-show="ContentHome.isInValidUrl">
-      <p ng-if="ContentHome.errorMessage">
-        {{ ContentHome.errorMessage}}
-      </p>
-      <p ng-if="!ContentHome.errorMessage">
-          Error. Please check and try again
-      </p>
-    </div>
-  </div>
-</div>
-<div class="item clearfix row">
-  <div class="main pull-right col-md-9 margin-top-ten">
-    <p class="info padding-zero">Note 1: Having problems with your feed? Ensure that it is a valid feed by running it through the RSS feed validator <a onclick="window.open('https://validator.w3.org/feed','_blank')">HERE</a></p>
-    <p class="info padding-zero">Note 2: It is best to use secure websites (<strong>Https</strong>) some operating systems require it.</p>
-  </div>
-</div>
-<hr>
 <div id="carousel"></div>
 <hr>
 <div class="item clearfix row">
@@ -47,21 +8,82 @@
 <hr class="none">
 <div class="item clearfix row">
   <div class="main col-md-12 pull-right">
-    <textarea id="text" rows="5" width="100%" class="form-control"
-              ui-tinymce="ContentHome.descriptionWYSIWYGOptions"
-              ng-model="ContentHome.data.content.description"
-              placeholder="WYSIWYG"></textarea>
+    <textarea id="text" rows="5" width="100%" class="form-control" ui-tinymce="ContentHome.descriptionWYSIWYGOptions"
+      ng-model="ContentHome.data.content.description" placeholder="WYSIWYG"></textarea>
   </div>
 </div>
-<hr>
-<div class="item clearfix row margin-bottom-twenty">
-  <div class="labels col-md-10 padding-right-zero pull-left">
-    <span>Requires Login For Articles</span>
+<br>
+<div id="feeds"></div>
+<br>
+<div id="rssFeedDialog" class="subPage">
+  <div class="spHeader padded">
+    <h4 class="spHeaderText">Entity Title</h4>
+    <a><span class="icon icon-cross2 close-modal"></span></a>
   </div>
-  <div class="main pull-right margin-right-twenty"> 
-      <div class="button-switch">
-        <input id="readRequiresLogin" name="readRequiresLogin" type="checkbox" ng-model="ContentHome.data.readRequiresLogin">
-        <label for="readRequiresLogin" class="label-success"></label>
+  <div class="modal-body padded">
+    <div class="form-group">
+      <label for="title">Feed Name</label>
+      <div class="bf-tooltip margin-left-ten">
+        <div class="tooltip-icon primary-bg">!</div>
+        <div class="tooltip-content to-bottom">
+          If you add more feeds, this will be the tab name on the widget. If you have only one feed, the tab name will not be visible on the widget.
+        </div>
       </div>
+      <input type="text" class="form-control" id="rssFeedTitle" placeholder="Title" required>
+    </div>
+    <div class="form-group">
+      <label for="title">RSS URL</label>
+      <div class="bf-tooltip margin-left-ten">
+        <div class="tooltip-icon primary-bg">!</div>
+        <div class="tooltip-content to-bottom">
+          Enter the URL of the RSS source you wish to display. Using secure websites (HTTPS) is recommended as as some
+          systems may require it.
+        </div>
+      </div>
+      <input type="text" class="form-control" id="rssFeedUrl"
+        placeholder="https://news.un.org/feed/subscribe/en/news/all/rss.xml" required>
+      <span id="rssErrorMessage" style="display: none;"></span>
+      <span>To prevent issues with your feed, make sure to validate it using the <a href="https://validator.w3.org/feed/" target="_blank">RSS Feed Validator</a></span>
+    </div>
+  </div>
+  <div class="spFooter padded">
+    <button href="#" class="btn spDeleteButton">Cancel</button>
+    <button id="saveButton" class="btn btn-success spSaveButton" disabled>Save</button>
+  </div>
+</div>
+
+<div id="googleFeedDialog" class="subPage">
+  <div class="spHeader padded">
+    <h4 class="spHeaderText">Entity Title</h4>
+    <a><span class="icon icon-cross2 close-modal"></span></a>
+  </div>
+  <div class="modal-body padded">
+    <div class="form-group">
+      <label for="title">Feed Name</label>
+      <div class="bf-tooltip margin-left-ten">
+        <div class="tooltip-icon primary-bg">!</div>
+        <div class="tooltip-content to-bottom">
+          If you enable other feeds, this will be the tab name. If you're showing only one feed, you can leave this
+          field empty.
+        </div>
+      </div>
+      <input type="text" class="form-control" id="googleFeedTitle" placeholder="Title" required>
+
+    </div>
+    <div class="form-group">
+      <label for="title">Keywords</label>
+      <div class="bf-tooltip margin-left-ten">
+        <div class="tooltip-icon primary-bg">!</div>
+        <div class="tooltip-content to-bottom">
+          Add keywords separated by commas, which will be used to search relevant articles in Google News. Maximum of two keywords is allowed.
+        </div>
+      </div>
+      <input type="text" class="form-control" id="googleFeedKeywords" placeholder="Sports, NBA" required>
+      <span id="googleErrorMessage" style="display: none;"></span>
+    </div>
+  </div>
+  <div class="spFooter padded">
+    <button href="#" class="btn spDeleteButton">Cancel</button>
+    <button id="saveButton" class="btn btn-success spSaveButton" disabled>Save</button>
   </div>
 </div>

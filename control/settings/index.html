@@ -1,23 +1,53 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    	
-	<!-- Load helper.css to use our helper classes.
-	<link href="../../../../styles/helper.css" rel="stylesheet">
-	-->
-	
-	<!-- JS -->
-	<script src="../../../../scripts/buildfire.min.js"></script>
-   
- 	<!--
-    <script src="../../../../scripts/angular/angular.min.js"></script>
-    <script src="../../../../scripts/angular/ui-bootstrap.min.js"></script>
 
-    <script src="../../../../scripts/jquery/jquery-1.11.2.min.js"></script>
-    -->
+    <link rel="stylesheet" href="../../../../styles/control/siteIcons-control.css">
+    <link rel="stylesheet" href="../../../../styles/helper.css">
+    <script src="../../../../scripts/buildfire.min.js"></script>
+    
+    <!-- build:bundleCSSFiles -->
+    <link rel="stylesheet" href="../content/assets/css/base.css">
+    <!-- endbuild -->
+
+    <!-- build:bundleJSFiles  -->
+    <script src="./settings.js"></script>
+    <!-- endbuild -->
 </head>
+
+<style>
+    .row {
+        display: flex;
+    }
+    .settings-container {
+        padding: 20px;
+    }
+</style>
+
 <body>
-    <span>Settings - Hello world!</span>
+    <div class="settings-container">
+        <div class="row">
+            <div class="col-sm-6">
+                <label>Require Login
+                    <div class="bf-tooltip margin-left-ten">
+                        <div class="tooltip-icon primary-bg">!</div>
+                        <div class="tooltip-content to-bottom">
+                            Allow users to browse through the titles, but require them to log in to access the articles.
+                        </div>
+                    </div>
+                </label>
+            </div>
+            <div class="col-sm-6">
+                <div class="button-switch" style="float: right;">
+                    <input type="checkbox" id="readRequiresLogin" onchange="saveSettings()" disabled>
+                    <label for="readRequiresLogin" class="label-success"></label>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
+
 </html>

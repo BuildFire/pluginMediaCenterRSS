@@ -26,26 +26,49 @@
                  * Handles incoming bookmark navigation
                  */
                 var handleBookmarkNav = function handleBookmarkNav() {
+
                     if ($scope.first) {
-                        buildfire.deeplink.getData(function (data) {
+                        const processDeeplink = (data) => {
                             if (data && data.link) {
                                 var targetGuid = data.link;
-                                var itemLinks = _items.map(function (item) {
-                                    return item.guid
-                                });
-                                var index = itemLinks.indexOf(targetGuid);
-                                if (index < 0) {
-                                    console.warn('bookmarked item not found.');
+
+                                if(WidgetHome.data.content.feeds?.length) {
+                                    Object.keys(WidgetHome.feedsCache).forEach(key => {
+                                        console.log(WidgetHome.feedsCache[key])
+                                        let feedItem = WidgetHome.feedsCache[key].items.find(el => el.guid == targetGuid),
+                                        index = WidgetHome.feedsCache[key].items.indexOf(feedItem);
+                                        if(feedItem) {
+                                            if (data.timeIndex) {
+                                                WidgetHome.feedsCache[key].items[index].seekTo = data.timeIndex;
+                                            }
+                                            $rootScope.deeplinkFirstNav = true;
+                                            WidgetHome.goToItem(index, feedItem);
+                                        }
+                                    });
                                 } else {
-                                    if (data.timeIndex) {
-                                        _items[index].seekTo = data.timeIndex;
+                                    var itemLinks = _items.map(function (item) {
+                                        return item.guid
+                                    });
+                                    var index = itemLinks.indexOf(targetGuid);
+                                    if (index < 0) {
+                                        console.warn('bookmarked item not found.');
+                                    } else {
+                                        if (data.timeIndex) {
+                                            _items[index].seekTo = data.timeIndex;
+                                        }
+                                        $rootScope.deeplinkFirstNav = true;
+                                        WidgetHome.goToItem(index, _items[index]);
                                     }
-                                    $rootScope.deeplinkFirstNav = true;
-                                    WidgetHome.goToItem(index, _items[index]);
+                                    $scope.first = false;
                                 }
-                                $scope.first = false;
                                 if (!$scope.$$phase) $scope.$apply();
                             }
+                        }
+                        buildfire.deeplink.getData(function (data) {
+                            processDeeplink(data);
+                        });
+                        buildfire.deeplink.onUpdate(function (data) {
+                            processDeeplink(data);
                         });
                     }
                 };
@@ -97,7 +120,15 @@
                     "content": {
                         "carouselImages": [],
                         "description": "",
-                        "rssUrl": "https://blog.ted.com/feed"
+                        "rssUrl": null,
+                        "feeds": [
+                            {
+                                id: "default",
+                                title: "Feed",
+                                type: "rss",
+                                url: "https://blog.ted.com/feed"
+                            }
+                        ]
                     },
                     "design": {
                         "itemListLayout": 'List_Layout_1',
@@ -113,6 +144,8 @@
                  */
                 WidgetHome.data = null;
                 WidgetHome.view = null;
+                WidgetHome.feedsCache = {};
+                WidgetHome.currentFeed = null;
 
                 /**
                  * @name WidgetHome.items is used to listing items.
@@ -164,7 +197,7 @@
                         length = 0,
                         imageUrl = '';
                     if (item.image && item.image.url) {
-                        return item.image.url;
+												imageUrl = item.image.url;
                     } else if (item.enclosures && item.enclosures.length > 0) {
                         length = item.enclosures.length;
                         for (i = 0; i < length; i++) {
@@ -173,8 +206,11 @@
                                 break;
                             }
                         }
-                        return imageUrl;
-                    } else {
+                    } 
+										if(imageUrl){
+											return imageUrl;
+										}
+										else {
                         if (item['media:thumbnail'] && item['media:thumbnail']['@'] && item['media:thumbnail']['@'].url) {
                             return item['media:thumbnail']['@'].url;
                         } else if (item['media:group'] && item['media:group']['media:content'] && item['media:group']['media:content']['media:thumbnail'] && item['media:group']['media:content']['media:thumbnail']['@'] && item['media:group']['media:content']['media:thumbnail']['@'].url) {
@@ -195,17 +231,16 @@
                  */
                 var getFeedData = function (rssUrl) {
                     resetDefaults();
-                    buildfire.spinner.show();
                     FeedParseService.getFeedData(rssUrl).then(getFeedDataSuccess, getFeedDataError);
                 };
                 var getFeedDataSuccess = function (result) {
                     // compare the first item, last item, and length of the cached feed vs fetched feed
-					buildfire.spinner.hide();
                     var isUnchanged = checkFeedEquality(_items, result.data.items);
                     console.warn(isUnchanged);
                     
+                    WidgetHome.loading = false;
                     result.rssUrl = WidgetHome.data.content.rssUrl ? WidgetHome.data.content.rssUrl : false;
-                    cache.saveCache(result);
+                    cacheManager.setItem(undefined, result, () => { });
                     if (isUnchanged) return;
 
                     if (WidgetHome.items.length > 0) {
@@ -225,10 +260,9 @@
                     }
                     chunkData = Underscore.chunk(_items, limit);
                     totalChunks = chunkData.length;
-                    WidgetHome.loadMore();
-
                     viewedItems.sync(WidgetHome.items);
                     bookmarks.sync($scope);
+                    WidgetHome.loadMore();
                     handleBookmarkNav();
 
                     isInit = false;
@@ -246,7 +280,6 @@
                 };
 
                 var getFeedDataError = function (err) {
-                    buildfire.spinner.hide();
                     console.error('Error while getting feed data', err);
                 };
 
@@ -259,45 +292,37 @@
                  */
                 var onUpdateCallback = function (event) {
                     if (event && event.tag === TAG_NAMES.RSS_FEED_INFO) {
-                        WidgetHome.data = event.data;
-                        $rootScope.data = event.data;
-                        $rootScope.backgroundImage = WidgetHome.data.design.itemListBgImage;
-                        $rootScope.backgroundImageItem = WidgetHome.data.design.itemDetailsBgImage;
-                        console.log('$rootScope.backgroundImage', $rootScope.backgroundImage);
-                        console.log('$rootScope.backgroundImageItem', $rootScope.backgroundImageItem);
-                        console.log('--------------', WidgetHome.data.design.showImages);
-                        if (WidgetHome.view && event.data.content && event.data.content.carouselImages) {
-                            WidgetHome.view.loadItems(event.data.content.carouselImages);
-                        }
-                        if (!WidgetHome.data.design)
-                            WidgetHome.data.design = {};
-                        if (!WidgetHome.data.design.showImages)
-                            WidgetHome.data.design.showImages = FEED_IMAGES.YES;
-                        if (WidgetHome.data.content && WidgetHome.data.content.rssUrl) {
-                            if (WidgetHome.data.content.rssUrl !== currentRssUrl) {
-                                currentRssUrl = WidgetHome.data.content.rssUrl;
-                                getFeedData(WidgetHome.data.content.rssUrl);
-                            }
-                        } else {
-                            resetDefaults();
-                        }
+                        window.location.reload();
                     }
                 };
+                buildfire.appearance.titlebar.isVisible(null, (err, isVisible) => {
+                    if (err) return console.error(err);
+                    WidgetHome.isTittlebarVisible = isVisible;
+                });
 
-                /**
-                 * @name init()
-                 * @private
-                 * It is used to fetch previously saved user's data
-                 */
-                var init = function () {
+                WidgetHome.isSafeArea = () => {
+                    if (!WidgetHome.isTittlebarVisible && WidgetHome.data.content && !(WidgetHome.data.content.description || WidgetHome.data.content.carouselImages.length)) {
+                        return true;
+                    }
+                    else return false;
+                }
+
+                WidgetHome.fetchFeed = (feed) => {
+                    buildfire.appearance.ready();
+                    let url = null;
+                    if (feed.type === 'google') {
+                        const baseUrl = 'https://news.google.com/rss/search';
+                        const keywords = encodeURIComponent(feed.keywords.replaceAll(",", "AND"));
+                        const rssUrl = `${baseUrl}?q=${keywords}&hl=en&gl=US&ceid=US:en`;
+                        url = rssUrl;
+                    } else url = feed.url;
+                    currentRssUrl = url;
+
+                    getFeedData(url);
+                }
+
+                WidgetHome.processDatastore = (result) => {
                     viewedItems.init();
-                    
-                    var success = function (result) {
-                        cache.getCache(function (err, data) {
-                          // if the rss feed url has changed, ignore the cache and update when fetched 
-                          if (err || !data || !WidgetHome.data.content || data.rssUrl != WidgetHome.data.content.rssUrl) return;
-                          getFeedDataSuccess(data);
-                        });
 
                         if (Object.keys(result.data).length > 0) {
                             WidgetHome.data = result.data;
@@ -310,29 +335,169 @@
                             $rootScope.backgroundImage = WidgetHome.data.design.itemListBgImage;
                             $rootScope.backgroundImageItem = WidgetHome.data.design.itemDetailsBgImage;
                         }
-                        if (WidgetHome.data.content && WidgetHome.data.content.rssUrl) {
-                            currentRssUrl = WidgetHome.data.content.rssUrl;
-                            buildfire.appearance.ready();
-                            getFeedData(WidgetHome.data.content.rssUrl);
-                        }
                         if (!WidgetHome.data.design) {
                             WidgetHome.data.design = {};
                         }
                         if (!WidgetHome.data.design.showImages) {
                             WidgetHome.data.design.showImages = FEED_IMAGES.YES;
                         }
-                        viewedItems.sync(WidgetHome.items);
-                    },
-                    error = function (err) {
-                        console.error('Error while getting data', err);
-                    };
-                    DataStore.get(TAG_NAMES.RSS_FEED_INFO).then(success, error);
+                    $scope.hideandshow = true;
+                }
+
+                WidgetHome.fetchFeedResults = (feed) => {
+                    return new Promise((resolve, reject) => {
+                        let url = null;
+                        if (feed.type === 'google') {
+                            const baseUrl = 'https://news.google.com/rss/search';
+                            const keywords = encodeURIComponent(feed.keywords.replaceAll(",", "AND"));
+                            const rssUrl = `${baseUrl}?q=${keywords}&hl=en&gl=US&ceid=US:en`;
+                            url = rssUrl;
+                        } else url = feed.url;
+
+                        FeedParseService.getFeedData(url).then((result) => {
+                            resolve(result);
+                        }, (err) => {
+                            reject(err);
+                        });
+                    });
+                }
+
+                WidgetHome.checkIfFeedChanged = (feedId) => {
+                    if (WidgetHome.feedsCache[feedId] && WidgetHome.feedsCache[feedId].isChanged) {
+                        return true;
+                    }
+                    else return false;
+                }
+
+                WidgetHome.initializeTabs = () => {
+                    setTimeout(() => {
+                        WidgetHome.activeTab = 0;
+                        let tabs = document.querySelector('.mdc-tab-bar');
+                        if (!tabs) return;
+                        tabs.classList.remove('hidden');
+                        const tabBar = new mdc.tabBar.MDCTabBar(tabs);
+                        tabBar.listen('MDCTabBar:activated', (event) => {
+                            WidgetHome.activeTab = event.detail.index;
+                            WidgetHome.currentFeed = WidgetHome.data.content.feeds[event.detail.index];
+                            WidgetHome.renderFeedItems();
+                            WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged = false;
+                            cacheManager.setItem(WidgetHome.currentFeed.id, WidgetHome.feedsCache[WidgetHome.currentFeed.id], () => { });
+                        });
+                    }, 0);
+                }
+
+                WidgetHome.renderFeedItems = function () {
+                    let allItems = WidgetHome.feedsCache[WidgetHome.currentFeed.id].items;
+                    WidgetHome.prepareFeedImages(WidgetHome.currentFeed.id);
+                    WidgetHome.items = [];
+                    nextChunkDataIndex = 0;
+                    if(allItems?.length) {
+                        WidgetHome.isItems = true;
+                    } else  WidgetHome.isItems = false;
+                    _items = allItems;
+                    chunkData = Underscore.chunk(_items, limit);
+                    totalChunks = chunkData.length;
+                    WidgetHome.loadMore();
+                    viewedItems.sync(WidgetHome.items);
+                    bookmarks.sync($scope);
+                    if(!$scope.$$phase)$scope.$digest();
+                }
+
+                WidgetHome.checkFeedEquality = function (currentItems, fetchedItems) {
+                    if (!(currentItems[0] && currentItems[0].guid) && !fetchedItems.length) return true;
+                    if (!currentItems[0] || !currentItems[0].guid) return false;
+
+                    let sameLength = currentItems.length === fetchedItems.length;
+
+                    let currentItemsString = currentItems.map(element => {
+                        return element.guid + element.link
+                    }).sort().toString();
+                    currentItemsString = currentItemsString.toString();
+
+                    let fetchedItemsString = fetchedItems.map(element => {
+                        return element.guid + element.link
+                    }).sort().toString();
+                    // console.log("sameLength: " + sameLength)
+                    // console.log("currentItemsString: " + currentItemsString)
+                    // console.log("fetchedItemsString: " + fetchedItemsString)
+                    return sameLength && currentItemsString === fetchedItemsString;
+                }
+
+                WidgetHome.prepareFeedImages = (id) => {
+                    WidgetHome.feedsCache[id].items?.forEach((item) => {
+                        item.imageSrcUrl = getImageUrl(item);
+                    });
+                }
+
+                WidgetHome.initializePlugin = function () {
+                    DataStore.get(TAG_NAMES.RSS_FEED_INFO).then((settings) => {
+                        WidgetHome.processDatastore(settings);
+                        WidgetHome.loading = true;
+                        if (!Object.keys(settings.data).length) {
+                            settings.data = WidgetHome.data;
+                        }
+
+                        //if settings data contains rssUrl proceed with old logic
+                        if (!settings.data.content.feeds?.length && settings.data.content.rssUrl) {
+                            cacheManager.getItem().then((data) => {
+                                if (!data || !WidgetHome.data.content || data.rssUrl != WidgetHome.data.content.rssUrl) {
+                                    WidgetHome.isItems = false;
+                                    WidgetHome.loading = false;
+                                    if (!$scope.$$phase) $scope.$digest();
+                                    return;
+                                }
+                                getFeedDataSuccess(data);
+                            });
+                            currentRssUrl = WidgetHome.data.content.rssUrl;
+                            buildfire.appearance.ready();
+                            getFeedData(WidgetHome.data.content.rssUrl);
+                        }
+                        //if settings data has feeds proceed with new logic
+                        else if (settings.data.content.feeds && !settings.data.content.rssUrl) {
+                            if (!settings.data.content.feeds.length) {
+                                WidgetHome.isItems = false;
+                                WidgetHome.loading = false;
+                            }
+                            let cachePromises = [], dataPromises = [];
+                            settings.data.content.feeds.map((feed) => {
+                                cachePromises.push(cacheManager.getItem(feed.id).then(r => ({ id: feed.id, result: r })));
+                                dataPromises.push(WidgetHome.fetchFeedResults(feed).then(r => ({ id: feed.id, result: r })));
+                            });
+                            WidgetHome.initializeTabs();
+
+                            WidgetHome.currentFeed = settings.data.content?.feeds[0];
+                            if (!WidgetHome.currentFeed) return;
+                            Promise.all(cachePromises).then(results => {
+                                results.forEach((el) => {
+                                    if (Object.keys(el).length > 0)
+                                        WidgetHome.feedsCache[el.id] = el.result ?? {};
+                                });
+                                WidgetHome.loading = false;
+                                if (!$scope.$$phase) $scope.$digest();
+                                WidgetHome.renderFeedItems();
+                                handleBookmarkNav();
+                                Promise.all(dataPromises).then(dataResults => {
+                                    dataResults.forEach((el) => {
+                                        let isUnchanged = WidgetHome.checkFeedEquality(WidgetHome.feedsCache[el.id].items ?? [], el.result.data.items);
+                                        WidgetHome.feedsCache[el.id] = {
+                                            items: el.result.data.items ?? [],
+                                            isChanged: !isUnchanged
+                                        };
+                                        if (!$scope.$$phase) $scope.$digest();
+                                        cacheManager.setItem(el.id, WidgetHome.feedsCache[el.id], () => { });
+                                    });
+                                    if (WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged)
+                                        WidgetHome.renderFeedItems();
+                                }).catch((err) => console.error(err));
+                            }).catch((err) => {
+                                console.error(err)
+                            });
+                        }
+                    }, (err) => console.error(err));
                 };
 
-                /**
-                 * @name init() function invocation to fetch previously saved user's data from datastore.
-                 */
-                init();
+                WidgetHome.initializePlugin();
+
 
                 /**
                  * @name DataStore.onUpdate() will invoked when there is some change in datastore
@@ -499,16 +664,16 @@
                         return;
                     }
                     WidgetHome.busy = true;
-                    if (!isInit) Buildfire.spinner.show();
                     if (nextChunkDataIndex < totalChunks) {
                         nextChunk = chunkData[nextChunkDataIndex];
                         WidgetHome.items.push.apply(WidgetHome.items, nextChunk);
                         nextChunkDataIndex = nextChunkDataIndex + 1;
                         nextChunk = null;
-                        WidgetHome.busy = false;
+                        bookmarks.sync($scope);
+                        viewedItems.sync($scope.WidgetHome.items);
                     }
-                    bookmarks.sync($scope);
-                    viewedItems.sync($scope.WidgetHome.items);
+                    WidgetHome.busy = false;
+                    if (!$scope.$$phase) $scope.$digest();
                 };
 
                 /**

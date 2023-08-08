@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html ng-app="mediaCenterRSSPluginContent">
 <head lang="en">
+  <meta name="buildfire" content="enablePluginJsonLoad">
   <!-- CSS -->
-  <link href="../../../../styles/helper.css" rel="stylesheet">
-  <link href="../../../../styles/siteIcons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../../../styles/control/bf-base.css">
+  <link rel="stylesheet" href="../../../../styles/control/siteIcons-control.css">
+  <link rel="stylesheet" href="../../../../styles/helper.css">
 
   <!-- build:bundleCSSFiles -->
   <link href="assets/css/content.app.css" rel="stylesheet">
+  <link href="assets/css/base.css" rel="stylesheet">
+  <link href="assets/css/subPage.css" rel="stylesheet">
+  <link href="assets/css/sortableList.css" rel="stylesheet">
   <!-- endbuild -->
 
   <!-- JS -->
@@ -29,6 +34,8 @@
   <script src="app.services.js"></script>
   <script src="controllers/content.home.controller.js"></script>
   <script src="searchEngine.js"></script>
+  <script src="./assets/js/subPage.js"></script>
+  <script src="./assets/js/sortable.js"></script>
   <!-- endbuild -->
 
   <link rel="stylesheet" href="../../../../styles/transitionAnimation.css">

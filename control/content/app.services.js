@@ -7,9 +7,9 @@
      *  providers and factories/services  *
      **************************************/
 
-  /**
-   * A provider for retrieving global window.buildfire object defined in buildfire.js.
-   */
+    /**
+     * A provider for retrieving global window.buildfire object defined in buildfire.js.
+     */
     .provider('Buildfire', [function () {
       var Buildfire = this;
       Buildfire.$get = function () {
@@ -18,9 +18,9 @@
       return Buildfire;
     }])
 
-  /**
-   * A factory which is a wrapper on global buildfire.datastore object defined in buildfire.js
-   */
+    /**
+     * A factory which is a wrapper on global buildfire.datastore object defined in buildfire.js
+     */
     .factory("DataStore", ['Buildfire', '$q', 'STATUS_CODE', 'STATUS_MESSAGES', function (Buildfire, $q, STATUS_CODE, STATUS_MESSAGES) {
       return {
         get: function (_tagName) {
@@ -56,17 +56,17 @@
       };
     }])
 
-  /**
-   * A REST-ful factory used to validate RSS feed url.
-   */
+    /**
+     * A REST-ful factory used to validate RSS feed url.
+     */
     .factory("FeedParseService", ['$q', '$http', function ($q, $http) {
       var validateFeedUrl = function (_feedUrl) {
         var deferred = $q.defer();
         if (!_feedUrl) {
           deferred.reject(new Error('Undefined feed url'));
         }
-        $http.post('https://proxy.buildfire.com/validatefeedurl', 
-        { feedUrl: _feedUrl })
+        $http.post('https://proxy.buildfire.com/validatefeedurl',
+          { feedUrl: _feedUrl })
           .success(function (response) {
             if (response.data && response.data.isValidFeedUrl) {
               deferred.resolve(response);
@@ -81,6 +81,14 @@
       };
       return {
         validateFeedUrl: validateFeedUrl
+      };
+    }])
+    .factory("Utils", ['$q', '$http', function ($q, $http) {
+      var _nanoid = function(t=21) {
+        return crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?'-':'_'),'');
+      }
+      return {
+        _nanoid: _nanoid
       };
     }]);
 })(window.angular, window.buildfire);
