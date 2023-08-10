@@ -95,7 +95,7 @@
                     sources: null,
                     tracks: null,
                     theme: {
-                        url: "assets/css/videogular/videogular.css"
+                        url: "assets/css/videogular/videogular.min.css"
                     }
                 };
 
@@ -140,7 +140,7 @@
                         sources: null,
                         tracks: null,
                         theme: {
-                            url: "assets/css/videogular/videogular.css"
+                            url: "assets/css/videogular/videogular.min.css"
                         }
                     };
                     WidgetMedia.audio = {
