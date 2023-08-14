@@ -219,7 +219,7 @@
                 break;
               default: break;
             }
-            
+
             $scope.$digest();
           }, () => {
             ContentHome.subPages[item.type].close();
@@ -227,13 +227,19 @@
         }
 
         ContentHome.initSortableList = function () {
-          ContentHome.sortableList = new buildfire.components.sortableList("#feeds", {
+          ContentHome.sortableList = new buildfire.components.control.listView("#feeds", {
             appearance: {
               title: 'Feeds',
               addButtonText: "Add Feed"
             },
             settings: {
-              showAddButton: true
+              showAddButton: true,
+              contentMapping: {
+                idKey: "id",
+                columns: [
+                  { titleKey: "title", subtitleKey: "subtitle" }
+                ]
+              }
             },
             addButtonOptions: [
               { id: 1, title: "RSS Feed", type: "rss" },
@@ -256,19 +262,6 @@
               callback(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
             }
           }
-          ContentHome.sortableList.onItemRender = function (options) {
-            let obj = {
-              idKey: "id",
-              columns: [
-                { id: 1, titleKey: "title", subtitleKey: "subtitle", type: "title" },
-              ],
-              itemActions: {
-                disableDelete: false,
-                disableEdit: false
-              }
-            }
-            return obj;
-          };
 
           ContentHome.sortableList.onAddButtonClick = function (options) {
             if (ContentHome.data.content.feeds.length >= 5)
@@ -279,8 +272,7 @@
 
           ContentHome.sortableList.onItemActionClick = (options) => {
             delete options.item.subtitle;
-
-            switch (options.action) {
+            switch (options.actionId) {
               case "edit":
                 ContentHome.showEditDialog(options.item);
                 break;
@@ -288,9 +280,8 @@
                 buildfire.dialog.confirm({ message: "Are you sure you want to delete this feed?" }, (err, isConfirmed) => {
                   if (err) console.error(err);
                   if (isConfirmed) {
-                    let index = ContentHome.sortableList.items.map(e => e.title).indexOf(options.item.title);
                     ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter((el, ind) => el.id !== options.item.id);
-                    ContentHome.sortableList.remove(index);
+                    ContentHome.sortableList.remove(options.item.id);
                     $scope.$digest();
                   }
                 })
