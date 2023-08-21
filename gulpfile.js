@@ -199,6 +199,11 @@ gulp.task('resources', function () {
         .pipe(gulp.dest(destinationFolder));
 });
 
+gulp.task('videogularTheme', function () {
+    return gulp.src(['widget/assets/css/videogular/**', 'widget/assets/css/videogular/**/*.*'], {base: '.'})
+        .pipe(gulp.dest(destinationFolder));
+});
+
 gulp.task('widgetIcons', function () {
     return gulp.src(['widget/assets/css/icons/*.*'], {base: '.'})
         .pipe(gulp.dest(destinationFolder));
@@ -211,7 +216,7 @@ gulp.task('images', function () {
 });
 
 
-var buildTasksToRun = ['html', 'resources', 'images', 'widgetIcons'];
+var buildTasksToRun = ['html', 'resources', 'images', 'videogularTheme', 'widgetIcons'];
 
 [...cssInjection, ...cssTasks].forEach(function (task) {
     buildTasksToRun.push(task.name)
