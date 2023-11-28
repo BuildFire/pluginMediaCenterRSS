@@ -249,7 +249,6 @@
                         nextChunkDataIndex = 0;
                     }
                     if (result.data && result.data.items.length > 0) {
-                        console.log("🚀 ~ file: widget.home.controller.js:252 ~ getFeedDataSuccess ~ result.data.items:", result.data.items)
                         result.data.items.forEach(function (item) {
                             item.imageSrcUrl = getImageUrl(item);
                         });
@@ -425,7 +424,6 @@
                 }
 
                 WidgetHome.prepareFeedImages = (id) => {
-                    console.log("🚀 ~ file: widget.home.controller.js:429 ~ WidgetHome.feedsCache[id].items?.forEach ~ WidgetHome.feedsCache[id].items:", WidgetHome.feedsCache[id].items)
                     WidgetHome.feedsCache[id].items?.forEach((item) => {
                         item.imageSrcUrl = getImageUrl(item);
                     });
