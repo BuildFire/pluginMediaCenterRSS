@@ -201,7 +201,7 @@
                     } else if (item.enclosures && item.enclosures.length > 0) {
                         length = item.enclosures.length;
                         for (i = 0; i < length; i++) {
-                            if (item.enclosures[i].type.indexOf('image') === 0) {
+                            if (item.enclosures[i].type.indexOf('image') === 0 || item.enclosures[i].type.indexOf('img') != -1) {
                                 imageUrl = item.enclosures[i].url;
                                 break;
                             }
