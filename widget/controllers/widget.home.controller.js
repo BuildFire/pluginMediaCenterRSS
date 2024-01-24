@@ -442,7 +442,6 @@
                             cacheManager.getItem().then((data) => {
                                 if (!data || !WidgetHome.data.content || data.rssUrl != WidgetHome.data.content.rssUrl) {
                                     WidgetHome.isItems = false;
-                                    WidgetHome.loading = false;
                                     if (!$scope.$$phase) $scope.$digest();
                                     return;
                                 }
@@ -472,10 +471,12 @@
                                     if (Object.keys(el).length > 0)
                                         WidgetHome.feedsCache[el.id] = el.result ?? {};
                                 });
-                                WidgetHome.loading = false;
                                 if (!$scope.$$phase) $scope.$digest();
                                 WidgetHome.renderFeedItems();
                                 handleBookmarkNav();
+                                if (WidgetHome.isItems) {
+                                    WidgetHome.loading = false;
+                                }
                                 Promise.all(dataPromises).then(dataResults => {
                                     dataResults.forEach((el) => {
                                         let isUnchanged = WidgetHome.checkFeedEquality(WidgetHome.feedsCache[el.id].items ?? [], el.result.data.items);
@@ -486,6 +487,7 @@
                                         if (!$scope.$$phase) $scope.$digest();
                                         cacheManager.setItem(el.id, WidgetHome.feedsCache[el.id], () => { });
                                     });
+                                    WidgetHome.loading = false;
                                     if (WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged)
                                         WidgetHome.renderFeedItems();
                                 }).catch((err) => console.error(err));
