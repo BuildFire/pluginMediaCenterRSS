@@ -1,6 +1,6 @@
 .subPage {
     display: none;
-    position: absolute;
+    position: fixed;
     top: 0px;
     left: 0px;
     background-color: white;
@@ -15,8 +15,11 @@
 .subPage.activeDialog {
     display: block;
     width: 80%;
-    left: 10%;
-    top: 200px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    overflow: auto;
+    max-height: 90vh;
     box-shadow: grey 5px 5px 15px;
     outline: 9999px solid #ffffffaa;
     z-index: 999;
@@ -52,11 +55,6 @@
 }
 
 .required:after {
-    content: " *";
-    color: red;
-}
-
-.subPage>.modal-body>.form-group>label:after {
     content: " *";
     color: red;
 }

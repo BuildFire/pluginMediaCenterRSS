@@ -22,29 +22,130 @@
   </div>
   <div class="modal-body padded">
     <div class="form-group">
-      <label for="title">Feed Name</label>
-      <div class="bf-tooltip margin-left-ten">
-        <div class="tooltip-icon primary-bg">!</div>
-        <div class="tooltip-content to-bottom">
+      <label class="tooltip-container">Feed Name <span class="required"></span>
+        <span class="btn-info-icon btn-primary">
+        <span class="cp-tooltip top-cp-tooltip">
           If you add more feeds, this will be the tab name on the widget. If you have only one feed, the tab name will not be visible on the widget.
-        </div>
-      </div>
+        </span>
+        </span>
+      </label>
       <input type="text" class="form-control" id="rssFeedTitle" placeholder="Title" required>
     </div>
     <div class="form-group">
-      <label for="title">RSS URL</label>
-      <div class="bf-tooltip margin-left-ten">
-        <div class="tooltip-icon primary-bg">!</div>
-        <div class="tooltip-content to-bottom">
+      <label class="tooltip-container">RSS URL <span class="required"></span>
+        <span class="btn-info-icon btn-primary">
+        <span class="cp-tooltip">
           Enter the URL of the RSS source you wish to display. Using secure websites (HTTPS) is recommended as as some
           systems may require it.
-        </div>
-      </div>
+        </span>
+        </span>
+      </label>
       <input type="text" class="form-control" id="rssFeedUrl"
         placeholder="https://news.un.org/feed/subscribe/en/news/all/rss.xml" required>
       <span id="rssErrorMessage" style="display: none;"></span>
       <span>To prevent issues with your feed, make sure to validate it using the <a href="https://validator.w3.org/feed/" target="_blank">RSS Feed Validator</a></span>
     </div>
+
+    <div class="form-group">
+      <div class="row">
+        <div class="col-sm-6">
+          <label class="tooltip-container">Advanced Settings
+            <span class="btn-info-icon btn-primary">
+            <span class="cp-tooltip">
+              Advanced settings is used only to configure Search Engine Indexing. Adjust the feed's key parameters to enable searchability of feed items in the global search located in the app's side menu.
+            </span>
+            </span>
+          </label>
+        </div>
+        <div class="col-sm-6">
+          <div class="button-switch" style="float: right;">
+            <input type="checkbox" id="enableSearchEngineConfig">
+            <label for="enableSearchEngineConfig" class="label-success"></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hidden" advanced-modal-show="enableSearchEngineConfig">
+      <div class="form-group">
+        <div>
+          <label class="tooltip-container">Unique Key
+            <span class="btn-info-icon btn-primary">
+            <span class="cp-tooltip">
+              Unique key for each item returned from rss service.
+            </span>
+            </span>
+          </label>
+          <input type="text" class="form-control" id="uniqueKey" placeholder="id">
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <div>
+          <label class="tooltip-container">Title Key
+            <span class="btn-info-icon btn-primary">
+            <span class="cp-tooltip">
+              The title for each item returned from rss service.
+            </span>
+            </span>
+          </label>
+          <input type="text" class="form-control" id="titleKey" placeholder="title">
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <div>
+          <label class="tooltip-container">Description Key
+            <span class="btn-info-icon btn-primary">
+            <span class="cp-tooltip">
+              The description key for each item returned from rss service.
+            </span>
+            </span>
+          </label>
+          <input type="text" class="form-control" id="descriptionKey" placeholder="media:group.media:keywords">
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <div>
+          <label class="tooltip-container">Url Key
+            <span class="btn-info-icon btn-primary">
+            <span class="cp-tooltip">
+              The url key for each item returned from rss service.
+            </span>
+            </span>
+          </label>
+          <input type="text" class="form-control" id="urlKey" placeholder="link">
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <div>
+          <label class="tooltip-container">Publish Date Key
+            <span class="btn-info-icon btn-primary">
+            <span class="cp-tooltip">
+              The publish date key for each item returned from rss service.
+            </span>
+            </span>
+          </label>
+          <input type="text" class="form-control" id="publishDateKey" placeholder="pubDate">
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <div>
+          <label class="tooltip-container">Image URL Key
+            <span class="btn-info-icon btn-primary">
+            <span class="cp-tooltip">
+              The image url key for each item returned from rss service.
+            </span>
+            </span>
+          </label>
+          <input type="text" class="form-control" id="imageUrlKey" placeholder="media:group.media:thumbnail.$.url">
+        </div>
+      </div>
+    </div>
+
   </div>
   <div class="spFooter padded">
     <button href="#" class="btn spDeleteButton">Cancel</button>
@@ -59,25 +160,25 @@
   </div>
   <div class="modal-body padded">
     <div class="form-group">
-      <label for="title">Feed Name</label>
-      <div class="bf-tooltip margin-left-ten">
-        <div class="tooltip-icon primary-bg">!</div>
-        <div class="tooltip-content to-bottom">
+      <label class="tooltip-container">Feed Name <span class="required"></span>
+        <span class="btn-info-icon btn-primary">
+        <span class="cp-tooltip top-cp-tooltip">
           If you enable other feeds, this will be the tab name. If you're showing only one feed, you can leave this
           field empty.
-        </div>
-      </div>
+        </span>
+        </span>
+      </label>
       <input type="text" class="form-control" id="googleFeedTitle" placeholder="Title" required>
 
     </div>
     <div class="form-group">
-      <label for="title">Keywords</label>
-      <div class="bf-tooltip margin-left-ten">
-        <div class="tooltip-icon primary-bg">!</div>
-        <div class="tooltip-content to-bottom">
+      <label class="tooltip-container">Keywords <span class="required"></span>
+        <span class="btn-info-icon btn-primary">
+        <span class="cp-tooltip">
           Add keywords separated by commas, which will be used to search relevant articles in Google News. Maximum of two keywords is allowed.
-        </div>
-      </div>
+        </span>
+        </span>
+      </label>
       <input type="text" class="form-control" id="googleFeedKeywords" placeholder="Sports, NBA" required>
       <span id="googleErrorMessage" style="display: none;"></span>
     </div>
