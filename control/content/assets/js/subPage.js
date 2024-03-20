@@ -33,25 +33,64 @@ class SubPage {
 			let nodes = this.container.querySelectorAll("input");
 			let values = {};
 			nodes.forEach(element => {
-				values[element.id] = element.value
+				if (element.type === "checkbox") {
+					values[element.id] = element.checked;
+				} else {
+					values[element.id] = element.value
+				}
 			});
 			return values;
 		};
 
+		const getRequiredValues = () => {
+			let nodes = this.container.querySelectorAll("input");
+			let values = {};
+			nodes.forEach(element => {
+				if (element.required) {
+					values[element.id] = element.value
+				}
+			});
+			return values;
+		}
+
+		// Toggle advanced settings based on checkbox state
+		// use this to show/hide advanced settings
+		const toggleAdvanced = (id, state) => {
+			let nodes = document.querySelectorAll(`[advanced-modal-show='${id}']`);
+			nodes.forEach(node => {
+				if (state) {
+					node.classList.remove("hidden");
+				} else {
+					node.classList.add("hidden");
+				}
+			});
+		}
+
 		const setElementsValues = () => {
 			Object.keys(options.values).map(key => {
 				let node = this.container.querySelector(`#${key}`);
-				node.value = options.values[key];
+				if (node) {
+					if (node.type === "checkbox") {
+						node.checked = options.values[key];
+						toggleAdvanced(node.id, node.checked);
+					} else {
+						node.value = options.values[key];
+					}
+				}
 			});
 			this.container.querySelector(".spSaveButton").disabled = false;
 		};
 
 		this.container.addEventListener("input", (e) => {
-			let values = getElementsValues();
+			let values = getRequiredValues();
 			let hasAllValues = Object.values(values).every((v) => v);
 			let btnSave = this.container.querySelector(".spSaveButton");
 
 			btnSave.disabled = hasAllValues ? false : true;
+		});
+
+		this.container.addEventListener("change", (e) => {
+			toggleAdvanced(e.target.id, e.target.checked);
 		});
 
 		if (options.values)
