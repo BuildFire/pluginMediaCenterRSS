@@ -115,27 +115,69 @@
           });
         }
 
+        ContentHome.prepareDialogValues = (item, type) => {
+          let values = {};
+          switch (type) {
+            case "rss":
+              const rssFeed = new RssFeed(item);
+              values = {
+                rssFeedTitle: rssFeed.title,
+                rssFeedUrl: rssFeed.url,
+                enableSearchEngineConfig: rssFeed.advancedConfig.enableSearchEngineConfig,
+                uniqueKey: rssFeed.advancedConfig.searchEngineItemConfig.uniqueKey,
+                titleKey: rssFeed.advancedConfig.searchEngineItemConfig.titleKey,
+                urlKey: rssFeed.advancedConfig.searchEngineItemConfig.urlKey,
+                descriptionKey: rssFeed.advancedConfig.searchEngineItemConfig.descriptionKey,
+                publishDateKey: rssFeed.advancedConfig.searchEngineItemConfig.publishDateKey,
+                imageUrlKey: rssFeed.advancedConfig.searchEngineItemConfig.imageUrlKey,
+              }
+              break;
+            case "google":
+              const googleFeed = new GoogleFeed(item);
+              values = {
+                googleFeedTitle: googleFeed.title,
+                googleFeedKeywords: googleFeed.keywords,
+              }
+              break;
+            default: break;
+          }
+          return values;
+        }
+
         ContentHome.showAddDialog = (type) => {
+          const values = ContentHome.prepareDialogValues({}, type);
           ContentHome.subPages[type].showDialog({
             title: type == 'rss' ? "New RSS Feed" : "New Google Feed",
             saveText: 'Save',
+            values: values,
             hideDelete: false
           }, (values) => {
-            let feed = {
-              id: Utils._nanoid()
-            };
+            let feed = {};
             switch (type) {
               case "rss":
-                feed.title = values.rssFeedTitle;
-                feed.type = "rss";
-                feed.url = values.rssFeedUrl;
-                feed.subtitle = "RSS Feed";
+                feed = new RssFeed({
+                  id: Utils._nanoid(),
+                  title: values.rssFeedTitle,
+                  url: values.rssFeedUrl,
+                  advancedConfig: {
+                    enableSearchEngineConfig: values.enableSearchEngineConfig,
+                    searchEngineItemConfig: {
+                      uniqueKey: values.uniqueKey,
+                      titleKey: values.titleKey,
+                      descriptionKey: values.descriptionKey,
+                      urlKey: values.urlKey,
+                      publishDateKey: values.publishDateKey,
+                      imageUrlKey: values.imageUrlKey,
+                    }
+                  }
+                });
                 break;
               case "google":
-                feed.title = values.googleFeedTitle;
-                feed.type = "google";
-                feed.keywords = values.googleFeedKeywords;
-                feed.subtitle = "Google Feed";
+                feed = new GoogleFeed({
+                  id: Utils._nanoid(),
+                  title: values.googleFeedTitle,
+                  keywords: values.googleFeedKeywords,
+                });
                 break;
               default:
                 break;
@@ -170,23 +212,8 @@
         }
 
         ContentHome.showEditDialog = (item) => {
-          let values = {};
-
-          switch (item.type) {
-            case "rss":
-              values = {
-                rssFeedTitle: item.title,
-                rssFeedUrl: item.url,
-              }
-              break;
-            case "google":
-              values = {
-                googleFeedTitle: item.title,
-                googleFeedKeywords: item.keywords,
-              }
-              break;
-            default: break;
-          }
+          const _feed = item.type == "rss" ? new RssFeed(item) : new GoogleFeed(item);
+          const values = ContentHome.prepareDialogValues(_feed, item.type);
           ContentHome.subPages[item.type].showDialog({
             title: item.type == 'rss' ? "Edit RSS Feed" : "Edit Google Feed",
             values: values,
@@ -199,8 +226,23 @@
                 ContentHome.validateFeedUrl(values.rssFeedUrl, (errors) => {
                   if (errors) ContentHome.subPages[item.type].showInvalidFeedMessage("rss", errors);
                   else {
-                    ContentHome.data.content.feeds[index].title = values.rssFeedTitle;
-                    ContentHome.data.content.feeds[index].url = values.rssFeedUrl;
+                    const updatedFeed = new RssFeed({
+                      id: item.id,
+                      title: values.rssFeedTitle,
+                      url: values.rssFeedUrl,
+                      advancedConfig: {
+                        enableSearchEngineConfig: values.enableSearchEngineConfig,
+                        searchEngineItemConfig: {
+                          uniqueKey: values.uniqueKey,
+                          titleKey: values.titleKey,
+                          descriptionKey: values.descriptionKey,
+                          urlKey: values.urlKey,
+                          publishDateKey: values.publishDateKey,
+                          imageUrlKey: values.imageUrlKey,
+                        }
+                      }
+                    });
+                    ContentHome.data.content.feeds[index] = updatedFeed;
                     ContentHome.subPages[item.type].close();
                     ContentHome.sortableList.update(index, ContentHome.prepareFeeds([ContentHome.data.content.feeds[index]])[0]);
                   }
@@ -211,8 +253,12 @@
                 if(excededMaximumKeywords) {
                   ContentHome.subPages[item.type].showInvalidFeedMessage("google", "Maximum of two keywords is allowed");
                 } else {
-                  ContentHome.data.content.feeds[index].title = values.googleFeedTitle;
-                  ContentHome.data.content.feeds[index].keywords = values.googleFeedKeywords;
+                  const updatedFeed = new GoogleFeed({
+                    id: item.id,
+                    title: values.googleFeedTitle,
+                    keywords: values.googleFeedKeywords,
+                  });
+                  ContentHome.data.content.feeds[index] = updatedFeed;
                   ContentHome.subPages[item.type].close();
                   ContentHome.sortableList.update(index, ContentHome.prepareFeeds([ContentHome.data.content.feeds[index]])[0]);
                 }
