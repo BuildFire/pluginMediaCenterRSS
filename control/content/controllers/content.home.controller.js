@@ -97,6 +97,7 @@
          * @type {string}
          */
         ContentHome.rssFeedUrl = '';
+        ContentHome.activeRssFeed = null;
 
         ContentHome.prepareFeeds = (feeds) => {
           return feeds.map(el => {
@@ -171,6 +172,7 @@
                     }
                   }
                 });
+                ContentHome.activeRssFeed = feed;
                 break;
               case "google":
                 feed = new GoogleFeed({
@@ -242,6 +244,7 @@
                         }
                       }
                     });
+                    ContentHome.activeRssFeed = updatedFeed;
                     ContentHome.data.content.feeds[index] = updatedFeed;
                     ContentHome.subPages[item.type].close();
                     ContentHome.sortableList.update(index, ContentHome.prepareFeeds([ContentHome.data.content.feeds[index]])[0]);
@@ -354,6 +357,39 @@
           var success = function (result) {
             console.info('Saved data result: ', result);
             updateMasterItem(newObj);
+            if (ContentHome.activeRssFeed) {
+              searchEngine.get(ContentHome.activeRssFeed.id, (err, result) => {
+                if (err) console.error(err);
+                else {
+                  const feedUrl = result[0] ? result[0].feed_config.url : false;
+                  const feedItemConfig = result[0] ? result[0].feed_item_config : {};
+                  const { feedItemConfig: currentFeedItemConfig } = searchEngine.getSearchEngineOptions(ContentHome.activeRssFeed);
+
+                  let isFeedItemConfigChanged = false,
+                      currentConfigValues = Object.values(currentFeedItemConfig),
+                      feedConfigValues = Object.values(feedItemConfig);
+
+                  for (let i = 0; i < currentConfigValues.length; i++) {
+                    if (feedConfigValues.indexOf(currentConfigValues[i]) === -1) {
+                      isFeedItemConfigChanged = true;
+                      break;
+                    }
+                  }
+                  // TODO: need to add error handlers
+                  if (!feedUrl || (feedUrl === ContentHome.activeRssFeed.url && isFeedItemConfigChanged)) {
+                    searchEngine.insertFeed(ContentHome.activeRssFeed, (err, result) => {
+                      if (err) console.error(err);
+                      else console.log('Feed inserted successfully', result);
+                    });
+                  } else if (feedUrl !== ContentHome.activeRssFeed.url) {
+                    searchEngine.updateFeed(ContentHome.activeRssFeed, (err, result) => {
+                      if (err) console.error(err);
+                      else console.log('Feed updated successfully', result);
+                    });
+                  }
+                }
+              });
+            }
           }
             , error = function (err) {
               console.error('Error while saving data : ', err);
@@ -539,7 +575,6 @@
             ContentHome.isValidUrl = true;
             ContentHome.isValidateButtonClicked = false;
             ContentHome.data.content.rssUrl = ContentHome.rssFeedUrl;
-            searchEngine.indexFeed(ContentHome.data.content.rssUrl);
             Buildfire.spinner.hide();
             callback(null);
             $timeout(function () {

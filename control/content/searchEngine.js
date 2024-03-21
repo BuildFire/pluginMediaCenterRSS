@@ -1,74 +1,71 @@
 'use strict';
 
 var searchEngine = {
-  indexFeed: function indexFeed(rssUrl) {
-    var _this = this;
-    this._get(function (err, result) {
-      if (err) throw err;
-      console.log(result);
+  indexFeed: function indexFeed(rssFeed, callback) {
+    this.get(rssFeed.id, (err, result) => {
+      if (err) callback(err, null);
+
       var feedUrl = result[0] ? result[0].feed_config.url : false;
-      if (feedUrl === rssUrl) {
-        var options = { searchText: "e" };
-        var callback = function callback(e, d) {
-          return console.log(e, d.hits);
-        };
-        buildfire.services.searchEngine.search(options, callback);
+      if (!feedUrl) {
+        this.insertFeed(rssFeed, callback);
+      } else if (feedUrl !== rssFeed.url) { // TODO: need to be checked
+        this.updateFeed(rssFeed, callback);
         return;
-      } else if (!feedUrl) {
-        _this._insertFeed(rssUrl);
       } else {
-        _this._updateFeed(result[0]._id, rssUrl);
+        callback('Feed already exists', null);
       }
     });
   },
-  _insertFeed: function _insertFeed(url, callback) {
+  deleteFeed: function deleteFeed(rssFeed, callback) {
+    this.get(rssFeed.id, function (err, result) {
+      if (err) callback(err, null);
+      var feedId = result[0]._id;
+      var options = {
+        tag: `rss_feed_${rssFeed.id}`,
+        feedId: feedId,
+        removeFeedData: true
+      };
+      buildfire.services.searchEngine.feeds.delete(options, callback);
+    });
+  },
+  insertFeed: function insertFeed(rssFeed, callback) {
+    var options = this.getSearchEngineOptions(rssFeed);
+    buildfire.services.searchEngine.feeds.insert(options, callback);
+  },
+  updateFeed: function updateFeed(rssFeed, callback) {
+    this.deleteFeed(rssFeed, (err, result) => {
+      if (err) return callback(err, null);
+      this.insertFeed(rssFeed, callback);
+    });
+  },
+  get: function get(feedId, callback) {
+    buildfire.services.searchEngine.feeds.get({ tag: `rss_feed_${feedId}`, feedType: 'rss' }, function (err, result) {
+      callback(err, result);
+    });
+  },
+  getSearchEngineOptions: function getSearchEngineOptions(rssFeed) {
+    let feedItemConfig = {
+      uniqueKey: "guid",
+      titleKey: "title",
+      urlKey: "link",
+      descriptionKey: "media:group.media:keywords",
+      publishDateKey: "pubDate",
+      imageUrlKey: "media:group.media:thumbnail.$.url"
+    };
+    if (rssFeed.advancedConfig && rssFeed.enableSearchEngineConfig && rssFeed.advancedConfig.searchEngineItemConfig) {
+      feedItemConfig = rssFeed.advancedConfig.searchEngineItemConfig;
+    }
 
-    var options = {
-      tag: 'rss_feed',
+    let options = {
+      tag: `rss_feed_${rssFeed.id}`,
       title: 'rss feed',
       feedType: "rss",
       feedConfig: {
-        url: url
+        url: rssFeed.url
       },
-      // feedItemConfig: {
-      //   uniqueKey: 'id',
-      //   titleKey: 'title',
-      //   urlKey: 'link',
-      //   descriptionKey: 'media:group.media:description'
-      // imageUrlKey: "itunes.image"
-      // }
+      feedItemConfig: feedItemConfig
     };
 
-    buildfire.services.searchEngine.feeds.insert(options, function (err, result) {
-      if (err) {
-        if (err.innerError.error === 'invalid unique_key') {
-          options.feedItemConfig = { uniqueKey: 'title' };
-          buildfire.services.searchEngine.feeds.insert(options, function (err, result) {
-            if (err) throw err;
-            console.log(result);
-          });
-        }
-      };
-      console.log(result);
-    });
+    return options;
   },
-  _updateFeed: function _updateFeed(feedId, url) {
-    var _this2 = this;
-
-    var options = {
-      tag: 'rss_feed',
-      feedId: feedId,
-      removeFeedData: true
-    };
-    var callback = function callback(e) {
-      if (e) throw e;
-      _this2._insertFeed(url);
-    };
-    buildfire.services.searchEngine.feeds.delete(options, callback);
-  },
-  _get: function _get(callback) {
-    buildfire.services.searchEngine.feeds.get({ tag: 'rss_feed', feedType: 'rss' }, function (err, result) {
-      callback(err, result);
-    });
-  }
 };

@@ -17,7 +17,7 @@ class RssFeed {
         return {
             enableSearchEngineConfig: typeof settings.enableSearchEngineConfig === 'boolean' ? settings.enableSearchEngineConfig : false,
             searchEngineItemConfig: {
-                uniqueKey: typeof settings.searchEngineItemConfig.uniqueKey !== 'undefined' ? settings.searchEngineItemConfig.uniqueKey : "id",
+                uniqueKey: typeof settings.searchEngineItemConfig.uniqueKey !== 'undefined' ? settings.searchEngineItemConfig.uniqueKey : "guid",
                 titleKey: typeof settings.searchEngineItemConfig.titleKey !== 'undefined' ? settings.searchEngineItemConfig.titleKey : "title",
                 urlKey: typeof settings.searchEngineItemConfig.urlKey !== 'undefined' ? settings.searchEngineItemConfig.urlKey : "link",
                 descriptionKey: typeof settings.searchEngineItemConfig.descriptionKey !== 'undefined' ? settings.searchEngineItemConfig.descriptionKey : "media:group.media:keywords",
