@@ -18,7 +18,9 @@ var searchEngine = {
   },
   deleteFeed: function deleteFeed(rssFeed, callback) {
     this.get(rssFeed.id, function (err, result) {
-      if (err || !result || !result[0]) callback(err, null);
+      if (err) return callback(err, null);
+      if (!result || !result[0] || !result[0]._id) return callback();
+
       var feedId = result[0]._id;
       var options = {
         tag: `rss_feed_${rssFeed.id}`,

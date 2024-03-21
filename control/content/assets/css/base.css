@@ -530,3 +530,13 @@ p.info__note.info__note--transparent {
     transform: none !important;
     -webkit-transform: none !important;
 }
+
+#loader {
+    border: 6px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 4px solid var(--c-primary);
+    width: 30px;
+    height: 30px;
+    -webkit-animation: spin 1s linear infinite; 
+    animation: spin 1s linear infinite;
+}
