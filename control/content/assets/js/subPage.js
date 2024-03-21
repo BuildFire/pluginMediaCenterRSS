@@ -24,6 +24,11 @@ class SubPage {
 	showDialog(options, saveCallback, deleteCallback) {
 		document.body.scroll(0, 0);
 		let btnSave = this.container.querySelector(".spSaveButton");
+		let spFooter = this.container.querySelector(".spFooter");
+
+		if (options.hideFooter)
+			spFooter.style.display = 'none';
+
 		btnSave.onclick = () => {
 			let values = getElementsValues();
 			saveCallback(values);
@@ -78,7 +83,9 @@ class SubPage {
 					}
 				}
 			});
-			this.container.querySelector(".spSaveButton").disabled = false;
+			let values = getRequiredValues();
+			let hasAllValues = Object.values(values).every((v) => v);
+			btnSave.disabled = hasAllValues ? false : true;
 		};
 
 		this.container.addEventListener("input", (e) => {
