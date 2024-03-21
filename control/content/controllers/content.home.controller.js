@@ -228,7 +228,7 @@
                 buildfire.dialog.confirm({ message: "Are you sure you want to delete this feed?" }, (err, isConfirmed) => {
                   if (err) console.error(err);
                   if (isConfirmed) {
-                    ContentHome.handleLoaderDialog("Deleting data, please wait...", true);
+                    ContentHome.handleLoaderDialog("Deleting Data", "Deleting data, please wait...", true);
                     searchEngine.deleteFeed(options.item, (err, result) => {
                       ContentHome.handleLoaderDialog();
                       if (err) return console.error(err);
@@ -251,11 +251,11 @@
         }
 
         // manage CP loader 
-        ContentHome.handleLoaderDialog = function (message, show = false) {
+        ContentHome.handleLoaderDialog = function (title, message, show = false) {
           if(show) {
             const showLoaderOptions = {
               hideFooter: true,
-              title: 'Inserting Data'
+              title: title
             }
             ContentHome.subPages.cpLoader.showDialog(showLoaderOptions, () => {})
             
@@ -268,14 +268,39 @@
         }
 
         const handleFeedInsertion = (item, values, type) => {
+          const insertFeedToList = (feed) => {
+            if (item) { // update RSS feed
+              let index = ContentHome.data.content.feeds.findIndex(el => el.id == item.id);
+              // change the id if the user is updating the default feed
+              if (feed.id === 'default') {
+                feed.id = Utils.nanoid();
+                ContentHome.data.content.feeds[index] = feed;
+                ContentHome.sortableList.remove('default');
+                ContentHome.sortableList.append(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
+              } else {
+                ContentHome.data.content.feeds[index] = feed;
+                ContentHome.sortableList.update(index, ContentHome.prepareFeeds([ContentHome.data.content.feeds[index]])[0]);
+              }
+              ContentHome.subPages[type].close();
+            } else { // add new RSS feed
+              if (!ContentHome.data.content.feeds) ContentHome.data.content.feeds = [feed];
+              else ContentHome.data.content.feeds.push(feed);
+              ContentHome.subPages[type].close();
+              ContentHome.sortableList.append(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
+            }
+            if (!$scope.$$phase) $scope.$digest();
+          }
+
           switch (type) {
             case "rss":
+              ContentHome.handleLoaderDialog("Validating Feed", "Validating feed url, please wait...", true);
               ContentHome.validateFeedUrl(values.rssFeedUrl, (errors) => {
                 if (errors) {
+                  ContentHome.handleLoaderDialog();
                   ContentHome.subPages[type].showInvalidFeedMessage("rss", errors);
                 } else {
                   const feed = new RssFeed({
-                    id: item ? item.id : Utils._nanoid(),
+                    id: item ? item.id : Utils.nanoid(),
                     title: values.rssFeedTitle,
                     url: values.rssFeedUrl,
                     advancedConfig: {
@@ -291,19 +316,7 @@
                     }
                   });
                   ContentHome.activeRssFeed = feed;
-
-                  if (item) {
-                    let index = ContentHome.data.content.feeds.findIndex(el => el.id == item.id);
-                    ContentHome.data.content.feeds[index] = feed;
-                    ContentHome.subPages[item.type].close();
-                    ContentHome.sortableList.update(index, ContentHome.prepareFeeds([ContentHome.data.content.feeds[index]])[0]);
-                  } else {
-                    if (!ContentHome.data.content.feeds) ContentHome.data.content.feeds = [feed];
-                    else ContentHome.data.content.feeds.push(feed);
-
-                    ContentHome.subPages[type].close();
-                    ContentHome.sortableList.append(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
-                  }
+                  insertFeedToList(feed);
                 }
               });
               break;
@@ -313,24 +326,11 @@
                 ContentHome.subPages[type].showInvalidFeedMessage("google", "Maximum of two keywords is allowed");
               } else {
                 const feed = new GoogleFeed({
-                  id: item ? item.id : Utils._nanoid(),
+                  id: item ? item.id : Utils.nanoid(),
                   title: values.googleFeedTitle,
                   keywords: values.googleFeedKeywords,
                 });
-
-                if (item) { // update google feed
-                  let index = ContentHome.data.content.feeds.findIndex(el => el.id == item.id);
-                  ContentHome.data.content.feeds[index] = feed;
-                  ContentHome.subPages[type].close();
-                  ContentHome.sortableList.update(index, ContentHome.prepareFeeds([ContentHome.data.content.feeds[index]])[0]);
-                } else { // add new google feed
-                  if (!ContentHome.data.content.feeds) ContentHome.data.content.feeds = [feed];
-                  else ContentHome.data.content.feeds.push(feed);
-
-                  ContentHome.subPages[type].close();
-                  ContentHome.sortableList.append(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
-                }
-                if (!$scope.$$phase) $scope.$digest();
+                insertFeedToList(feed);
               }
               break;
             default: break;
@@ -351,7 +351,7 @@
             updateMasterItem(newObj);
             if (ContentHome.activeRssFeed) {
               ContentHome.subPages.rss.close();
-              ContentHome.handleLoaderDialog("Fetching data, please wait...", true);
+              ContentHome.handleLoaderDialog("Fetching Data", "Fetching data, please wait...", true);
 
               searchEngine.get(ContentHome.activeRssFeed.id, (err, result) => {
                 if (err) {
@@ -376,7 +376,7 @@
                   }
 
                   if (!feedUrl || (feedUrl === ContentHome.activeRssFeed.url && isFeedItemConfigChanged)) {
-                    ContentHome.handleLoaderDialog("Indexing data for search results, please wait...", true);
+                    ContentHome.handleLoaderDialog("Indexing Data", "Indexing data for search results, please wait...", true);
                     searchEngine.insertFeed(ContentHome.activeRssFeed, (err, result) => {
                       ContentHome.handleLoaderDialog();
                       if (err) {
@@ -386,7 +386,7 @@
                       ContentHome.activeRssFeed = null;
                     });
                   } else if (feedUrl !== ContentHome.activeRssFeed.url) {
-                    ContentHome.handleLoaderDialog("Updating data for search results, please wait...", true);
+                    ContentHome.handleLoaderDialog("Updating Data", "Updating data for search results, please wait...", true);
                     searchEngine.updateFeed(ContentHome.activeRssFeed, (err, result) => {
                       ContentHome.handleLoaderDialog();
                       if (err) return console.error(err);
@@ -462,7 +462,7 @@
                 ContentHome.rssFeedUrl = ContentHome.data.content.rssUrl;
                 ContentHome.data.content.feeds = [];
                 ContentHome.data.content.feeds.push({
-                  id: Utils._nanoid(),
+                  id: Utils.nanoid(),
                   title: "Feed",
                   type: "rss",
                   url: ContentHome.data.content.rssUrl
