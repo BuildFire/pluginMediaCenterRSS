@@ -329,9 +329,13 @@
                 buildfire.dialog.confirm({ message: "Are you sure you want to delete this feed?" }, (err, isConfirmed) => {
                   if (err) console.error(err);
                   if (isConfirmed) {
-                    ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter((el, ind) => el.id !== options.item.id);
-                    ContentHome.sortableList.remove(options.item.id);
-                    $scope.$digest();
+                    searchEngine.deleteFeed(options.item, (err, result) => {
+                      if (err) return console.error(err);
+                      
+                      ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter((el, ind) => el.id !== options.item.id);
+                      ContentHome.sortableList.remove(options.item.id);
+                      $scope.$digest();
+                    });
                   }
                 })
                 break;
@@ -378,13 +382,15 @@
                   // TODO: need to add error handlers
                   if (!feedUrl || (feedUrl === ContentHome.activeRssFeed.url && isFeedItemConfigChanged)) {
                     searchEngine.insertFeed(ContentHome.activeRssFeed, (err, result) => {
-                      if (err) console.error(err);
+                      if (err) return console.error(err);
                       else console.log('Feed inserted successfully', result);
+                      ContentHome.activeRssFeed = null;
                     });
                   } else if (feedUrl !== ContentHome.activeRssFeed.url) {
                     searchEngine.updateFeed(ContentHome.activeRssFeed, (err, result) => {
-                      if (err) console.error(err);
+                      if (err) return console.error(err);
                       else console.log('Feed updated successfully', result);
+                      ContentHome.activeRssFeed = null;
                     });
                   }
                 }

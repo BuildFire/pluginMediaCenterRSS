@@ -18,7 +18,7 @@ var searchEngine = {
   },
   deleteFeed: function deleteFeed(rssFeed, callback) {
     this.get(rssFeed.id, function (err, result) {
-      if (err) callback(err, null);
+      if (err || !result || !result[0]) callback(err, null);
       var feedId = result[0]._id;
       var options = {
         tag: `rss_feed_${rssFeed.id}`,
@@ -52,7 +52,7 @@ var searchEngine = {
       publishDateKey: "pubDate",
       imageUrlKey: "media:group.media:thumbnail.$.url"
     };
-    if (rssFeed.advancedConfig && rssFeed.enableSearchEngineConfig && rssFeed.advancedConfig.searchEngineItemConfig) {
+    if (rssFeed.advancedConfig && rssFeed.advancedConfig.enableSearchEngineConfig && rssFeed.advancedConfig.searchEngineItemConfig) {
       feedItemConfig = rssFeed.advancedConfig.searchEngineItemConfig;
     }
 
