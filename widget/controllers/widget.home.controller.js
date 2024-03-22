@@ -19,30 +19,46 @@
                     $rootScope.deviceWidth = window.innerWidth || 320;
                 }
 
-                $scope.first = true;
+                const toggleDeeplinkSkeleton = (show) => {
+                    const deeplinkSkeletonContainer = document.getElementById('deeplinkSkeleton');
+                    if (show && !WidgetHome.deeplinkSkeleton) {
+                        WidgetHome.deeplinkSkeleton = new buildfire.components.skeleton('#deeplinkSkeleton', {
+                            type: 'image, list-item, sentence, paragraph',
+                        })
+                        WidgetHome.deeplinkSkeleton.start();
+                        deeplinkSkeletonContainer.classList.remove('hidden');
+                    } else if (!show && WidgetHome.deeplinkSkeleton) {
+                        deeplinkSkeletonContainer.classList.add('hidden');
+                        WidgetHome.deeplinkSkeleton.stop();
+                    }
+                };
                 /**
                  * @name handleBookmarkNav
                  * @type {function}
                  * Handles incoming bookmark navigation
                  */
                 var handleBookmarkNav = function handleBookmarkNav() {
-
-                    if ($scope.first) {
                         const processDeeplink = (data) => {
                             if (data && data.link) {
+                                toggleDeeplinkSkeleton(true);
                                 var targetGuid = data.link;
 
-                                if(WidgetHome.data.content.feeds?.length) {
+                                if(WidgetHome.data && WidgetHome.data.content.feeds?.length) {
                                     Object.keys(WidgetHome.feedsCache).forEach(key => {
                                         console.log(WidgetHome.feedsCache[key])
-                                        let feedItem = WidgetHome.feedsCache[key].items.find(el => el.guid == targetGuid),
-                                        index = WidgetHome.feedsCache[key].items.indexOf(feedItem);
-                                        if(feedItem) {
-                                            if (data.timeIndex) {
-                                                WidgetHome.feedsCache[key].items[index].seekTo = data.timeIndex;
+                                        if (WidgetHome.feedsCache[key].items && WidgetHome.feedsCache[key].items.length) {
+                                            let feedItem = WidgetHome.feedsCache[key].items.find(el => el.guid == targetGuid),
+                                            index = WidgetHome.feedsCache[key].items.indexOf(feedItem);
+                                            if(feedItem) {
+                                                if (data.timeIndex) {
+                                                    WidgetHome.feedsCache[key].items[index].seekTo = data.timeIndex;
+                                                }
+                                                $rootScope.deeplinkFirstNav = true;
+                                                WidgetHome.goToItem(index, feedItem);
+                                                toggleDeeplinkSkeleton();
+                                            } else if (WidgetHome.dataTotallyLoaded) {
+                                                toggleDeeplinkSkeleton();
                                             }
-                                            $rootScope.deeplinkFirstNav = true;
-                                            WidgetHome.goToItem(index, feedItem);
                                         }
                                     });
                                 } else {
@@ -50,16 +66,17 @@
                                         return item.guid
                                     });
                                     var index = itemLinks.indexOf(targetGuid);
-                                    if (index < 0) {
+                                    if (index < 0 && WidgetHome.dataTotallyLoaded) {
                                         console.warn('bookmarked item not found.');
+                                        toggleDeeplinkSkeleton();
                                     } else {
                                         if (data.timeIndex) {
                                             _items[index].seekTo = data.timeIndex;
                                         }
                                         $rootScope.deeplinkFirstNav = true;
+                                        toggleDeeplinkSkeleton();
                                         WidgetHome.goToItem(index, _items[index]);
                                     }
-                                    $scope.first = false;
                                 }
                                 if (!$scope.$$phase) $scope.$apply();
                             }
@@ -70,7 +87,6 @@
                         buildfire.deeplink.onUpdate(function (data) {
                             processDeeplink(data);
                         });
-                    }
                 };
 
                 /** 
@@ -432,6 +448,7 @@
                 WidgetHome.initializePlugin = function () {
                     DataStore.get(TAG_NAMES.RSS_FEED_INFO).then((settings) => {
                         WidgetHome.processDatastore(settings);
+                        handleBookmarkNav();
                         WidgetHome.loading = true;
                         if (!Object.keys(settings.data).length) {
                             settings.data = WidgetHome.data;
@@ -488,6 +505,8 @@
                                         cacheManager.setItem(el.id, WidgetHome.feedsCache[el.id], () => { });
                                     });
                                     WidgetHome.loading = false;
+                                    WidgetHome.dataTotallyLoaded = true;
+                                    handleBookmarkNav();
                                     if (WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged)
                                         WidgetHome.renderFeedItems();
                                 }).catch((err) => console.error(err));
