@@ -32,7 +32,7 @@
           <vg-overlay-play></vg-overlay-play>
         </videogular>
         <embed-video id="vimeoPlayer" data-ng-if="WidgetMedia.videoUrl" data-ng-href="{{WidgetMedia.videoUrl}}"
-          controls='0'></embed-video>
+          controls='!WidgetMedia.isVideoPlayerSupported'></embed-video>
         <img src="../../../styles/media/holder-16x9.gif" ng-if="WidgetMedia.loadingVideo">
       </div>
       <div ng-switch-when="AUDIO">
