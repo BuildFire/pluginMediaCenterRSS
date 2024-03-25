@@ -33,12 +33,15 @@
                         WidgetHome.deeplinkSkeleton = null;
                     }
                 };
+
+                $scope.first = true;
                 /**
                  * @name handleBookmarkNav
                  * @type {function}
                  * Handles incoming bookmark navigation
                  */
                 var handleBookmarkNav = function handleBookmarkNav() {
+                    if ($scope.first) {
                         const processDeeplink = (data) => {
                             if (data && data.link) {
                                 toggleDeeplinkSkeleton(true);
@@ -76,6 +79,7 @@
                                         $rootScope.deeplinkFirstNav = true;
                                         WidgetHome.goToItem(index, _items[index], false);
                                     }
+                                    $scope.first = false;
                                 }
                                 if (!$scope.$$phase) $scope.$apply();
                             }
@@ -86,6 +90,7 @@
                         buildfire.deeplink.onUpdate(function (data) {
                             processDeeplink(data);
                         });
+                    }
                 };
 
                 /** 
