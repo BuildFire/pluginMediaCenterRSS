@@ -30,6 +30,7 @@
                     } else if (!show && WidgetHome.deeplinkSkeleton) {
                         deeplinkSkeletonContainer.classList.add('hidden');
                         WidgetHome.deeplinkSkeleton.stop();
+                        WidgetHome.deeplinkSkeleton = null;
                     }
                 };
                 /**
@@ -54,8 +55,7 @@
                                                     WidgetHome.feedsCache[key].items[index].seekTo = data.timeIndex;
                                                 }
                                                 $rootScope.deeplinkFirstNav = true;
-                                                WidgetHome.goToItem(index, feedItem);
-                                                toggleDeeplinkSkeleton();
+                                                WidgetHome.goToItem(index, feedItem, false);
                                             } else if (WidgetHome.dataTotallyLoaded) {
                                                 toggleDeeplinkSkeleton();
                                             }
@@ -74,8 +74,7 @@
                                             _items[index].seekTo = data.timeIndex;
                                         }
                                         $rootScope.deeplinkFirstNav = true;
-                                        toggleDeeplinkSkeleton();
-                                        WidgetHome.goToItem(index, _items[index]);
+                                        WidgetHome.goToItem(index, _items[index], false);
                                     }
                                 }
                                 if (!$scope.$$phase) $scope.$apply();
@@ -615,28 +614,34 @@
                  * will used to redirect on details page
                  * @param index
                  */
-                WidgetHome.goToItem = function (index, item) {
+                WidgetHome.goToItem = function (index, item, pushToHistory = true) {
                     $rootScope.preventResetDefaults = true;
                     if(WidgetHome.data.readRequiresLogin) {
                         buildfire.auth.getCurrentUser(function (err, user) {
-                            if (err) return console.error(err);
+                            if (err) {
+                                toggleDeeplinkSkeleton();
+                                return console.error(err);
+                            }
                             if (user) {
-                                WidgetHome.proceedToItem(index, item);
+                                WidgetHome.proceedToItem(index, item, pushToHistory);
                             } else {
                                 buildfire.auth.login({ allowCancel: true }, function(err, user) {
-                                    if (err) return console.error(err);
+                                    if (err) {
+                                        toggleDeeplinkSkeleton();
+                                        return console.error(err);
+                                    }
                                     if (user) {
                                         $rootScope.showFeed = false;
-                                        WidgetHome.proceedToItem(index, item);
+                                        WidgetHome.proceedToItem(index, item, pushToHistory);
                                     }
                                 });
                             }
                         });
                     } else {
-                        WidgetHome.proceedToItem(index, item);
+                        WidgetHome.proceedToItem(index, item, pushToHistory);
                     }
                 };
-                WidgetHome.proceedToItem = function (index, item) {
+                WidgetHome.proceedToItem = function (index, item, pushToHistory) {
                     setTimeout(function () {
                         viewedItems.markViewed($scope, item.guid);
                     }, 500);
@@ -646,8 +651,13 @@
                     // ItemDetailsService.setData(WidgetHome.items[index]);
                     ItemDetailsService.setData(item);
                     // Buildfire.history.push(WidgetHome.items[index].title, {});
-                    Buildfire.history.push(item.title, {});
+                    if (pushToHistory) {
+                        Buildfire.history.push(item.title, {});
+                    }
                     Location.goTo('#/item');
+                    setTimeout(() => {
+                        toggleDeeplinkSkeleton();
+                    }, 100);
                 };
 
                 WidgetHome.bookmark = function ($event, item) {

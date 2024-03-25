@@ -1725,3 +1725,7 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
     height: 100%;
     background: var(--bf-theme-background);
 }
+
+.deeplink-item-skeleton .bf-skeleton-container .skeleton-paragraph {
+	padding: 0 20px;
+}
