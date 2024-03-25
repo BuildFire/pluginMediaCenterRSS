@@ -452,7 +452,6 @@
                 WidgetHome.initializePlugin = function () {
                     DataStore.get(TAG_NAMES.RSS_FEED_INFO).then((settings) => {
                         WidgetHome.processDatastore(settings);
-                        handleBookmarkNav();
                         WidgetHome.loading = true;
                         if (!Object.keys(settings.data).length) {
                             settings.data = WidgetHome.data;
@@ -474,6 +473,7 @@
                         }
                         //if settings data has feeds proceed with new logic
                         else if (settings.data.content.feeds && !settings.data.content.rssUrl) {
+                            handleBookmarkNav();
                             if (!settings.data.content.feeds.length) {
                                 WidgetHome.isItems = false;
                                 WidgetHome.loading = false;
@@ -648,6 +648,7 @@
                 };
                 WidgetHome.proceedToItem = function (index, item, pushToHistory) {
                     setTimeout(function () {
+                        toggleDeeplinkSkeleton();
                         viewedItems.markViewed($scope, item.guid);
                     }, 500);
                     if (WidgetHome.items[index]) {
@@ -660,9 +661,6 @@
                         Buildfire.history.push(item.title, {});
                     }
                     Location.goTo('#/item');
-                    setTimeout(() => {
-                        toggleDeeplinkSkeleton();
-                    }, 100);
                 };
 
                 WidgetHome.bookmark = function ($event, item) {
