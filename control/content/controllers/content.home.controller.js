@@ -231,7 +231,10 @@
                     ContentHome.handleLoaderDialog("Deleting Data", "Deleting data, please wait...", true);
                     searchEngine.deleteFeed(options.item, (err, result) => {
                       ContentHome.handleLoaderDialog();
-                      if (err) return console.error(err);
+                      if (err) {
+                        handleSearchEngineErrors('deleting');
+                        return console.error(err);
+                      }
                       
                       ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter((el, ind) => el.id !== options.item.id);
                       ContentHome.sortableList.remove(options.item.id);
@@ -271,50 +274,74 @@
           const insertFeedToList = (feed) => {
             if (item) { // update RSS feed
               let index = ContentHome.data.content.feeds.findIndex(el => el.id == item.id);
-              // change the id if the user is updating the default feed
-              if (feed.id === 'default') {
-                feed.id = Utils.nanoid();
-                ContentHome.data.content.feeds[index] = feed;
-                ContentHome.sortableList.remove('default');
-                ContentHome.sortableList.append(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
-              } else {
+              if (item.type == "google") {
                 ContentHome.data.content.feeds[index] = feed;
                 ContentHome.sortableList.update(index, ContentHome.prepareFeeds([ContentHome.data.content.feeds[index]])[0]);
+                ContentHome.subPages[type].close();
+                if (!$scope.$$phase) $scope.$digest();
+                return;
               }
-              ContentHome.subPages[type].close();
+              // delete old search engine data
+              ContentHome.handleLoaderDialog("Deleting Old Data", "Deleting old search data, please wait...", true);
+              searchEngine.deleteFeed(item, (err, result) => {
+                if (err) {
+                  handleSearchEngineErrors('updating');
+                  return console.error(err);
+                } else {
+                  // change the id if the user is updating the default feed
+                  if (feed.id === 'default') {
+                    feed.id = Utils.nanoid();
+                    ContentHome.data.content.feeds[index] = feed;
+                    ContentHome.sortableList.remove('default');
+                    ContentHome.sortableList.append(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
+                  } else {
+                    ContentHome.data.content.feeds[index] = feed;
+                    ContentHome.sortableList.update(index, ContentHome.prepareFeeds([ContentHome.data.content.feeds[index]])[0]);
+                  }
+                  ContentHome.subPages[type].close();
+                  if (!$scope.$$phase) $scope.$digest();
+                }
+              });
             } else { // add new RSS feed
               if (!ContentHome.data.content.feeds) ContentHome.data.content.feeds = [feed];
               else ContentHome.data.content.feeds.push(feed);
               ContentHome.subPages[type].close();
               ContentHome.sortableList.append(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
+              if (!$scope.$$phase) $scope.$digest();
             }
-            if (!$scope.$$phase) $scope.$digest();
           }
 
           switch (type) {
             case "rss":
+              const feed = new RssFeed({
+                id: item ? item.id : Utils.nanoid(),
+                title: values.rssFeedTitle,
+                url: values.rssFeedUrl,
+                advancedConfig: {
+                  enableSearchEngineConfig: values.enableSearchEngineConfig,
+                  searchEngineItemConfig: {
+                    uniqueKey: values.uniqueKey,
+                    titleKey: values.titleKey,
+                    descriptionKey: values.descriptionKey,
+                    urlKey: values.urlKey,
+                    publishDateKey: values.publishDateKey,
+                    imageUrlKey: values.imageUrlKey,
+                  }
+                }
+              });
+              const isEquals = utils.checkEquality(new RssFeed(item), feed);
+              if (isEquals) { // if no changes made, close the dialog
+                ContentHome.handleLoaderDialog();
+                ContentHome.subPages[type].close();
+                return;
+              }
+
               ContentHome.handleLoaderDialog("Validating Feed", "Validating feed url, please wait...", true);
               ContentHome.validateFeedUrl(values.rssFeedUrl, (errors) => {
                 if (errors) {
                   ContentHome.handleLoaderDialog();
                   ContentHome.subPages[type].showInvalidFeedMessage("rss", errors);
                 } else {
-                  const feed = new RssFeed({
-                    id: item ? item.id : Utils.nanoid(),
-                    title: values.rssFeedTitle,
-                    url: values.rssFeedUrl,
-                    advancedConfig: {
-                      enableSearchEngineConfig: values.enableSearchEngineConfig,
-                      searchEngineItemConfig: {
-                        uniqueKey: values.uniqueKey,
-                        titleKey: values.titleKey,
-                        descriptionKey: values.descriptionKey,
-                        urlKey: values.urlKey,
-                        publishDateKey: values.publishDateKey,
-                        imageUrlKey: values.imageUrlKey,
-                      }
-                    }
-                  });
                   ContentHome.activeRssFeed = feed;
                   insertFeedToList(feed);
                 }
@@ -356,10 +383,11 @@
               searchEngine.get(ContentHome.activeRssFeed.id, (err, result) => {
                 if (err) {
                   // hide the loader and show error message
+                  ContentHome.activeRssFeed = null;
                   ContentHome.handleLoaderDialog();
+                  handleSearchEngineErrors('indexing');
                   console.error(err);
-                }
-                else {
+                } else {
                   const feedUrl = result[0] ? result[0].feed_config.url : false;
                   const feedItemConfig = result[0] ? result[0].feed_item_config : {};
                   const { feedItemConfig: currentFeedItemConfig } = searchEngine.getSearchEngineOptions(ContentHome.activeRssFeed);
@@ -375,22 +403,24 @@
                     }
                   }
 
-                  if (!feedUrl || (feedUrl === ContentHome.activeRssFeed.url && isFeedItemConfigChanged)) {
+                  if (!feedUrl || feedUrl !== ContentHome.activeRssFeed.url || isFeedItemConfigChanged) {
                     ContentHome.handleLoaderDialog("Indexing Data", "Indexing data for search results, please wait...", true);
                     searchEngine.insertFeed(ContentHome.activeRssFeed, (err, result) => {
                       ContentHome.handleLoaderDialog();
                       if (err) {
-                        return console.error(err);
+                        if (err.errorMessage && err.innerError && err.innerError.error) {
+                          if (err.innerError.error.indexOf('unique_key') > -1) {
+                            handleSearchEngineErrors('uniqueKey');
+                          } else if (err.innerError.error.indexOf('title_key') > -1) {
+                            handleSearchEngineErrors('titleKey');
+                          } else {
+                            handleSearchEngineErrors('indexing');
+                          }
+                        } else {
+                          handleSearchEngineErrors('indexing');
+                        }
+                        console.error(err);
                       }
-                      else console.log('Feed inserted successfully', result);
-                      ContentHome.activeRssFeed = null;
-                    });
-                  } else if (feedUrl !== ContentHome.activeRssFeed.url) {
-                    ContentHome.handleLoaderDialog("Updating Data", "Updating data for search results, please wait...", true);
-                    searchEngine.updateFeed(ContentHome.activeRssFeed, (err, result) => {
-                      ContentHome.handleLoaderDialog();
-                      if (err) return console.error(err);
-                      else console.log('Feed updated successfully', result);
                       ContentHome.activeRssFeed = null;
                     });
                   } else {
@@ -398,6 +428,8 @@
                   }
                 }
               });
+            } else {
+              ContentHome.handleLoaderDialog();
             }
           }
             , error = function (err) {
@@ -435,6 +467,35 @@
               saveData(JSON.parse(angular.toJson(newObj)), TAG_NAMES.RSS_FEED_INFO);
             }, 500);
           }
+        };
+
+        const handleSearchEngineErrors = (errType) => {
+          let title = "", message = "";
+          switch (errType) {
+            case 'indexing':
+              title = "Indexing Error";
+              message = "Error indexing data. Please try adding the feed again.";
+              break;
+            case 'deleting':
+              title = "Deletion Error";
+              message = "Error deleting data. Please try deleting the feed again.";
+              break;
+            case 'updating':
+              title = "Updating Error";
+              message = "Error updating data. Please try updating the feed again.";
+              break;
+            case 'uniqueKey':
+              title = "Unique Key Error";
+              message = "Invalid Unique Key. Please correct the key in the feed's advanced settings and try again. Without correct key feed items won't show in search results.";
+              break;
+            case 'titleKey':
+              title = "Title Key Error";
+              message = "Invalid Title Key. Please correct the key in the feed's advanced settings and try again. Without correct key feed items won't show in search results.";
+              break;
+            default:
+              break;
+          }
+          buildfire.dialog.alert({ title, message });
         };
 
         /**
