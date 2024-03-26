@@ -63,6 +63,9 @@
                 WidgetMedia.item = ItemDetailsService.getData();
                 var regex = /(style=".+?")/gm;
                 
+                if (!WidgetMedia.item) {
+                    return Location.goTo('#/');
+                }
                 WidgetMedia.item.description = (WidgetMedia && WidgetMedia.item && WidgetMedia.item.description) ? WidgetMedia.item.description.replace(regex, '') : "";
                 
                 $rootScope.preventResetDefaults = false;
@@ -170,121 +173,19 @@
                 };
 
                 /**
-                 * checkEnclosuresTag() private method
-                 * used to check tag eclosures to filter item's media type
-                 * @param _item
-                 * @returns {*}
-                 */
-                var checkEnclosuresTag = function (_item) {
-                    if (_item.enclosures && _item.enclosures.length > 0 && _item.enclosures[0].url && _item.enclosures[0].type) {
-                        if (_item.enclosures[0].type.indexOf('video/') === 0) {
-                            WidgetMedia.medium = MEDIUM_TYPES.VIDEO;
-                        } else if (_item.enclosures[0].type.indexOf('audio/') === 0) {
-                            WidgetMedia.medium = MEDIUM_TYPES.AUDIO;
-                        } else if (_item.enclosures[0].type.indexOf('image/') === 0) {
-                            WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
-                        } else {
-                            WidgetMedia.medium = MEDIUM_TYPES.OTHER;
-                        }
-                        return {
-                            type: _item.enclosures[0].type,
-                            src: _item.enclosures[0].url
-                        };
-                    } else {
-                        return null;
-                    }
-                };
-
-                /**
-                 * checkMediaTag() private method
-                 * used to check media tag to filter item's media type
-                 * @param _item
-                 * @returns {*}
-                 */
-                var checkMediaTag = function (_item) {
-                    if (_item['media:group'] && _item['media:group']['media:content']) {
-                        if (_item['media:group']['media:content']['@'] && _item['media:group']['media:content']['@'].type && _item['media:group']['media:content']['@'].url) {                            
-                            if (_item['media:group']['media:content']['@'].type.indexOf('video/') === 0
-                            || (_item['media:group']['media:content']['@'].type.indexOf("application/x-shockwave-flash") === 0
-                            && _item['media:group']['media:content']['@'].url.indexOf('youtube') > 0)) {
-                                
-                                WidgetMedia.medium = MEDIUM_TYPES.VIDEO;
-                            } else if (_item['media:group']['media:content']['@'].type.indexOf('audio/') === 0) {
-                                WidgetMedia.medium = MEDIUM_TYPES.AUDIO;
-                            } else if (_item['media:group']['media:content']['@'].type.indexOf('image/') === 0) {
-                                WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
-                            } else {
-                                WidgetMedia.medium = MEDIUM_TYPES.OTHER;
-                            }
-                            return {
-                                type: _item['media:group']['media:content']['@'].type,
-                                src: _item['media:group']['media:content']['@'].url
-                            };
-                        } else if (_item['media:group']['media:content']['media:thumbnail'] && _item['media:group']['media:content']['media:thumbnail']['@'] && _item['media:group']['media:content']['media:thumbnail']['@'].url) {
-                            WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
-                            return {
-                                type: 'image/*',
-                                src: _item['media:group']['media:content']['media:thumbnail']['@'].url
-                            };
-                        } else {
-                            return null;
-                        }
-                    } else if (_item['media:content'] && _item['media:content']['@'] && _item['media:content']['@'].url && _item['media:content']['@'].type) {
-                        if (_item['media:content']['@'].type.indexOf('video/') === 0) {
-                            WidgetMedia.medium = MEDIUM_TYPES.VIDEO;
-                        } else if (_item['media:content']['@'].type.indexOf('audio/') === 0) {
-                            WidgetMedia.medium = MEDIUM_TYPES.AUDIO;
-                        } else if (_item['media:content']['@'].type.indexOf('image/') === 0) {
-                            WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
-                        } else {
-                            WidgetMedia.medium = MEDIUM_TYPES.OTHER;
-                        }
-                        return {
-                            type: _item['media:content']['@'].type,
-                            src: _item['media:content']['@'].url
-                        };
-                    } else if (_item['media:content'] && _item['media:content']['media:player'] && _item['media:content']['media:player']['@'] && _item['media:content']['media:player']['@'].url) {
-                        WidgetMedia.medium = MEDIUM_TYPES.VIDEO;
-                        return {
-                            type: 'video/*',
-                            src: _item['media:content']['media:player']['@'].url
-                        };
-                    } else if (_item['media:thumbnail'] && _item['media:thumbnail']['@'] && _item['media:thumbnail']['@'].url) {
-                        WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
-                        return {
-                            type: 'image/*',
-                            src: _item['media:thumbnail']['@'].url
-                        };
-                    } else if (_item.image && _item.image.url) {
-                        WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
-                        return {
-                            type: 'image/*',
-                            src: _item.image.url
-                        };
-                    } else if (_item.imageSrcUrl) {
-                        WidgetMedia.medium = MEDIUM_TYPES.IMAGE;
-                        return {
-                            type: 'image/*',
-                            src: _item.imageSrcUrl
-                        };
-                    } else {
-                        return null;
-                    }
-                };
-
-                /**
                  * filterItemType() private method
                  * used to filter item whether it is image content, audio/video content or other
                  * @param _item
                  */
                 var filterItemType = function (_item) {
                     var _src = '',
-                        mediaData = checkEnclosuresTag(_item);
+                        mediaData = sharedUtils.checkEnclosuresTag(_item, MEDIUM_TYPES);
 
                     if (!mediaData) {
-                        mediaData = checkMediaTag(_item);
+                        mediaData = sharedUtils.checkMediaTag(_item, MEDIUM_TYPES);
                     }
                     if (mediaData) {
+                        WidgetMedia.medium = mediaData.medium;
                         switch (WidgetMedia.medium) {
                             case MEDIUM_TYPES.VIDEO:
                                 _src = mediaData.src.toLowerCase();
