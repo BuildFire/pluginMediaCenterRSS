@@ -64,7 +64,7 @@
                 var regex = /(style=".+?")/gm;
                 
                 if (!WidgetMedia.item) {
-                    return Location.goTo('#/');
+                    return Location.goToHome();
                 }
                 WidgetMedia.item.description = (WidgetMedia && WidgetMedia.item && WidgetMedia.item.description) ? WidgetMedia.item.description.replace(regex, '') : "";
                 
@@ -249,7 +249,7 @@
                                 currentRssUrl = WidgetMedia.data.content.rssUrl;
                                 $rootScope.showFeed = true;
                                 Buildfire.history.pop();
-                                Location.goTo('#/');
+                                Location.goToHome();
                             } else {
                                 $rootScope.data.design.itemDetailsLayout = WidgetMedia.data.design.itemDetailsLayout;
                             }

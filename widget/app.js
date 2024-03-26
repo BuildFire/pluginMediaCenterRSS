@@ -54,7 +54,7 @@
                     $timeout(function () {
                         $rootScope.showFeed = true;
                     }, 200);
-                    Location.goTo('#/');
+                    Location.goToHome();
                 } else if (reg1.test($location.path())) {
                     if ($rootScope.playlist) {
                         $rootScope.playlist = false;
@@ -64,50 +64,7 @@
                     }
                 }
             });
-            // buildfire.device.onAppBackgrounded(function () {
-            //     $rootScope.$emit('deviceLocked', {});
-            // });
         }])
-        /*.filter('getImageUrl', ['Buildfire','$timeout', function (Buildfire, $timeout) {
-            filter.$stateful = true;
-            var _imgUrl = {};
-
-            function filter(url, width, height, type) {
-                if(!_imgUrl.i) {
-                    if (type == 'resize') {
-                        Buildfire.imageLib.local.resizeImage(url, {
-                            width: width,
-                            height: height
-                        }, function (err, imgUrl) {
-                            _imgUrl.i = imgUrl;
-                        });
-                    } else {
-                        */
-        /*Buildfire.imageLib.local.cropImage(url, {
-                                    width: width,
-                                    height: height
-                                }, function (err, imgUrl) {
-                                    _imgUrl = imgUrl;
-                                });*/
-        /*
-                                Buildfire.imageLib.local.cropImage(url, {
-                                    width: width,
-                                    height: height
-                                }, function (err, imgUrl) {
-                                    _imgUrl = imgUrl;
-                                });
-                                (function (i, u) {
-                                    $timeout(function () {
-                                        i.img = u;
-                                    }, 2000);
-                                })(_imgUrl, url)
-
-                            }
-                        }
-                        return _imgUrl.i;
-                    }
-                    return filter;
-                }])*/
         .directive("loadImage", function () {
             return {
                 restrict: 'A',
