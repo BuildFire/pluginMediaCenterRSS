@@ -274,34 +274,20 @@
           const insertFeedToList = (feed) => {
             if (item) { // update RSS feed
               let index = ContentHome.data.content.feeds.findIndex(el => el.id == item.id);
-              if (item.type == "google") {
+
+              // change the id if the user is updating the default feed
+              if (feed.id === 'default') {
+                feed.id = Utils.nanoid();
+                ContentHome.data.content.feeds[index] = feed;
+                ContentHome.sortableList.remove('default');
+                ContentHome.sortableList.append(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
+              } else {
                 ContentHome.data.content.feeds[index] = feed;
                 ContentHome.sortableList.update(index, ContentHome.prepareFeeds([ContentHome.data.content.feeds[index]])[0]);
-                ContentHome.subPages[type].close();
-                if (!$scope.$$phase) $scope.$digest();
-                return;
               }
-              // delete old search engine data
-              ContentHome.handleLoaderDialog("Deleting Old Data", "Deleting old search data, please wait...", true);
-              searchEngine.deleteFeed(item, (err, result) => {
-                if (err) {
-                  handleSearchEngineErrors('updating');
-                  return console.error(err);
-                } else {
-                  // change the id if the user is updating the default feed
-                  if (feed.id === 'default') {
-                    feed.id = Utils.nanoid();
-                    ContentHome.data.content.feeds[index] = feed;
-                    ContentHome.sortableList.remove('default');
-                    ContentHome.sortableList.append(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
-                  } else {
-                    ContentHome.data.content.feeds[index] = feed;
-                    ContentHome.sortableList.update(index, ContentHome.prepareFeeds([ContentHome.data.content.feeds[index]])[0]);
-                  }
-                  ContentHome.subPages[type].close();
-                  if (!$scope.$$phase) $scope.$digest();
-                }
-              });
+              // ContentHome.activeRssFeed = feed;
+              ContentHome.subPages[type].close();
+              if (!$scope.$$phase) $scope.$digest();
             } else { // add new RSS feed
               if (!ContentHome.data.content.feeds) ContentHome.data.content.feeds = [feed];
               else ContentHome.data.content.feeds.push(feed);
@@ -343,7 +329,31 @@
                   ContentHome.subPages[type].showInvalidFeedMessage("rss", errors);
                 } else {
                   ContentHome.activeRssFeed = feed;
-                  insertFeedToList(feed);
+                  if (item) {
+                    searchEngine.isFeedChanged(feed, (err, isFeedChanged) => {
+                      if (err) {
+                        ContentHome.handleLoaderDialog();
+                        handleSearchEngineErrors('updating');
+                        return console.error(err);
+                      }
+                      if (isFeedChanged) {
+                        // delete old search engine data
+                        ContentHome.handleLoaderDialog("Deleting Old Data", "Deleting old search data, please wait...", true);
+                        searchEngine.deleteFeed(item, (err, result) => {
+                          if (err) {
+                            ContentHome.handleLoaderDialog();
+                            handleSearchEngineErrors('updating');
+                            return console.error(err);
+                          }
+                          insertFeedToList(feed);
+                        });
+                      } else {
+                        insertFeedToList(feed);
+                      }
+                    });
+                  } else {
+                    insertFeedToList(feed);
+                  }
                 }
               });
               break;
@@ -365,52 +375,36 @@
         }
 
         const indexingSearchEngineData = () => {
-          searchEngine.get(ContentHome.activeRssFeed.id, (err, result) => {
+          searchEngine.isFeedChanged(ContentHome.activeRssFeed, (err, isFeedChanged) => {
             if (err) {
-              // hide the loader and show error message
               ContentHome.activeRssFeed = null;
               ContentHome.handleLoaderDialog();
               handleSearchEngineErrors('indexing');
               console.error(err);
-            } else {
-              const feedUrl = result[0] ? result[0].feed_config.url : false;
-              const feedItemConfig = result[0] ? result[0].feed_item_config : {};
-              const { feedItemConfig: currentFeedItemConfig } = searchEngine.getSearchEngineOptions(ContentHome.activeRssFeed);
+            }
 
-              let isFeedItemConfigChanged = false,
-                  currentConfigValues = Object.values(currentFeedItemConfig),
-                  feedConfigValues = Object.values(feedItemConfig);
-
-              for (let i = 0; i < currentConfigValues.length; i++) {
-                if (feedConfigValues.indexOf(currentConfigValues[i]) === -1) {
-                  isFeedItemConfigChanged = true;
-                  break;
-                }
-              }
-
-              if (!feedUrl || feedUrl !== ContentHome.activeRssFeed.url || isFeedItemConfigChanged) {
-                ContentHome.handleLoaderDialog("Indexing Data", "Indexing data for search results, please wait...", true);
-                searchEngine.insertFeed(ContentHome.activeRssFeed, (err, result) => {
-                  ContentHome.handleLoaderDialog();
-                  if (err) {
-                    if (err.errorMessage && err.innerError && err.innerError.error) {
-                      if (err.innerError.error.indexOf('unique_key') > -1) {
-                        handleSearchEngineErrors('uniqueKey');
-                      } else if (err.innerError.error.indexOf('title_key') > -1) {
-                        handleSearchEngineErrors('titleKey');
-                      } else {
-                        handleSearchEngineErrors('indexing');
-                      }
+            if (isFeedChanged) {
+              ContentHome.handleLoaderDialog("Indexing Data", "Indexing data for search results, please wait...", true);
+              searchEngine.insertFeed(ContentHome.activeRssFeed, (err, result) => {
+                ContentHome.handleLoaderDialog();
+                if (err) {
+                  if (err.errorMessage && err.innerError && err.innerError.error) {
+                    if (err.innerError.error.indexOf('unique_key') > -1) {
+                      handleSearchEngineErrors('uniqueKey');
+                    } else if (err.innerError.error.indexOf('title_key') > -1) {
+                      handleSearchEngineErrors('titleKey');
                     } else {
                       handleSearchEngineErrors('indexing');
                     }
-                    console.error(err);
+                  } else {
+                    handleSearchEngineErrors('indexing');
                   }
-                  ContentHome.activeRssFeed = null;
-                });
-              } else {
-                ContentHome.handleLoaderDialog();
-              }
+                  console.error(err);
+                }
+                ContentHome.activeRssFeed = null;
+              });
+            } else {
+              ContentHome.handleLoaderDialog();
             }
           });
         }
@@ -525,6 +519,9 @@
         var init = function () {
           var success = function (result) {
             console.info('Init success result:', result);
+            if (!result.lastUpdated || new Date(result.lastUpdated) < new Date('2019-10-21')) {
+              AnalyticsManager.init();
+            }
             if (Object.keys(result.data).length > 0) {
               updateMasterItem(result.data);
               ContentHome.data = result.data;
