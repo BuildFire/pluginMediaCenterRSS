@@ -3,8 +3,8 @@
 (function (angular) {
   angular
     .module('mediaCenterRSSPluginContent')
-    .controller('ContentHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'TAG_NAMES', 'LAYOUTS', 'FeedParseService', '$timeout', 'Utils',
-      function ($scope, DataStore, Buildfire, TAG_NAMES, LAYOUTS, FeedParseService, $timeout, Utils) {
+    .controller('ContentHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'TAG_NAMES', 'LAYOUTS', 'FeedParseService', '$timeout', 'Utils', 'MEDIUM_TYPES',
+      function ($scope, DataStore, Buildfire, TAG_NAMES, LAYOUTS, FeedParseService, $timeout, Utils, MEDIUM_TYPES) {
         /*
          * Private variables
          *
@@ -364,6 +364,57 @@
           }
         }
 
+        const indexingSearchEngineData = () => {
+          searchEngine.get(ContentHome.activeRssFeed.id, (err, result) => {
+            if (err) {
+              // hide the loader and show error message
+              ContentHome.activeRssFeed = null;
+              ContentHome.handleLoaderDialog();
+              handleSearchEngineErrors('indexing');
+              console.error(err);
+            } else {
+              const feedUrl = result[0] ? result[0].feed_config.url : false;
+              const feedItemConfig = result[0] ? result[0].feed_item_config : {};
+              const { feedItemConfig: currentFeedItemConfig } = searchEngine.getSearchEngineOptions(ContentHome.activeRssFeed);
+
+              let isFeedItemConfigChanged = false,
+                  currentConfigValues = Object.values(currentFeedItemConfig),
+                  feedConfigValues = Object.values(feedItemConfig);
+
+              for (let i = 0; i < currentConfigValues.length; i++) {
+                if (feedConfigValues.indexOf(currentConfigValues[i]) === -1) {
+                  isFeedItemConfigChanged = true;
+                  break;
+                }
+              }
+
+              if (!feedUrl || feedUrl !== ContentHome.activeRssFeed.url || isFeedItemConfigChanged) {
+                ContentHome.handleLoaderDialog("Indexing Data", "Indexing data for search results, please wait...", true);
+                searchEngine.insertFeed(ContentHome.activeRssFeed, (err, result) => {
+                  ContentHome.handleLoaderDialog();
+                  if (err) {
+                    if (err.errorMessage && err.innerError && err.innerError.error) {
+                      if (err.innerError.error.indexOf('unique_key') > -1) {
+                        handleSearchEngineErrors('uniqueKey');
+                      } else if (err.innerError.error.indexOf('title_key') > -1) {
+                        handleSearchEngineErrors('titleKey');
+                      } else {
+                        handleSearchEngineErrors('indexing');
+                      }
+                    } else {
+                      handleSearchEngineErrors('indexing');
+                    }
+                    console.error(err);
+                  }
+                  ContentHome.activeRssFeed = null;
+                });
+              } else {
+                ContentHome.handleLoaderDialog();
+              }
+            }
+          });
+        }
+
         /* saveData(data, tag) private function
          * It will Call the Datastore.save method to save the data object
          * @param data: data to save in datastore.
@@ -380,53 +431,22 @@
               ContentHome.subPages.rss.close();
               ContentHome.handleLoaderDialog("Fetching Data", "Fetching data, please wait...", true);
 
-              searchEngine.get(ContentHome.activeRssFeed.id, (err, result) => {
-                if (err) {
-                  // hide the loader and show error message
-                  ContentHome.activeRssFeed = null;
-                  ContentHome.handleLoaderDialog();
-                  handleSearchEngineErrors('indexing');
-                  console.error(err);
-                } else {
-                  const feedUrl = result[0] ? result[0].feed_config.url : false;
-                  const feedItemConfig = result[0] ? result[0].feed_item_config : {};
-                  const { feedItemConfig: currentFeedItemConfig } = searchEngine.getSearchEngineOptions(ContentHome.activeRssFeed);
+              FeedParseService.getFeedData(ContentHome.activeRssFeed.url).then((result) => {
+                const feedData = result.data.items.map(_item => {
+                  let enclosureData = sharedUtils.checkEnclosuresTag(_item, MEDIUM_TYPES);
+                  let mediaTagData = sharedUtils.checkMediaTag(_item, MEDIUM_TYPES);
 
-                  let isFeedItemConfigChanged = false,
-                      currentConfigValues = Object.values(currentFeedItemConfig),
-                      feedConfigValues = Object.values(feedItemConfig);
-
-                  for (let i = 0; i < currentConfigValues.length; i++) {
-                    if (feedConfigValues.indexOf(currentConfigValues[i]) === -1) {
-                      isFeedItemConfigChanged = true;
-                      break;
+                    if (enclosureData) {
+                      _item.type = enclosureData.medium;
+                    } else if (mediaTagData) {
+                      _item.type = mediaTagData.medium;
                     }
-                  }
-
-                  if (!feedUrl || feedUrl !== ContentHome.activeRssFeed.url || isFeedItemConfigChanged) {
-                    ContentHome.handleLoaderDialog("Indexing Data", "Indexing data for search results, please wait...", true);
-                    searchEngine.insertFeed(ContentHome.activeRssFeed, (err, result) => {
-                      ContentHome.handleLoaderDialog();
-                      if (err) {
-                        if (err.errorMessage && err.innerError && err.innerError.error) {
-                          if (err.innerError.error.indexOf('unique_key') > -1) {
-                            handleSearchEngineErrors('uniqueKey');
-                          } else if (err.innerError.error.indexOf('title_key') > -1) {
-                            handleSearchEngineErrors('titleKey');
-                          } else {
-                            handleSearchEngineErrors('indexing');
-                          }
-                        } else {
-                          handleSearchEngineErrors('indexing');
-                        }
-                        console.error(err);
-                      }
-                      ContentHome.activeRssFeed = null;
-                    });
-                  } else {
-                    ContentHome.handleLoaderDialog();
-                  }
-                }
+                    return _item;
+                });
+                AnalyticsManager.registerFeedAnalytics(feedData, indexingSearchEngineData);
+              }).catch((err) => {
+                console.error(err);
+                indexingSearchEngineData();
               });
             } else {
               ContentHome.handleLoaderDialog();

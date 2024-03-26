@@ -32,6 +32,16 @@
       ITEM_ARRAY_FOUND: 'Array of Items provided'
     })
 
+    /**
+     * MEDIUM_TYPES will be used to filter item whether it have video content, audio content, image content or other.
+     */
+    .constant('MEDIUM_TYPES', {
+      VIDEO: 'VIDEO',
+      AUDIO: 'AUDIO',
+      IMAGE: 'IMAGE',
+      OTHER: 'OTHER'
+    })
+    
   /**
    * LAYOUTS will be used to set item list layout and item details layout.
    */

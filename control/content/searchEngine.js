@@ -50,9 +50,9 @@ var searchEngine = {
       uniqueKey: "guid",
       titleKey: "title",
       urlKey: "link",
-      descriptionKey: "media:group.media:keywords",
+      descriptionKey: "description",
       publishDateKey: "pubDate",
-      imageUrlKey: "media:group.media:thumbnail.$.url"
+      imageUrlKey: "thumbnail"
     };
     if (rssFeed.advancedConfig && rssFeed.advancedConfig.enableSearchEngineConfig && rssFeed.advancedConfig.searchEngineItemConfig) {
       feedItemConfig = rssFeed.advancedConfig.searchEngineItemConfig;

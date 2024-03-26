@@ -20,9 +20,9 @@ class RssFeed {
                 uniqueKey: typeof settings.searchEngineItemConfig.uniqueKey !== 'undefined' ? settings.searchEngineItemConfig.uniqueKey : "guid",
                 titleKey: typeof settings.searchEngineItemConfig.titleKey !== 'undefined' ? settings.searchEngineItemConfig.titleKey : "title",
                 urlKey: typeof settings.searchEngineItemConfig.urlKey !== 'undefined' ? settings.searchEngineItemConfig.urlKey : "link",
-                descriptionKey: typeof settings.searchEngineItemConfig.descriptionKey !== 'undefined' ? settings.searchEngineItemConfig.descriptionKey : "media:group.media:keywords",
+                descriptionKey: typeof settings.searchEngineItemConfig.descriptionKey !== 'undefined' ? settings.searchEngineItemConfig.descriptionKey : "description",
                 publishDateKey: typeof settings.searchEngineItemConfig.publishDateKey !== 'undefined' ? settings.searchEngineItemConfig.publishDateKey : "pubDate",
-                imageUrlKey: typeof settings.searchEngineItemConfig.imageUrlKey !== 'undefined' ? settings.searchEngineItemConfig.imageUrlKey : "media:group.media:thumbnail.$.url"
+                imageUrlKey: typeof settings.searchEngineItemConfig.imageUrlKey !== 'undefined' ? settings.searchEngineItemConfig.imageUrlKey : "thumbnail"
             }
         }
     }

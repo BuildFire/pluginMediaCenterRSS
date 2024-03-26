@@ -508,11 +508,13 @@
                                         if (!$scope.$$phase) $scope.$digest();
                                         cacheManager.setItem(el.id, WidgetHome.feedsCache[el.id], () => { });
                                     });
+                                    if (WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged)
+                                        WidgetHome.renderFeedItems();
+                                    
                                     WidgetHome.loading = false;
                                     WidgetHome.dataTotallyLoaded = true;
                                     handleBookmarkNav();
-                                    if (WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged)
-                                        WidgetHome.renderFeedItems();
+                                    if (!$scope.$$phase) $scope.$digest();
                                 }).catch((err) => console.error(err));
                             }).catch((err) => {
                                 console.error(err)
