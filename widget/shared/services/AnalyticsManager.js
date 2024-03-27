@@ -1,28 +1,40 @@
 class AnalyticsManager {
+    static _batchSize = 25;
+
     static trackAction(eventName, data) {
         buildfire.analytics.trackAction(eventName, data);
     }
 
-    static registerFeedAnalytics(feedData, callback) {
+    static registerFeedAnalytics(startIndex = 0, feedData, callback) {
         const registeringArray = [];
-        feedData.forEach(item => {
+        const batch = feedData.slice(startIndex, startIndex + this._batchSize);
+        batch.forEach(item => {
             if (item.type === "VIDEO" || item.type === 'AUDIO') {
-                registeringArray.push(AnalyticsManager.registerEvent(`${item.title} - Total Plays`, `${item.guid}_plays`, 'Number of plays'))
-                registeringArray.push(AnalyticsManager.registerEvent(`${item.title} - Total Opens`, `${item.guid}_opens`, 'Number of opens'))
-                registeringArray.push(AnalyticsManager.registerEvent(`${item.title} - Total Time Watched`, `${item.guid}_SecondsWatch`, 'Number of plays'))
+                registeringArray.push(AnalyticsManager.registerEvent(`${item.title} - Total Plays`, `${item.guid}_plays`, 'Number of plays'));
+                registeringArray.push(AnalyticsManager.registerEvent(`${item.title} - Total Opens`, `${item.guid}_opens`, 'Number of opens'));
+                registeringArray.push(AnalyticsManager.registerEvent(`${item.title} - Total Time Watched`, `${item.guid}_SecondsWatch`, 'Number of plays'));
             } else {
                 registeringArray.push(AnalyticsManager.registerEvent(`${item.title} - Total Opens`, `${item.guid}_opens`, 'Number of opens'));
             }
         });
 
         Promise.all(registeringArray)
-            .then(() => callback())
-            .catch((err) => callback(err));
+            .then(() => {
+                if (startIndex + this._batchSize < feedData.length) {
+                    this.registerFeedAnalytics(startIndex + this._batchSize, feedData, callback);
+                } else {
+                    callback();
+                }
+            })
+            .catch(err => {
+                callback(err)
+            });
     }
     
-    static unRegisterFeedAnalytics(feedData, callback) {
+    static unRegisterFeedAnalytics(startIndex = 0, feedData, callback) {
         const unRegisteringArray = [];
-        feedData.forEach(item => {
+        const batch = feedData.slice(startIndex, startIndex + this._batchSize);
+        batch.forEach(item => {
             if (item.type === "VIDEO" || item.type === 'AUDIO') {
                 unRegisteringArray.push(AnalyticsManager.unregisterEvent(`${item.guid}_plays`));
                 unRegisteringArray.push(AnalyticsManager.unregisterEvent(`${item.guid}_opens`));
@@ -33,8 +45,16 @@ class AnalyticsManager {
         });
 
         Promise.all(unRegisteringArray)
-            .then(() => callback())
-            .catch((err) => callback(err));
+            .then(() => {
+                if (startIndex + this._batchSize < feedData.length) {
+                    this.unRegisterFeedAnalytics(startIndex + this._batchSize, feedData, callback);
+                } else {
+                    callback();
+                }
+            })
+            .catch(err => {
+                callback(err)
+            });
     }
 
     static unregisterEvent(key) {
@@ -53,6 +73,10 @@ class AnalyticsManager {
                 else resolve(res);
             });
         })
+    }
+
+    static trackEvent(eventKey, metaData) {
+        buildfire.analytics.trackAction(eventKey, metaData);
     }
 
     static init() { // this should be called one time 

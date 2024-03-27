@@ -286,9 +286,28 @@
                  * filterItemType() method will be called if WidgetMedia.item is not null
                  */
                 if (WidgetMedia.item) {
-                    console.log('WidgetMedia Item----------------------', WidgetMedia.item);
                     filterItemType(WidgetMedia.item);
                     bookmarks.sync($scope);
+
+                    let metaData = {
+                        itemId: WidgetMedia.item.guid,
+                        itemTitle: WidgetMedia.item.title,
+                        imageUrl: WidgetMedia.item.imageSrcUrl
+                    };
+                    let eventKey = '';
+                    switch (WidgetMedia.medium) {
+                        case MEDIUM_TYPES.VIDEO:
+                            eventKey = `videoOpens`;
+                            break;
+                        case MEDIUM_TYPES.AUDIO:
+                            eventKey = `audioOpens`;
+                            break;
+                        default:
+                            eventKey = `articleOpens`;
+                            break;
+                    }
+                    AnalyticsManager.trackEvent(eventKey, metaData);
+                    AnalyticsManager.trackEvent(`${WidgetMedia.item.guid}_opens`, metaData);
                 }
 
                 /**
@@ -299,6 +318,35 @@
                 WidgetMedia.onPlayerReady = function ($API) {
                     WidgetMedia.API = $API;
                 };
+                
+                WidgetMedia.isVideoPlayed = false;
+                WidgetMedia.playInterval = null;
+                WidgetMedia.lastAnalyticsTime = 0;
+                WidgetMedia.onVideoStateChange = function (videoState) {
+                    const metaData = {
+                        itemId: WidgetMedia.item.guid,
+                        itemTitle: WidgetMedia.item.title,
+                        imageUrl: WidgetMedia.item.imageSrcUrl,
+                    };
+                    const eventKey = `${WidgetMedia.item.guid}_SecondsWatch`; 
+                    if (videoState === 'play') {
+                        if (!WidgetMedia.isVideoPlayed) {
+                            WidgetMedia.isVideoPlayed = true;
+                            AnalyticsManager.trackEvent(`videoPlays`, metaData);
+                            AnalyticsManager.trackEvent(`${WidgetMedia.item.guid}_plays`, metaData);
+                        }
+                        WidgetMedia.playInterval = setInterval(() => {
+                            WidgetMedia.lastAnalyticsTime = WidgetMedia.API.currentTime;
+                            metaData._buildfire = { aggregationValue: 5 }; // 5 seconds
+                            AnalyticsManager.trackEvent(eventKey, metaData);
+                        }, 5*1000);
+                    } else if (videoState === 'pause') {
+                        clearInterval(WidgetMedia.playInterval);
+                        const extraTime = WidgetMedia.API.currentTime - WidgetMedia.lastAnalyticsTime;
+                        metaData._buildfire = { aggregationValue: parseInt(extraTime/1000) }; // aggregation value in seconds
+                        AnalyticsManager.trackEvent(eventKey, metaData);
+                    }
+                }
 
                 /**
                  * WidgetMedia.onVideoError() method

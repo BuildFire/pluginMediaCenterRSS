@@ -35,6 +35,11 @@
 				NowPlaying.volume = setting.volume;
 			});
 
+			if (!NowPlaying.item || !NowPlaying.item.guid) {
+				audioPlayer.pause();
+				return Location.goToHome();
+			}
+
 			buildfire.notes && buildfire.notes.onSeekTo && buildfire.notes.onSeekTo(function (data) {
 				NowPlaying.changeTime(data.time);
 			});
@@ -43,8 +48,25 @@
 			 */
 
 			var first = true;
+			let playInterval = null;
 			audioPlayer.onEvent(function (e) {
+				const metaData = {
+					itemId: NowPlaying.item.guid,
+					itemTitle: NowPlaying.item.title,
+					imageUrl: NowPlaying.item.imageSrcUrl,
+				};
+				const eventKey = `${NowPlaying.item.guid}_SecondsWatch`; 
+
 				switch (e.event) {
+					case "play":
+						AnalyticsManager.trackEvent(`audioPlays`, metaData);
+						AnalyticsManager.trackEvent(`${NowPlaying.item.guid}_plays`, metaData);
+					case "resume":
+						playInterval = setInterval(() => {
+							metaData._buildfire = { aggregationValue: 5 }; // 5 seconds
+							AnalyticsManager.trackEvent(eventKey, metaData);
+						}, 5*1000);
+					break;
 					case 'skip':
 						NowPlaying.changeTime(e.data);
 						break;
@@ -59,10 +81,16 @@
 						NowPlaying.maxRange = Math.floor(e.data.duration);
 						break;
 					case 'audioEnded':
+						clearInterval(playInterval);
+						const extraTime = e.data.lastPosition - NowPlaying.currentTime;
+                        metaData._buildfire = { aggregationValue: parseInt(extraTime/1000) }; // aggregation value in seconds
+                        AnalyticsManager.trackEvent(eventKey, metaData);
+
 						NowPlaying.playing = false;
 						NowPlaying.paused = false;
 						break;
 					case 'pause':
+						clearInterval(playInterval);
 						NowPlaying.playing = false;
 						break;
 					case 'next':

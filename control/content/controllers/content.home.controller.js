@@ -287,16 +287,14 @@
                 ContentHome.data.content.feeds[index] = feed;
                 ContentHome.sortableList.update(index, ContentHome.prepareFeeds([ContentHome.data.content.feeds[index]])[0]);
               }
-              // ContentHome.activeRssFeed = feed;
               ContentHome.subPages[type].close();
-              if (!$scope.$$phase) $scope.$digest();
             } else { // add new RSS feed
               if (!ContentHome.data.content.feeds) ContentHome.data.content.feeds = [feed];
               else ContentHome.data.content.feeds.push(feed);
               ContentHome.subPages[type].close();
               ContentHome.sortableList.append(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
-              if (!$scope.$$phase) $scope.$digest();
             }
+            if (!$scope.$$phase) $scope.$digest();
           }
 
           switch (type) {
@@ -729,7 +727,7 @@
               callback(err);
               return console.error(err);
             }
-            AnalyticsManager.registerFeedAnalytics(feedData, callback);
+            AnalyticsManager.registerFeedAnalytics(0, feedData, callback);
           });
         };
 
@@ -744,7 +742,7 @@
               callback(err);
               return console.error(err);
             }
-            AnalyticsManager.unRegisterFeedAnalytics(feedData, callback);
+            AnalyticsManager.unRegisterFeedAnalytics(0, feedData, callback);
           });
         };
 

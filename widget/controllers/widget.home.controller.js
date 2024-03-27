@@ -62,6 +62,8 @@
                                             } else if (WidgetHome.dataTotallyLoaded) {
                                                 toggleDeeplinkSkeleton();
                                             }
+                                        } else if (WidgetHome.dataTotallyLoaded) {
+                                            toggleDeeplinkSkeleton();
                                         }
                                     });
                                 } else {
