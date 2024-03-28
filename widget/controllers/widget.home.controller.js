@@ -42,7 +42,7 @@
                  */
                 var handleBookmarkNav = function handleBookmarkNav() {
                     if ($scope.first) {
-                        const processDeeplink = (data) => {
+                        const processDeeplink = (data, pushToHistory=true) => {
                             if (data && data.link) {
                                 toggleDeeplinkSkeleton(true);
                                 var targetGuid = data.link;
@@ -58,7 +58,7 @@
                                                     WidgetHome.feedsCache[key].items[index].seekTo = data.timeIndex;
                                                 }
                                                 $rootScope.deeplinkFirstNav = true;
-                                                WidgetHome.goToItem(index, feedItem, false);
+                                                WidgetHome.goToItem(index, feedItem, pushToHistory);
                                             } else if (WidgetHome.dataTotallyLoaded) {
                                                 toggleDeeplinkSkeleton();
                                             }
@@ -79,7 +79,7 @@
                                             _items[index].seekTo = data.timeIndex;
                                         }
                                         $rootScope.deeplinkFirstNav = true;
-                                        WidgetHome.goToItem(index, _items[index], false);
+                                        WidgetHome.goToItem(index, _items[index], pushToHistory);
                                     }
                                     $scope.first = false;
                                 }
@@ -87,10 +87,12 @@
                             }
                         }
                         buildfire.deeplink.getData(function (data) {
-                            processDeeplink(data);
+                            if (!$rootScope.redirectedFromBack) {
+                                processDeeplink(data, false);
+                            }
                         });
                         buildfire.deeplink.onUpdate(function (data) {
-                            processDeeplink(data);
+                            processDeeplink(data, true);
                         });
                     }
                 };
@@ -452,6 +454,7 @@
                 }
 
                 WidgetHome.initializePlugin = function () {
+                    $rootScope.itemDetailsOpened = false;
                     DataStore.get(TAG_NAMES.RSS_FEED_INFO).then((settings) => {
                         WidgetHome.processDatastore(settings);
                         WidgetHome.loading = true;

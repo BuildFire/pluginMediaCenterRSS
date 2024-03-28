@@ -289,25 +289,28 @@
                     filterItemType(WidgetMedia.item);
                     bookmarks.sync($scope);
 
-                    let metaData = {
-                        itemId: WidgetMedia.item.guid,
-                        itemTitle: WidgetMedia.item.title,
-                        imageUrl: WidgetMedia.item.imageSrcUrl
-                    };
-                    let eventKey = '';
-                    switch (WidgetMedia.medium) {
-                        case MEDIUM_TYPES.VIDEO:
-                            eventKey = `videoOpens`;
-                            break;
-                        case MEDIUM_TYPES.AUDIO:
-                            eventKey = `audioOpens`;
-                            break;
-                        default:
-                            eventKey = `articleOpens`;
-                            break;
+                    if (!$rootScope.itemDetailsOpened) {
+                        $rootScope.itemDetailsOpened = true;
+                        let metaData = {
+                            itemId: WidgetMedia.item.guid,
+                            itemTitle: WidgetMedia.item.title,
+                            imageUrl: WidgetMedia.item.imageSrcUrl
+                        };
+                        let eventKey = '';
+                        switch (WidgetMedia.medium) {
+                            case MEDIUM_TYPES.VIDEO:
+                                eventKey = `videoOpens`;
+                                break;
+                            case MEDIUM_TYPES.AUDIO:
+                                eventKey = `audioOpens`;
+                                break;
+                            default:
+                                eventKey = `articleOpens`;
+                                break;
+                        }
+                        AnalyticsManager.trackEvent(eventKey, metaData);
+                        AnalyticsManager.trackEvent(`${WidgetMedia.item.guid}_opens`, metaData);
                     }
-                    AnalyticsManager.trackEvent(eventKey, metaData);
-                    AnalyticsManager.trackEvent(`${WidgetMedia.item.guid}_opens`, metaData);
                 }
 
                 /**

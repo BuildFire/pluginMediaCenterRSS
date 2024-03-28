@@ -10,11 +10,11 @@ class AnalyticsManager {
         const batch = feedData.slice(startIndex, startIndex + this._batchSize);
         batch.forEach(item => {
             if (item.type === "VIDEO" || item.type === 'AUDIO') {
-                registeringArray.push(AnalyticsManager.registerEvent(`${item.title} - Total Plays`, `${item.guid}_plays`, 'Number of plays'));
-                registeringArray.push(AnalyticsManager.registerEvent(`${item.title} - Total Opens`, `${item.guid}_opens`, 'Number of opens'));
-                registeringArray.push(AnalyticsManager.registerEvent(`${item.title} - Total Time Watched`, `${item.guid}_SecondsWatch`, 'Number of plays'));
+                registeringArray.push(AnalyticsManager.registerEvent(`${item.title} - Plays Count`, `${item.guid}_plays`, 'Tracks the total number of times this item has been played by users within the app. It provides insights into the overall engagement level and popularity of this item.'));
+                registeringArray.push(AnalyticsManager.registerEvent(`${item.title} - Opens Count`, `${item.guid}_opens`, 'Tracks the total number of times this item has been opened by users within the app. It provides insights into the overall engagement level and popularity of this item.'));
+                registeringArray.push(AnalyticsManager.registerEvent(`${item.title} - Watch Time Duration`, `${item.guid}_SecondsWatch`, 'This analytics metric calculates the cumulative watch time for the item content. It offers valuable insights into user engagement and content consumption habits, aiding in content optimization and audience targeting strategies.'));
             } else {
-                registeringArray.push(AnalyticsManager.registerEvent(`${item.title} - Total Opens`, `${item.guid}_opens`, 'Number of opens'));
+                registeringArray.push(AnalyticsManager.registerEvent(`${item.title} - Opens Count`, `${item.guid}_opens`, 'Tracks the total number of times this item has been opened by users within the app. It provides insights into the overall engagement level and popularity of this item.'));
             }
         });
 
@@ -80,10 +80,11 @@ class AnalyticsManager {
     }
 
     static init() { // this should be called one time 
-        AnalyticsManager.registerEvent(`Total Video Opens`, `videoOpens`, 'Number of opens');
-        AnalyticsManager.registerEvent(`Total Video Plays`, `videoPlays`, 'Number of plays');
-        AnalyticsManager.registerEvent(`Total Audio Opens`, `audioOpens`, 'Number of opens');
-        AnalyticsManager.registerEvent(`Total Audio Plays`, `audioPlays`, 'Number of plays');
-        AnalyticsManager.registerEvent(`Total Articles Opens`, `articleOpens`, 'Number of opens');
+        AnalyticsManager.registerEvent(`Videos Opens Count`, `videoOpens`, 'Tracks the total number of times all videos have been opened by users within the app. It provides insights into the overall engagement level and popularity of all videos.');
+        AnalyticsManager.registerEvent(`Videos Plays Count`, `videoPlays`, 'Tracks the total number of times all videos have been played by users within the app. It provides insights into the overall engagement level and popularity of all videos.');
+        AnalyticsManager.registerEvent(`Audios Opens Count`, `audioOpens`, 'Tracks the total number of times all audios have been opened by users within the app. It provides insights into the overall engagement level and popularity of all audios.');
+        AnalyticsManager.registerEvent(`Audios Plays Count`, `audioPlays`, 'Tracks the total number of times all audios have been played by users within the app. It provides insights into the overall engagement level and popularity of all audios.');
+        AnalyticsManager.registerEvent(`Articles Opens Count`, `articleOpens`, 'Tracks the total number of times all articles have been opened by users within the app. It provides insights into the overall engagement level and popularity of all articles.');
     }
 }
+// analytics will moved to the next sprint 28/03/2024
