@@ -694,7 +694,7 @@
 
         ContentHome.toggleEmptyScreen = function (){
           const loadingContainer = document.getElementById('emptyListContainer');
-          if ((!ContentHome.data.content.feeds || !ContentHome.data.content.feeds.length) && !ContentHome.data.rssUrl) {
+          if (!ContentHome.sortableList.items.length) {
             loadingContainer.classList.remove('hidden');
             loadingContainer.innerHTML = '<h4>No Feeds Found.</h4>';
           } else {
