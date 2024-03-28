@@ -92,3 +92,7 @@
 .sortable-list-container {
     height: auto;
 }
+
+#feeds {
+    margin-bottom: 0;
+}

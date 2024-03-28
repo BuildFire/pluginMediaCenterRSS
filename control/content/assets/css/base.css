@@ -521,6 +521,16 @@ p.info__note.info__note--transparent {
     transform: scale(1);
 }
 
+.draggable-list-view .d-item .copy{
+    width: 70% !important;
+    max-width: 70% !important;
+}
+
+.draggable-list-view.carousel-items .d-item span.title {
+    width: 50% !important;
+    max-width: 50% !important;
+}
+
 #rssFeedDialog .modal-body {
     overflow: auto;
     max-height: calc(90vh - 124px);
@@ -539,4 +549,21 @@ p.info__note.info__note--transparent {
     height: 30px;
     -webkit-animation: spin 1s linear infinite; 
     animation: spin 1s linear infinite;
+}
+
+.empty-state {
+    min-height: 15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    border-radius: 0.25rem;
+    background-color: var(--c-gray1);
+    border: 1px solid var(--c-gray3);
+}
+
+.empty-state h4 {
+    color: var(--c-gray6);
+    font-weight: 700;
+    font-family: 'Conv_apercu_bold', 'Helvetica', 'Sans-Serif', 'Arial';
 }

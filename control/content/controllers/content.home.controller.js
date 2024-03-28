@@ -209,6 +209,7 @@
             } else {
               callback(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
             }
+            ContentHome.toggleEmptyScreen();
           }
 
           ContentHome.sortableList.onAddButtonClick = function (options) {
@@ -282,7 +283,11 @@
               // change the id if the user is updating the default feed
               if (feed.id === 'default') {
                 feed.id = Utils.nanoid();
-                ContentHome.data.content.feeds[index] = feed;
+                if (index > -1) {
+                  ContentHome.data.content.feeds[index] = feed;
+                } else {
+                  ContentHome.data.content.feeds.push(feed);
+                }
                 ContentHome.sortableList.remove('default');
                 ContentHome.sortableList.append(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
               } else {
@@ -422,8 +427,8 @@
             return;
           }
           var success = function (result) {
-            console.info('Saved data result: ', result);
             updateMasterItem(newObj);
+            ContentHome.toggleEmptyScreen();
             if (ContentHome.activeRssFeed) {
               ContentHome.subPages.rss.close();
               ContentHome.handleLoaderDialog("Fetching Data", "Fetching data, please wait...", true);
@@ -687,30 +692,15 @@
           FeedParseService.validateFeedUrl(feedUrl).then(success, error);
         };
 
-        /**
-         * ContentHome.getFeedData function will called to get RSS feed data.
-         * @param feedUrl
-         * @param callback
-         */
-        ContentHome.getFeedData = function (feedUrl, callback) {
-          FeedParseService.getFeedData(feedUrl).then((result) => {
-            const feedData = result.data.items.map(_item => {
-              let enclosureData = sharedUtils.checkEnclosuresTag(_item, MEDIUM_TYPES);
-              let mediaTagData = sharedUtils.checkMediaTag(_item, MEDIUM_TYPES);
-
-                if (enclosureData) {
-                  _item.type = enclosureData.medium;
-                } else if (mediaTagData) {
-                  _item.type = mediaTagData.medium;
-                }
-                return _item;
-            });
-            callback(null, feedData);
-          }).catch((err) => {
-            console.error(err);
-            callback(err);
-          });
-        };
+        ContentHome.toggleEmptyScreen = function (){
+          const loadingContainer = document.getElementById('emptyListContainer');
+          if ((!ContentHome.data.content.feeds || !ContentHome.data.content.feeds.length) && !ContentHome.data.rssUrl) {
+            loadingContainer.classList.remove('hidden');
+            loadingContainer.innerHTML = '<h4>No Feeds Found.</h4>';
+          } else {
+            loadingContainer.classList.add('hidden');
+          }
+        }
 
         /**
          * ContentHome.clearData function will called when RSS feed url removed from RSS feed url input box.
