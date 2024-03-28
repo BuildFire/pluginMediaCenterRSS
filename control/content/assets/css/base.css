@@ -524,7 +524,6 @@ p.info__note.info__note--transparent {
 #rssFeedDialog .modal-body {
     overflow: auto;
     max-height: calc(90vh - 124px);
-    min-height: 290px;
 }
 
 .slide {

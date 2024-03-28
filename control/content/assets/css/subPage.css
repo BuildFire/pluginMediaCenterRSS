@@ -14,7 +14,7 @@
 
 .subPage.activeDialog {
     display: block;
-    width: 80%;
+    width: 70%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -23,6 +23,10 @@
     box-shadow: grey 5px 5px 15px;
     outline: 9999px solid #ffffffaa;
     z-index: 999;
+}
+
+.subPage.activeDialog.loaderDialog {
+    width: 50%;
 }
 
 .subPage>.spHeader {

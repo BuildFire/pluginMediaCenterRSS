@@ -225,7 +225,11 @@
                 ContentHome.showFeedDialog(options.item.type, options.item);
                 break;
               case "delete":
-                buildfire.dialog.confirm({ message: "Are you sure you want to delete this feed?" }, (err, isConfirmed) => {
+                buildfire.dialog.confirm({
+                  title: "Delete Feed",
+                  message: `Are you sure you want to delete ${options.item.title} feed?`,
+                  confirmButton: { type: "danger", text: "Delete" },
+                }, (err, isConfirmed) => {
                   if (err) console.error(err);
                   if (isConfirmed) {
                     ContentHome.handleLoaderDialog("Deleting Data", "Deleting data, please wait...", true);
@@ -294,6 +298,7 @@
               ContentHome.subPages[type].close();
               ContentHome.sortableList.append(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
             }
+            ContentHome.data.content.rssUrl = ContentHome.rssFeedUrl;
             if (!$scope.$$phase) $scope.$digest();
           }
 
@@ -322,7 +327,7 @@
                 return;
               }
 
-              ContentHome.handleLoaderDialog("Validating Feed", "Validating feed url, please wait...", true);
+              ContentHome.handleLoaderDialog("Validating Feed", "Validating feed URL, please wait...", true);
               ContentHome.validateFeedUrl(values.rssFeedUrl, (errors) => {
                 if (errors) {
                   ContentHome.handleLoaderDialog();
@@ -339,7 +344,7 @@
                       if (isFeedChanged) {
                         // delete old search engine data
                         ContentHome.handleLoaderDialog("Deleting Old Data", "Deleting old search data, please wait...", true);
-                        ContentHome.unRegisterFeedAnalytics(feed.url, () => {
+                        ContentHome.unRegisterFeedAnalytics(item.url, () => {
                           searchEngine.deleteFeed(item, (err, result) => {
                             if (err) {
                               ContentHome.handleLoaderDialog();
@@ -646,7 +651,6 @@
           var success = function () {
             ContentHome.isValidUrl = true;
             ContentHome.isValidateButtonClicked = false;
-            ContentHome.data.content.rssUrl = ContentHome.rssFeedUrl;
             Buildfire.spinner.hide();
             callback(null);
             $timeout(function () {

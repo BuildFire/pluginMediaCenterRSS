@@ -55,3 +55,40 @@
 .slide::-webkit-scrollbar{
 	display: none;
 }
+
+#carousel .item.clearfix .col-md-3 {
+    width: calc(100% / 3);
+}
+  
+#carousel .item.clearfix .col-md-9 {
+    width: calc(100% / 3*2);
+    padding-left: 0;
+}
+  
+#carousel .item.clearfix .col-md-9 .clearfix {
+    display: flex;
+    justify-content: flex-end;
+}
+  
+#carousel .item.clearfix .col-md-9 .btn {
+    float: right !important;
+    color: #05acf0 !important;
+    background-color: transparent !important;
+    border: 1px solid var(--c-primary);
+    padding: 7px 22px 7px 38px !important;
+}
+  
+#carousel .item.clearfix .col-md-9 .btn:hover {
+    background-color: #f2f2f2 !important;
+}
+  
+#carousel .item.clearfix .col-md-9 .btn::before,
+#carousel .item.clearfix .col-md-9 .btn::after {
+    background-color: var(--c-primary) !important;
+    left: unset;
+    right: 70%;
+}
+
+.sortable-list-container {
+    height: auto;
+}

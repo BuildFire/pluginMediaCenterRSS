@@ -1,11 +1,5 @@
-<div id="carousel"></div>
-<hr>
-<div class="item clearfix row">
-  <div class="labels col-md-3 padding-right-zero pull-left">
-    <span>Content</span>
-  </div>
-</div>
-<hr class="none">
+<div class="section-title">Introduction</div>
+<div class="margin-bottom-fifteen" id="carousel"></div>
 <div class="item clearfix row">
   <div class="main col-md-12 pull-right">
     <textarea id="text" rows="5" width="100%" class="form-control" ui-tinymce="ContentHome.descriptionWYSIWYGOptions"
@@ -20,8 +14,8 @@
     <h4 class="spHeaderText">Entity Title</h4>
     <a><span class="icon icon-cross2 close-modal"></span></a>
   </div>
-  <div class="modal-body padded">
-    <div class="form-group">
+  <div class="padding-left-twenty padding-right-twenty padding-top-twenty padding-bottom-zero modal-body padded">
+    <div class="form-group margin-bottom-twenty">
       <label class="tooltip-container">Feed Name <span class="required"></span>
         <span class="btn-info-icon btn-primary">
         <span class="cp-tooltip top-cp-tooltip">
@@ -31,7 +25,7 @@
       </label>
       <input type="text" class="form-control" id="rssFeedTitle" placeholder="Title" required>
     </div>
-    <div class="form-group">
+    <div class="form-group margin-bottom-thirty">
       <label class="tooltip-container">RSS URL <span class="required"></span>
         <span class="btn-info-icon btn-primary">
         <span class="cp-tooltip">
@@ -46,12 +40,12 @@
       <span>To prevent issues with your feed, make sure to validate it using the <a href="https://validator.w3.org/feed/" target="_blank">RSS Feed Validator</a></span>
     </div>
 
-    <div class="form-group">
+    <div class="form-group margin-bottom-twenty">
       <div class="row">
         <div class="col-sm-6">
           <label class="tooltip-container">Advanced Settings
             <span class="btn-info-icon btn-primary">
-            <span class="cp-tooltip">
+            <span class="cp-tooltip bottom-cp-tooltip">
               Advanced settings is used only to configure Search Engine Indexing. Adjust the feed's key parameters to enable searchability of feed items in the global search located in the app's side menu.
             </span>
             </span>
@@ -67,7 +61,7 @@
     </div>
 
     <div class="hidden" advanced-modal-show="enableSearchEngineConfig">
-      <div class="form-group">
+      <div class="form-group margin-bottom-twenty">
         <div>
           <label class="tooltip-container">Unique Key
             <span class="btn-info-icon btn-primary">
@@ -80,7 +74,7 @@
         </div>
       </div>
   
-      <div class="form-group">
+      <div class="form-group margin-bottom-twenty">
         <div>
           <label class="tooltip-container">Title Key
             <span class="btn-info-icon btn-primary">
@@ -93,7 +87,7 @@
         </div>
       </div>
   
-      <div class="form-group">
+      <div class="form-group margin-bottom-twenty">
         <div>
           <label class="tooltip-container">Description Key
             <span class="btn-info-icon btn-primary">
@@ -106,7 +100,7 @@
         </div>
       </div>
   
-      <div class="form-group">
+      <div class="form-group margin-bottom-twenty">
         <div>
           <label class="tooltip-container">Url Key
             <span class="btn-info-icon btn-primary">
@@ -119,7 +113,7 @@
         </div>
       </div>
   
-      <div class="form-group">
+      <div class="form-group margin-bottom-twenty">
         <div>
           <label class="tooltip-container">Publish Date Key
             <span class="btn-info-icon btn-primary">
@@ -132,7 +126,7 @@
         </div>
       </div>
   
-      <div class="form-group">
+      <div class="form-group margin-bottom-twenty">
         <div>
           <label class="tooltip-container">Image URL Key
             <span class="btn-info-icon btn-primary">
@@ -159,7 +153,7 @@
     <a><span class="icon icon-cross2 close-modal"></span></a>
   </div>
   <div class="modal-body padded">
-    <div class="form-group">
+    <div class="form-group margin-bottom-twenty">
       <label class="tooltip-container">Feed Name <span class="required"></span>
         <span class="btn-info-icon btn-primary">
         <span class="cp-tooltip top-cp-tooltip">
@@ -171,7 +165,7 @@
       <input type="text" class="form-control" id="googleFeedTitle" placeholder="Title" required>
 
     </div>
-    <div class="form-group">
+    <div class="form-group margin-bottom-twenty">
       <label class="tooltip-container">Keywords <span class="required"></span>
         <span class="btn-info-icon btn-primary">
         <span class="cp-tooltip">
@@ -189,7 +183,7 @@
   </div>
 </div>
 
-<div id="cpLoaderDialog" class="subPage">
+<div id="cpLoaderDialog" class="subPage loaderDialog">
   <div class="spHeader padded">
     <h4 class="spHeaderText">Fetching Data</h4>
   </div>
