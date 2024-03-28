@@ -21,18 +21,22 @@
 
                 const toggleDeeplinkSkeleton = (show) => {
                     const deeplinkSkeletonContainer = document.getElementById('deeplinkSkeleton');
-                    if (show && !WidgetHome.deeplinkSkeleton) {
-                        WidgetHome.deeplinkSkeleton = new buildfire.components.skeleton('#deeplinkSkeleton', {
+                    if (show && !this.deeplinkSkeleton) {
+                        this.deeplinkSkeleton = new buildfire.components.skeleton('#deeplinkSkeleton', {
                             type: 'image, list-item, sentence, paragraph',
                         })
-                        WidgetHome.deeplinkSkeleton.start();
+                        this.deeplinkSkeleton.start();
                         deeplinkSkeletonContainer.classList.remove('hidden');
-                    } else if (!show && WidgetHome.deeplinkSkeleton) {
+                    } else if (!show && this.deeplinkSkeleton) {
                         deeplinkSkeletonContainer.classList.add('hidden');
-                        WidgetHome.deeplinkSkeleton.stop();
-                        WidgetHome.deeplinkSkeleton = null;
+                        this.deeplinkSkeleton.stop();
+                        this.deeplinkSkeleton = null;
                     }
                 };
+                // show the deeplink skeleton if the deeplink is present
+                buildfire.deeplink.getData(function (data) {
+                    if (data && data.link) toggleDeeplinkSkeleton(true);
+                });
 
                 $scope.deeplinkItemId = null;
                 $scope.isDeeplinkItemOpened = false;
@@ -46,7 +50,6 @@
                     if ($scope.first) {
                         const processDeeplink = (data, pushToHistory=true) => {
                             if (data && data.link) {
-                                toggleDeeplinkSkeleton(true);
                                 var targetGuid = data.link;
 
                                 if(WidgetHome.data && WidgetHome.data.content.feeds?.length) {

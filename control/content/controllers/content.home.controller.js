@@ -243,6 +243,7 @@
                       
                       ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter((el, ind) => el.id !== options.item.id);
                       ContentHome.sortableList.remove(options.item.id);
+                      ContentHome.toggleEmptyScreen();
                       $scope.$digest();
                     });
                   }
