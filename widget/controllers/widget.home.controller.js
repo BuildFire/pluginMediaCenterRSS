@@ -34,6 +34,8 @@
                     }
                 };
 
+                $scope.deeplinkItemId = null;
+                $scope.isDeeplinkItemOpened = false;
                 $scope.first = true;
                 /**
                  * @name handleBookmarkNav
@@ -58,6 +60,7 @@
                                                     WidgetHome.feedsCache[key].items[index].seekTo = data.timeIndex;
                                                 }
                                                 $rootScope.deeplinkFirstNav = true;
+                                                $scope.isDeeplinkItemOpened = true;
                                                 WidgetHome.goToItem(index, feedItem, pushToHistory);
                                             } else if (WidgetHome.dataTotallyLoaded) {
                                                 toggleDeeplinkSkeleton();
@@ -79,6 +82,7 @@
                                             _items[index].seekTo = data.timeIndex;
                                         }
                                         $rootScope.deeplinkFirstNav = true;
+                                        $scope.isDeeplinkItemOpened = true;
                                         WidgetHome.goToItem(index, _items[index], pushToHistory);
                                     }
                                     $scope.first = false;
@@ -87,11 +91,14 @@
                             }
                         }
                         buildfire.deeplink.getData(function (data) {
-                            if (!$rootScope.redirectedFromBack) {
+                            if (!data) return;
+                            if ($scope.deeplinkItemId !== data.link || !$scope.isDeeplinkItemOpened) {
+                                $scope.deeplinkItemId = data.link;
                                 processDeeplink(data, false);
                             }
                         });
                         buildfire.deeplink.onUpdate(function (data) {
+                            if (!data) return;
                             processDeeplink(data, true);
                         });
                     }
@@ -649,6 +656,7 @@
                             }
                         });
                     } else {
+                        $rootScope.showFeed = false;
                         WidgetHome.proceedToItem(index, item, pushToHistory);
                     }
                 };
