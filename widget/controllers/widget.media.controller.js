@@ -64,7 +64,7 @@
                 var regex = /(style=".+?")/gm;
                 
                 if (!WidgetMedia.item) {
-                    return Location.goToHome();
+                    return Location.goTo('#/');
                 }
                 WidgetMedia.item.description = (WidgetMedia && WidgetMedia.item && WidgetMedia.item.description) ? WidgetMedia.item.description.replace(regex, '') : "";
                 

@@ -54,7 +54,7 @@
                     $timeout(function () {
                         $rootScope.showFeed = true;
                     }, 200);
-                    Location.goToHome();
+                    Location.goTo('#/');
                 } else if (reg1.test($location.path())) {
                     if ($rootScope.playlist) {
                         $rootScope.playlist = false;
