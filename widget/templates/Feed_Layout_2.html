@@ -5,7 +5,6 @@
 				<div ng-switch="WidgetMedia.medium" class="people-holder clearfix">
 					<div ng-switch-when="VIDEO" class="videogular-container" ng-style="{'min-height': (9 * deviceWidth / 16) + 'px' }">
 						<videogular ng-if="WidgetMedia.isVideoPlayerSupported" vg-player-ready="WidgetMedia.onPlayerReady($API)"
-							vg-update-state="WidgetMedia.onVideoStateChange($state)"
 						 vg-change-source="WidgetMedia.sourceChanged($source)" vg-theme="WidgetMedia.videoPlayerConfig.theme.url"
 						 vg-error="WidgetMedia.onVideoError($event)" vg-can-play="WidgetMedia.videoLoaded()">
 							<vg-media vg-src="WidgetMedia.videoPlayerConfig.sources" vg-tracks="WidgetMedia.videoPlayerConfig.tracks"

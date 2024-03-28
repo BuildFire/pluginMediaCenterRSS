@@ -249,7 +249,7 @@
                                 currentRssUrl = WidgetMedia.data.content.rssUrl;
                                 $rootScope.showFeed = true;
                                 Buildfire.history.pop();
-                                Location.goToHome();
+                                Location.goTo('#/');
                             } else {
                                 $rootScope.data.design.itemDetailsLayout = WidgetMedia.data.design.itemDetailsLayout;
                             }
