@@ -233,19 +233,17 @@
                   if (err) console.error(err);
                   if (isConfirmed) {
                     ContentHome.handleLoaderDialog("Deleting Data", "Deleting data, please wait...", true);
-                    ContentHome.unRegisterFeedAnalytics(options.item.url, () => {
-                      searchEngine.deleteFeed(options.item, (err, result) => {
-                        ContentHome.handleLoaderDialog();
-                        if (err) {
-                          handleSearchEngineErrors('deleting');
-                          return console.error(err);
-                        }
-                        
-                        ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter((el, ind) => el.id !== options.item.id);
-                        ContentHome.sortableList.remove(options.item.id);
-                        $scope.$digest();
-                      });
-                    })
+                    searchEngine.deleteFeed(options.item, (err, result) => {
+                      ContentHome.handleLoaderDialog();
+                      if (err) {
+                        handleSearchEngineErrors('deleting');
+                        return console.error(err);
+                      }
+                      
+                      ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter((el, ind) => el.id !== options.item.id);
+                      ContentHome.sortableList.remove(options.item.id);
+                      $scope.$digest();
+                    });
                   }
                 })
                 break;
@@ -344,15 +342,13 @@
                       if (isFeedChanged) {
                         // delete old search engine data
                         ContentHome.handleLoaderDialog("Deleting Old Data", "Deleting old search data, please wait...", true);
-                        ContentHome.unRegisterFeedAnalytics(item.url, () => {
-                          searchEngine.deleteFeed(item, (err, result) => {
-                            if (err) {
-                              ContentHome.handleLoaderDialog();
-                              handleSearchEngineErrors('updating');
-                              return console.error(err);
-                            }
-                            insertFeedToList(feed);
-                          });
+                        searchEngine.deleteFeed(item, (err, result) => {
+                          if (err) {
+                            ContentHome.handleLoaderDialog();
+                            handleSearchEngineErrors('updating');
+                            return console.error(err);
+                          }
+                          insertFeedToList(feed);
                         });
                       } else {
                         insertFeedToList(feed);
@@ -431,7 +427,7 @@
             if (ContentHome.activeRssFeed) {
               ContentHome.subPages.rss.close();
               ContentHome.handleLoaderDialog("Fetching Data", "Fetching data, please wait...", true);
-              ContentHome.registerFeedAnalytics(ContentHome.activeRssFeed.url, indexingSearchEngineData);
+              indexingSearchEngineData();
             } else {
               ContentHome.handleLoaderDialog();
             }
@@ -508,10 +504,6 @@
          */
         var init = function () {
           var success = function (result) {
-            console.info('Init success result:', result);
-            if (!result.lastUpdated || new Date(result.lastUpdated) < new Date('2019-10-21')) {
-              AnalyticsManager.init();
-            }
             if (Object.keys(result.data).length > 0) {
               updateMasterItem(result.data);
               ContentHome.data = result.data;
@@ -717,36 +709,6 @@
           }).catch((err) => {
             console.error(err);
             callback(err);
-          });
-        };
-
-        /**
-         * ContentHome.registerFeedAnalytics function will called when you adding new RSS Feed to register analytics.
-         * @param feedUrl
-         * @param callback
-         */
-        ContentHome.registerFeedAnalytics = function (feedUrl, callback) {
-          ContentHome.getFeedData(feedUrl, (err, feedData) => {
-            if (err) {
-              callback(err);
-              return console.error(err);
-            }
-            AnalyticsManager.registerFeedAnalytics(0, feedData, callback);
-          });
-        };
-
-        /**
-         * ContentHome.unRegisterFeedAnalytics function will called when you deleting RSS Feed to unregister analytics.
-         * @param feedUrl
-         * @param callback
-         */
-        ContentHome.unRegisterFeedAnalytics = function (feedUrl, callback) {
-          ContentHome.getFeedData(feedUrl, (err, feedData) => {
-            if (err) {
-              callback(err);
-              return console.error(err);
-            }
-            AnalyticsManager.unRegisterFeedAnalytics(0, feedData, callback);
           });
         };
 

@@ -454,7 +454,6 @@
                 }
 
                 WidgetHome.initializePlugin = function () {
-                    $rootScope.itemDetailsOpened = false;
                     DataStore.get(TAG_NAMES.RSS_FEED_INFO).then((settings) => {
                         WidgetHome.processDatastore(settings);
                         WidgetHome.loading = true;
