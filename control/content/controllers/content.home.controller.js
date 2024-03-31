@@ -385,8 +385,8 @@
 
         const indexingSearchEngineData = () => {
           searchEngine.isFeedChanged(ContentHome.activeRssFeed, (err, isFeedChanged) => {
+            ContentHome.activeRssFeed = null;
             if (err) {
-              ContentHome.activeRssFeed = null;
               ContentHome.handleLoaderDialog();
               handleSearchEngineErrors('indexing');
               console.error(err);
