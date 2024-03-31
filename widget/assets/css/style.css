@@ -1719,7 +1719,7 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 }
 
 .deeplink-item-skeleton{
-	z-index: 1000;
+    z-index: 1000;
     position: absolute;
     width: 100%;
     height: 100%;
@@ -1727,5 +1727,5 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 }
 
 .deeplink-item-skeleton .bf-skeleton-container .skeleton-paragraph {
-	padding: 0 20px;
+    padding: 0 20px;
 }

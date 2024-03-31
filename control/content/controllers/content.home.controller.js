@@ -234,7 +234,7 @@
                   if (err) console.error(err);
                   if (isConfirmed) {
                     ContentHome.handleLoaderDialog("Deleting Data", "Deleting data, please wait...", true);
-                    searchEngine.deleteFeed(options.item, (err, result) => {
+                    searchEngine.deleteFeed(options.item.id, (err, result) => {
                       ContentHome.handleLoaderDialog();
                       if (err) {
                         handleSearchEngineErrors('deleting');
@@ -349,7 +349,7 @@
                       if (isFeedChanged) {
                         // delete old search engine data
                         ContentHome.handleLoaderDialog("Deleting Old Data", "Deleting old search data, please wait...", true);
-                        searchEngine.deleteFeed(item, (err, result) => {
+                        searchEngine.deleteFeed(item.id, (err, result) => {
                           if (err) {
                             ContentHome.handleLoaderDialog();
                             ContentHome.activeRssFeed = null;
@@ -387,16 +387,17 @@
 
         const indexingSearchEngineData = () => {
           searchEngine.isFeedChanged(ContentHome.activeRssFeed, (err, isFeedChanged) => {
-            ContentHome.activeRssFeed = null;
             if (err) {
+              ContentHome.activeRssFeed = null;
               ContentHome.handleLoaderDialog();
               handleSearchEngineErrors('indexing');
-              console.error(err);
+              return console.error(err);
             }
 
             if (isFeedChanged) {
               ContentHome.handleLoaderDialog("Indexing Data", "Indexing data for search results, please wait...", true);
               searchEngine.insertFeed(ContentHome.activeRssFeed, (err, result) => {
+                ContentHome.activeRssFeed = null;
                 ContentHome.handleLoaderDialog();
                 if (err) {
                   if (err.errorMessage && err.innerError && err.innerError.error) {
@@ -416,6 +417,7 @@
                 }
               });
             } else {
+              ContentHome.activeRssFeed = null;
               ContentHome.handleLoaderDialog();
             }
           });

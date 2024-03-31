@@ -95,7 +95,7 @@ const widgetJSFiles = [
 const jsTasks = [
     // { name: "widgetJS", src: "widget/**/*.js", dest: "/widget" },
     {name: "widgetJS", src: widgetJSFiles, dest: "/widget"},
-    {name: "sharedJS", src: "widget/shared/**/*.js", dest: "/widget/shared"},
+    {name: "sharedJS", src: "widget/global/**/*.js", dest: "/widget/global"},
     {name: "controlContentJS", src: "control/content/**/*.js", dest: "/control/content"},
     {name: "controlDesignJS", src: "control/design/**/*.js", dest: "/control/design"},
     {name: "controlSettingsJS", src: "control/settings/**/*.js", dest: "/control/settings"}
@@ -182,8 +182,8 @@ gulp.task('html', function () {
     /// with scripts.min.js with cache buster
         .pipe(htmlReplace({
             bundleJSFiles: "scripts.min.js?v=" + (new Date().getTime())
-            , bundleSharedJSFilesWidget: "shared/scripts.min.js?v=" + (new Date().getTime())
-            , bundleSharedJSFilesCP: "../../widget/shared/scripts.min.js?v=" + (new Date().getTime())
+            , bundleSharedJSFilesWidget: "global/scripts.min.js?v=" + (new Date().getTime())
+            , bundleSharedJSFilesCP: "../../widget/global/scripts.min.js?v=" + (new Date().getTime())
             , bundleCSSFiles: "styles/styles.min.css?v=" + (new Date().getTime())
         }))
 

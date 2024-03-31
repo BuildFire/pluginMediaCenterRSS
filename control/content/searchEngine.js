@@ -1,11 +1,11 @@
 'use strict';
 
 const searchEngine = {
-  insertFeed: function insertFeed(rssFeed, callback) {
+  insertFeed(rssFeed, callback) {
     const options = this.getSearchEngineOptions(rssFeed);
     buildfire.services.searchEngine.feeds.insert(options, callback);
   },
-  deleteFeed: function deleteFeed(rssFeed, callback) {
+  deleteFeed(rssFeed, callback) {
     this.get(rssFeed.id, function (err, result) {
       if (err) return callback(err, null);
       if (!result || !result[0] || !result[0]._id) return callback();
@@ -19,12 +19,12 @@ const searchEngine = {
       buildfire.services.searchEngine.feeds.delete(options, callback);
     });
   },
-  get: function get(feedId, callback) {
+  get(feedId, callback) {
     buildfire.services.searchEngine.feeds.get({ tag: `rss_feed_${feedId}`, feedType: 'rss' }, function (err, result) {
       callback(err, result);
     });
   },
-  isFeedChanged: function isFeedChanged(rssFeed, callback) {
+  isFeedChanged(rssFeed, callback) {
     this.get(rssFeed.id, function (err, result) {
       if (err) return callback(err, null);
       if (!result || !result[0] || !result[0]._id) return callback(null, true);
@@ -48,7 +48,7 @@ const searchEngine = {
       return callback(null, changeState);
     });
   },
-  getSearchEngineOptions: function getSearchEngineOptions(rssFeed) {
+  getSearchEngineOptions(rssFeed) {
     let feedItemConfig = {
       uniqueKey: "guid",
       titleKey: "title",

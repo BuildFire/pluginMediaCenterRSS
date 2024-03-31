@@ -6,7 +6,7 @@ class SubPage {
 
 		let closeButton = this.container.querySelector(".close-modal");
 		if (closeButton)
-			closeButton.onclick = () => { this.container.classList.remove("activeDialog"); };
+			closeButton.onclick = () => this.close();
 	}
 
 	show() {
