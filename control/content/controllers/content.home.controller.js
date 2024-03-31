@@ -342,6 +342,7 @@
                     searchEngine.isFeedChanged(feed, (err, isFeedChanged) => {
                       if (err) {
                         ContentHome.handleLoaderDialog();
+                        ContentHome.activeRssFeed = null;
                         handleSearchEngineErrors('updating');
                         return console.error(err);
                       }
@@ -351,6 +352,7 @@
                         searchEngine.deleteFeed(item, (err, result) => {
                           if (err) {
                             ContentHome.handleLoaderDialog();
+                            ContentHome.activeRssFeed = null;
                             handleSearchEngineErrors('updating');
                             return console.error(err);
                           }
@@ -412,7 +414,6 @@
                   }
                   console.error(err);
                 }
-                ContentHome.activeRssFeed = null;
               });
             } else {
               ContentHome.handleLoaderDialog();
