@@ -398,7 +398,9 @@
                 ContentHome.handleLoaderDialog();
                 if (err) {
                   if (err.errorMessage && err.innerError && err.innerError.error) {
-                    if (err.innerError.error.indexOf('unique_key') > -1) {
+                    if (err.innerError.error === 'no feeds available in the specified url') {
+                      // don't show indexing error because the feed is empty
+                    } else if (err.innerError.error.indexOf('unique_key') > -1) {
                       handleSearchEngineErrors('uniqueKey');
                     } else if (err.innerError.error.indexOf('title_key') > -1) {
                       handleSearchEngineErrors('titleKey');
