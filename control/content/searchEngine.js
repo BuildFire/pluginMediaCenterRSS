@@ -33,7 +33,16 @@ const searchEngine = {
       const feedItemConfig = result[0] ? result[0].feed_item_config : {};
       const { feedItemConfig: currentFeedItemConfig } = searchEngine.getSearchEngineOptions(rssFeed);
 
-      const isFeedItemConfigChanged = utils.checkEquality(feedItemConfig, currentFeedItemConfig);
+      let isFeedItemConfigChanged = false,
+          currentConfigValues = Object.values(currentFeedItemConfig),
+          feedConfigValues = Object.values(feedItemConfig);
+
+      for (let i = 0; i < currentConfigValues.length; i++) {
+        if (feedConfigValues.indexOf(currentConfigValues[i]) === -1) {
+          isFeedItemConfigChanged = true;
+          break;
+        }
+      }
 
       const changeState = !feedUrl || feedUrl !== rssFeed.url || isFeedItemConfigChanged;
       return callback(null, changeState);
