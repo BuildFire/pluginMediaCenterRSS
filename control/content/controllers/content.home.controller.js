@@ -119,26 +119,25 @@
 
         ContentHome.prepareDialogValues = (item, type) => {
           let values = {};
+          const feed = new Feed({...item, type});
           switch (type) {
             case "rss":
-              const rssFeed = new RssFeed(item);
               values = {
-                rssFeedTitle: rssFeed.title,
-                rssFeedUrl: rssFeed.url,
-                enableSearchEngineConfig: rssFeed.advancedConfig.enableSearchEngineConfig,
-                uniqueKey: rssFeed.advancedConfig.searchEngineItemConfig.uniqueKey,
-                titleKey: rssFeed.advancedConfig.searchEngineItemConfig.titleKey,
-                urlKey: rssFeed.advancedConfig.searchEngineItemConfig.urlKey,
-                descriptionKey: rssFeed.advancedConfig.searchEngineItemConfig.descriptionKey,
-                publishDateKey: rssFeed.advancedConfig.searchEngineItemConfig.publishDateKey,
-                imageUrlKey: rssFeed.advancedConfig.searchEngineItemConfig.imageUrlKey,
+                rssFeedTitle: feed.title,
+                rssFeedUrl: feed.url,
+                enableSearchEngineConfig: feed.advancedConfig.enableSearchEngineConfig,
+                uniqueKey: feed.advancedConfig.searchEngineItemConfig.uniqueKey,
+                titleKey: feed.advancedConfig.searchEngineItemConfig.titleKey,
+                urlKey: feed.advancedConfig.searchEngineItemConfig.urlKey,
+                descriptionKey: feed.advancedConfig.searchEngineItemConfig.descriptionKey,
+                publishDateKey: feed.advancedConfig.searchEngineItemConfig.publishDateKey,
+                imageUrlKey: feed.advancedConfig.searchEngineItemConfig.imageUrlKey,
               }
               break;
             case "google":
-              const googleFeed = new Feed(item);
               values = {
-                googleFeedTitle: googleFeed.title,
-                googleFeedKeywords: googleFeed.keywords,
+                googleFeedTitle: feed.title,
+                googleFeedKeywords: feed.keywords,
               }
               break;
             default: break;
@@ -149,7 +148,7 @@
         ContentHome.showFeedDialog = (type, item) => {
           let dialogOptions;
           if (item) {
-            const _feed = new Feed(item);
+            const _feed = new Feed({...item, type});
             const values = ContentHome.prepareDialogValues(_feed, type);
             dialogOptions = {
               title: type == 'rss' ? "Edit RSS Feed" : "Edit Google Feed",
@@ -308,10 +307,11 @@
 
           switch (type) {
             case "rss":
-              const feed = new RssFeed({
+              const feed = new Feed({
                 id: item ? item.id : Utils.nanoid(),
                 title: values.rssFeedTitle,
                 url: values.rssFeedUrl,
+                type,
                 advancedConfig: {
                   enableSearchEngineConfig: values.enableSearchEngineConfig,
                   searchEngineItemConfig: {
@@ -324,7 +324,7 @@
                   }
                 }
               });
-              const isEquals = utils.checkEquality(new RssFeed(item), feed);
+              const isEquals = utils.checkEquality(new Feed({...item, type}), feed);
               if (isEquals) { // if no changes made, close the dialog
                 ContentHome.handleLoaderDialog();
                 ContentHome.subPages[type].close();
@@ -339,14 +339,14 @@
                 } else {
                   ContentHome.activeRssFeed = feed;
                   if (item) {
-                    searchEngine.isFeedChanged(feed, (err, isFeedChanged) => {
+                    searchEngine.hasFeedConfigChanged(feed, (err, isChanged) => {
                       if (err) {
                         ContentHome.handleLoaderDialog();
                         ContentHome.activeRssFeed = null;
                         handleSearchEngineErrors('updating');
                         return console.error(err);
                       }
-                      if (isFeedChanged) {
+                      if (isChanged) {
                         // delete old search engine data
                         ContentHome.handleLoaderDialog("Deleting Old Data", "Deleting old search data, please wait...", true);
                         searchEngine.deleteFeed(item.id, (err, result) => {
@@ -377,6 +377,7 @@
                   id: item ? item.id : Utils.nanoid(),
                   title: values.googleFeedTitle,
                   keywords: values.googleFeedKeywords,
+                  type
                 });
                 insertFeedToList(feed);
               }
@@ -386,7 +387,7 @@
         }
 
         const indexingSearchEngineData = () => {
-          searchEngine.isFeedChanged(ContentHome.activeRssFeed, (err, isFeedChanged) => {
+          searchEngine.hasFeedConfigChanged(ContentHome.activeRssFeed, (err, isChanged) => {
             if (err) {
               ContentHome.activeRssFeed = null;
               ContentHome.handleLoaderDialog();
@@ -394,7 +395,7 @@
               return console.error(err);
             }
 
-            if (isFeedChanged) {
+            if (isChanged) {
               ContentHome.handleLoaderDialog("Indexing Data", "Indexing data for search results, please wait...", true);
               searchEngine.insertFeed(ContentHome.activeRssFeed, (err, result) => {
                 ContentHome.activeRssFeed = null;

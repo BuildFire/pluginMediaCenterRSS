@@ -5,14 +5,14 @@ const searchEngine = {
     const options = this.getSearchEngineOptions(rssFeed);
     buildfire.services.searchEngine.feeds.insert(options, callback);
   },
-  deleteFeed(rssFeed, callback) {
-    this.get(rssFeed.id, function (err, result) {
+  deleteFeed(rssFeedId, callback) {
+    this.get(rssFeedId, function (err, result) {
       if (err) return callback(err, null);
       if (!result || !result[0] || !result[0]._id) return callback();
 
       const feedId = result[0]._id;
       const options = {
-        tag: `rss_feed_${rssFeed.id}`,
+        tag: `rss_feed_${rssFeedId}`,
         feedId: feedId,
         removeFeedData: true
       };
@@ -24,7 +24,7 @@ const searchEngine = {
       callback(err, result);
     });
   },
-  isFeedChanged(rssFeed, callback) {
+  hasFeedConfigChanged(rssFeed, callback) {
     this.get(rssFeed.id, function (err, result) {
       if (err) return callback(err, null);
       if (!result || !result[0] || !result[0]._id) return callback(null, true);

@@ -79,7 +79,7 @@ class SubPage {
 						node.checked = options.values[key];
 						toggleAdvanced(node.id, node.checked);
 					} else {
-						node.value = options.values[key];
+						node.value = options.values[key] ? options.values[key] : '';
 					}
 				}
 			});
