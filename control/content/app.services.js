@@ -88,25 +88,8 @@
           });
         return deferred.promise;
       };
-      var getFeedData = function (_feedUrl) {
-        var deferred = $q.defer();
-        if (!_feedUrl) {
-          deferred.reject(new Error('Undefined feed url'));
-        }
-        $http.post('https://proxy.buildfire.com/parsefeedurl', {
-            feedUrl: _feedUrl
-          })
-          .success(function (response) {
-            deferred.resolve(response);
-          })
-          .error(function (error) {
-            deferred.reject(error);
-          });
-        return deferred.promise;
-      };
       return {
-        validateFeedUrl: validateFeedUrl,
-        getFeedData: getFeedData
+        validateFeedUrl: validateFeedUrl
       };
     }])
     .factory("Utils", ['$q', '$http', function ($q, $http) {
