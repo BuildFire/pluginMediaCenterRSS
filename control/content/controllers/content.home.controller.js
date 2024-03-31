@@ -135,7 +135,7 @@
               }
               break;
             case "google":
-              const googleFeed = new GoogleFeed(item);
+              const googleFeed = new Feed(item);
               values = {
                 googleFeedTitle: googleFeed.title,
                 googleFeedKeywords: googleFeed.keywords,
@@ -149,7 +149,7 @@
         ContentHome.showFeedDialog = (type, item) => {
           let dialogOptions;
           if (item) {
-            const _feed = type == "rss" ? new RssFeed(item) : new GoogleFeed(item);
+            const _feed = new Feed(item);
             const values = ContentHome.prepareDialogValues(_feed, type);
             dialogOptions = {
               title: type == 'rss' ? "Edit RSS Feed" : "Edit Google Feed",
@@ -371,7 +371,7 @@
               if(excededMaximumKeywords) {
                 ContentHome.subPages[type].showInvalidFeedMessage("google", "Maximum of two keywords is allowed");
               } else {
-                const feed = new GoogleFeed({
+                const feed = new Feed({
                   id: item ? item.id : Utils.nanoid(),
                   title: values.googleFeedTitle,
                   keywords: values.googleFeedKeywords,

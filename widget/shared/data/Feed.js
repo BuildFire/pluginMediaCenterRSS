@@ -1,3 +1,22 @@
+class Feed {
+    constructor(data = {}) {
+        if (data.type === "rss") {
+            return new RssFeed(data);
+        } else if (data.type === "google") {
+            return new GoogleFeed(data);
+        }
+    }
+}
+
+class GoogleFeed {
+    constructor(data = {}) {
+        this.type = "google";
+        this.subtitle = "Google Feed";
+        this.id = data.id || "";
+        this.title = data.title || "";
+        this.keywords = data.keywords || "";
+    }
+}
 
 class RssFeed {
     constructor(data = {}) {

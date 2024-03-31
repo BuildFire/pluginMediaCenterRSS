@@ -31,13 +31,7 @@
                 return deferred.reject(err);
               } else if (result) {
                 if (result && result.data && result.data.content && result.data.content.feeds) {
-                  result.data.content.feeds = result.data.content.feeds.map(feed => {
-                    if (feed.type === 'rss') {
-                      return new RssFeed(feed);
-                    } else if(feed.type === 'google') {
-                      return new GoogleFeed(feed);
-                    }
-                  });
+                  result.data.content.feeds = result.data.content.feeds.map(feed => new Feed(feed));
                 }
                 return deferred.resolve(result);
               }
