@@ -29,6 +29,9 @@
               if (err) {
                 return deferred.reject(err);
               } else if (result) {
+                if (result && result.data && result.data.content && result.data.content.feeds) {
+                  result.data.content.feeds = result.data.content.feeds.map(feed => new Feed(feed));
+                }
                 return deferred.resolve(result);
               }
             };
@@ -84,11 +87,11 @@
       };
     }])
     .factory("Utils", ['$q', '$http', function ($q, $http) {
-      var _nanoid = function(t=21) {
+      var nanoid = function(t=21) {
         return crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?'-':'_'),'');
       }
       return {
-        _nanoid: _nanoid
+        nanoid: nanoid
       };
     }]);
 })(window.angular, window.buildfire);

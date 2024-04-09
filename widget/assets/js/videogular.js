@@ -140,7 +140,9 @@ angular.module("com.2fdevs.videogular")
         this.videogularElement = null;
 
         this.clearMedia = function () {
-            this.mediaElement[0].src = '';
+            if (document.contains(this.mediaElement[0])) {
+                this.mediaElement[0].remove();
+            }
         };
 
         this.onRouteChange = function() {

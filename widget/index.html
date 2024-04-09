@@ -50,6 +50,10 @@
   <script src="../../../scripts/buildfire/components/toast/toast.js"></script>
   <script src="../../../scripts/buildfire/components/skeleton/skeleton.js"></script>
 
+  <!-- build:bundleSharedJSFilesWidget  -->
+  <script src="./global/utils.js"></script>
+  <script src="./global/models/Feed.js"></script>
+  <!-- endbuild -->
 
   <!-- build:bundleJSFiles  -->
   <script src="assets/js/lodash.js"></script>
@@ -83,6 +87,8 @@
     </div>
   </div>
   <div data-back-img="{{backgroundImageItem}}" ng-view="" class="slide content" ng-hide="showFeed"></div>
+  <!-- Deeplink Skeleton -->
+  <div id="deeplinkSkeleton" class="hidden deeplink-item-skeleton"></div>
 </div>
 </body>
 <script>

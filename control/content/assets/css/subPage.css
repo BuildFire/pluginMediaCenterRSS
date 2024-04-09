@@ -1,28 +1,46 @@
-.subPage {
+.subPage.activeDialog {
+    background: #ffffffaa;
+    bottom: 0;
+    display: block;
+    height: 100vh;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 100vw;
+    z-index: 999;
+}
+
+.subPage>.subPageContent {
     display: none;
-    position: absolute;
+    position: fixed;
     top: 0px;
     left: 0px;
     background-color: white;
 }
 
-.subPage.activeFull {
+.subPage.activeFull>.subPageContent {
     display: block;
     height: 100%;
     width: 100%;
 }
 
-.subPage.activeDialog {
+.subPage.activeDialog>.subPageContent {
     display: block;
-    width: 80%;
-    left: 10%;
-    top: 200px;
+    width: 70%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    overflow: auto;
+    max-height: 90vh;
     box-shadow: grey 5px 5px 15px;
-    outline: 9999px solid #ffffffaa;
-    z-index: 999;
+    z-index: 1000;
 }
 
-.subPage>.spHeader {
+.subPage.activeDialog.loaderDialog>.subPageContent {
+    width: 50%;
+}
+
+.subPage>.subPageContent>.spHeader {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -42,7 +60,7 @@
     font-size: 20px;
 }
 
-.subPage>.spFooter {
+.subPage>.subPageContent>.spFooter {
     text-align: right;
     border-top: 1px solid #ddd !important;
 }
@@ -52,11 +70,6 @@
 }
 
 .required:after {
-    content: " *";
-    color: red;
-}
-
-.subPage>.modal-body>.form-group>label:after {
     content: " *";
     color: red;
 }

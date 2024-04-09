@@ -1,74 +1,76 @@
 'use strict';
 
-var searchEngine = {
-  indexFeed: function indexFeed(rssUrl) {
-    var _this = this;
-    this._get(function (err, result) {
-      if (err) throw err;
-      console.log(result);
-      var feedUrl = result[0] ? result[0].feed_config.url : false;
-      if (feedUrl === rssUrl) {
-        var options = { searchText: "e" };
-        var callback = function callback(e, d) {
-          return console.log(e, d.hits);
-        };
-        buildfire.services.searchEngine.search(options, callback);
-        return;
-      } else if (!feedUrl) {
-        _this._insertFeed(rssUrl);
-      } else {
-        _this._updateFeed(result[0]._id, rssUrl);
-      }
+const searchEngine = {
+  insertFeed(rssFeed, callback) {
+    const options = this.getSearchEngineOptions(rssFeed);
+    buildfire.services.searchEngine.feeds.insert(options, callback);
+  },
+  deleteFeed(rssFeedId, callback) {
+    this.get(rssFeedId, function (err, result) {
+      if (err) return callback(err, null);
+      if (!result || !result[0] || !result[0]._id) return callback();
+
+      const feedId = result[0]._id;
+      const options = {
+        tag: `rss_feed_${rssFeedId}`,
+        feedId: feedId,
+        removeFeedData: true
+      };
+      buildfire.services.searchEngine.feeds.delete(options, callback);
     });
   },
-  _insertFeed: function _insertFeed(url, callback) {
+  get(feedId, callback) {
+    buildfire.services.searchEngine.feeds.get({ tag: `rss_feed_${feedId}`, feedType: 'rss' }, function (err, result) {
+      callback(err, result);
+    });
+  },
+  hasFeedConfigChanged(rssFeed, callback) {
+    this.get(rssFeed.id, function (err, result) {
+      if (err) return callback(err, null);
+      if (!result || !result[0] || !result[0]._id) return callback(null, true);
 
-    var options = {
-      tag: 'rss_feed',
+      const feedUrl = result[0] ? result[0].feed_config.url : false;
+      const feedItemConfig = result[0] ? result[0].feed_item_config : {};
+      const { feedItemConfig: currentFeedItemConfig } = searchEngine.getSearchEngineOptions(rssFeed);
+
+      let isFeedItemConfigChanged = false,
+          currentConfigValues = Object.values(currentFeedItemConfig),
+          feedConfigValues = Object.values(feedItemConfig);
+
+      for (let i = 0; i < currentConfigValues.length; i++) {
+        if (feedConfigValues.indexOf(currentConfigValues[i]) === -1) {
+          isFeedItemConfigChanged = true;
+          break;
+        }
+      }
+
+      const changeState = !feedUrl || feedUrl !== rssFeed.url || isFeedItemConfigChanged;
+      return callback(null, changeState);
+    });
+  },
+  getSearchEngineOptions(rssFeed) {
+    let feedItemConfig = {
+      uniqueKey: "guid",
+      titleKey: "title",
+      urlKey: "link",
+      descriptionKey: "description",
+      publishDateKey: "pubDate",
+      imageUrlKey: "thumbnail"
+    };
+    if (rssFeed.advancedConfig && rssFeed.advancedConfig.enableSearchEngineConfig && rssFeed.advancedConfig.searchEngineItemConfig) {
+      feedItemConfig = rssFeed.advancedConfig.searchEngineItemConfig;
+    }
+
+    let options = {
+      tag: `rss_feed_${rssFeed.id}`,
       title: 'rss feed',
       feedType: "rss",
       feedConfig: {
-        url: url
+        url: rssFeed.url
       },
-      // feedItemConfig: {
-      //   uniqueKey: 'id',
-      //   titleKey: 'title',
-      //   urlKey: 'link',
-      //   descriptionKey: 'media:group.media:description'
-      // imageUrlKey: "itunes.image"
-      // }
+      feedItemConfig: feedItemConfig
     };
 
-    buildfire.services.searchEngine.feeds.insert(options, function (err, result) {
-      if (err) {
-        if (err.innerError.error === 'invalid unique_key') {
-          options.feedItemConfig = { uniqueKey: 'title' };
-          buildfire.services.searchEngine.feeds.insert(options, function (err, result) {
-            if (err) throw err;
-            console.log(result);
-          });
-        }
-      };
-      console.log(result);
-    });
+    return options;
   },
-  _updateFeed: function _updateFeed(feedId, url) {
-    var _this2 = this;
-
-    var options = {
-      tag: 'rss_feed',
-      feedId: feedId,
-      removeFeedData: true
-    };
-    var callback = function callback(e) {
-      if (e) throw e;
-      _this2._insertFeed(url);
-    };
-    buildfire.services.searchEngine.feeds.delete(options, callback);
-  },
-  _get: function _get(callback) {
-    buildfire.services.searchEngine.feeds.get({ tag: 'rss_feed', feedType: 'rss' }, function (err, result) {
-      callback(err, result);
-    });
-  }
 };

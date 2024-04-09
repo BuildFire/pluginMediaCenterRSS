@@ -31,7 +31,7 @@
       UNDEFINED_ID: 'Undefined id provided',
       ITEM_ARRAY_FOUND: 'Array of Items provided'
     })
-
+    
   /**
    * LAYOUTS will be used to set item list layout and item details layout.
    */

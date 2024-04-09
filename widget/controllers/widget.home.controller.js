@@ -19,6 +19,27 @@
                     $rootScope.deviceWidth = window.innerWidth || 320;
                 }
 
+                const toggleDeeplinkSkeleton = (show) => {
+                    const deeplinkSkeletonContainer = document.getElementById('deeplinkSkeleton');
+                    if (show && !this.deeplinkSkeleton) {
+                        this.deeplinkSkeleton = new buildfire.components.skeleton('#deeplinkSkeleton', {
+                            type: 'image, list-item, sentence, paragraph',
+                        })
+                        this.deeplinkSkeleton.start();
+                        deeplinkSkeletonContainer.classList.remove('hidden');
+                    } else if (!show && this.deeplinkSkeleton) {
+                        deeplinkSkeletonContainer.classList.add('hidden');
+                        this.deeplinkSkeleton.stop();
+                        this.deeplinkSkeleton = null;
+                    }
+                };
+                // show the deeplink skeleton if the deeplink is present
+                buildfire.deeplink.getData(function (data) {
+                    if (data && data.link) toggleDeeplinkSkeleton(true);
+                });
+
+                $scope.deeplinkItemId = null;
+                $scope.isDeeplinkItemOpened = false;
                 $scope.first = true;
                 /**
                  * @name handleBookmarkNav
@@ -26,23 +47,29 @@
                  * Handles incoming bookmark navigation
                  */
                 var handleBookmarkNav = function handleBookmarkNav() {
-
                     if ($scope.first) {
-                        const processDeeplink = (data) => {
+                        const processDeeplink = (data, pushToHistory=true) => {
                             if (data && data.link) {
                                 var targetGuid = data.link;
 
-                                if(WidgetHome.data.content.feeds?.length) {
+                                if(WidgetHome.data && WidgetHome.data.content.feeds?.length) {
                                     Object.keys(WidgetHome.feedsCache).forEach(key => {
                                         console.log(WidgetHome.feedsCache[key])
-                                        let feedItem = WidgetHome.feedsCache[key].items.find(el => el.guid == targetGuid),
-                                        index = WidgetHome.feedsCache[key].items.indexOf(feedItem);
-                                        if(feedItem) {
-                                            if (data.timeIndex) {
-                                                WidgetHome.feedsCache[key].items[index].seekTo = data.timeIndex;
+                                        if (WidgetHome.feedsCache[key].items && WidgetHome.feedsCache[key].items.length) {
+                                            let feedItem = WidgetHome.feedsCache[key].items.find(el => el.guid == targetGuid),
+                                            index = WidgetHome.feedsCache[key].items.indexOf(feedItem);
+                                            if(feedItem) {
+                                                if (data.timeIndex) {
+                                                    WidgetHome.feedsCache[key].items[index].seekTo = data.timeIndex;
+                                                }
+                                                $rootScope.deeplinkFirstNav = true;
+                                                $scope.isDeeplinkItemOpened = true;
+                                                WidgetHome.goToItem(index, feedItem, pushToHistory);
+                                            } else if (WidgetHome.dataTotallyLoaded) {
+                                                toggleDeeplinkSkeleton();
                                             }
-                                            $rootScope.deeplinkFirstNav = true;
-                                            WidgetHome.goToItem(index, feedItem);
+                                        } else if (WidgetHome.dataTotallyLoaded) {
+                                            toggleDeeplinkSkeleton();
                                         }
                                     });
                                 } else {
@@ -50,14 +77,16 @@
                                         return item.guid
                                     });
                                     var index = itemLinks.indexOf(targetGuid);
-                                    if (index < 0) {
+                                    if (index < 0 && WidgetHome.dataTotallyLoaded) {
                                         console.warn('bookmarked item not found.');
+                                        toggleDeeplinkSkeleton();
                                     } else {
                                         if (data.timeIndex) {
                                             _items[index].seekTo = data.timeIndex;
                                         }
                                         $rootScope.deeplinkFirstNav = true;
-                                        WidgetHome.goToItem(index, _items[index]);
+                                        $scope.isDeeplinkItemOpened = true;
+                                        WidgetHome.goToItem(index, _items[index], pushToHistory);
                                     }
                                     $scope.first = false;
                                 }
@@ -65,10 +94,15 @@
                             }
                         }
                         buildfire.deeplink.getData(function (data) {
-                            processDeeplink(data);
+                            if (!data) return;
+                            if ($scope.deeplinkItemId !== data.link || !$scope.isDeeplinkItemOpened) {
+                                $scope.deeplinkItemId = data.link;
+                                processDeeplink(data, false);
+                            }
                         });
                         buildfire.deeplink.onUpdate(function (data) {
-                            processDeeplink(data);
+                            if (!data) return;
+                            processDeeplink(data, true);
                         });
                     }
                 };
@@ -453,6 +487,7 @@
                         }
                         //if settings data has feeds proceed with new logic
                         else if (settings.data.content.feeds && !settings.data.content.rssUrl) {
+                            handleBookmarkNav();
                             if (!settings.data.content.feeds.length) {
                                 WidgetHome.isItems = false;
                                 WidgetHome.loading = false;
@@ -487,9 +522,13 @@
                                         if (!$scope.$$phase) $scope.$digest();
                                         cacheManager.setItem(el.id, WidgetHome.feedsCache[el.id], () => { });
                                     });
-                                    WidgetHome.loading = false;
                                     if (WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged)
                                         WidgetHome.renderFeedItems();
+                                    
+                                    WidgetHome.loading = false;
+                                    WidgetHome.dataTotallyLoaded = true;
+                                    handleBookmarkNav();
+                                    if (!$scope.$$phase) $scope.$digest();
                                 }).catch((err) => console.error(err));
                             }).catch((err) => {
                                 console.error(err)
@@ -596,29 +635,37 @@
                  * will used to redirect on details page
                  * @param index
                  */
-                WidgetHome.goToItem = function (index, item) {
+                WidgetHome.goToItem = function (index, item, pushToHistory = true) {
                     $rootScope.preventResetDefaults = true;
                     if(WidgetHome.data.readRequiresLogin) {
                         buildfire.auth.getCurrentUser(function (err, user) {
-                            if (err) return console.error(err);
+                            if (err) {
+                                toggleDeeplinkSkeleton();
+                                return console.error(err);
+                            }
                             if (user) {
-                                WidgetHome.proceedToItem(index, item);
+                                WidgetHome.proceedToItem(index, item, pushToHistory);
                             } else {
                                 buildfire.auth.login({ allowCancel: true }, function(err, user) {
-                                    if (err) return console.error(err);
+                                    if (err) {
+                                        toggleDeeplinkSkeleton();
+                                        return console.error(err);
+                                    }
                                     if (user) {
                                         $rootScope.showFeed = false;
-                                        WidgetHome.proceedToItem(index, item);
+                                        WidgetHome.proceedToItem(index, item, pushToHistory);
                                     }
                                 });
                             }
                         });
                     } else {
-                        WidgetHome.proceedToItem(index, item);
+                        $rootScope.showFeed = false;
+                        WidgetHome.proceedToItem(index, item, pushToHistory);
                     }
                 };
-                WidgetHome.proceedToItem = function (index, item) {
+                WidgetHome.proceedToItem = function (index, item, pushToHistory) {
                     setTimeout(function () {
+                        toggleDeeplinkSkeleton();
                         viewedItems.markViewed($scope, item.guid);
                     }, 500);
                     if (WidgetHome.items[index]) {
@@ -627,7 +674,9 @@
                     // ItemDetailsService.setData(WidgetHome.items[index]);
                     ItemDetailsService.setData(item);
                     // Buildfire.history.push(WidgetHome.items[index].title, {});
-                    Buildfire.history.push(item.title, {});
+                    if (pushToHistory) {
+                        Buildfire.history.push(item.title, {});
+                    }
                     Location.goTo('#/item');
                 };
 

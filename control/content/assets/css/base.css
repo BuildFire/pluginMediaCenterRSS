@@ -22,7 +22,7 @@ html {
     font-size: 16px !important;
 }
 
-body {
+body, h1, h2, h3, h4, h5, h6, label, p, span {
     font-family: 'Conv_apercu_regular', 'Helvetica', 'Sans-Serif', 'Arial';
 }
 
@@ -441,61 +441,129 @@ p.info__note.info__note--transparent {
     margin-bottom: 0;
 }
 
-.bf-tooltip {
-    display: inline-flex;
-    position: relative;
-    cursor: default;
+/* tooltip */
+.tooltip-container {
+    display: flex;
+    align-items: center;
+    margin-right: 13px !important;
+    gap: 0.25rem;
 }
-
-.tooltip-icon {
-    width: 1rem;
-    height: 1rem;
-    display: inline-flex;
+.tooltip-container .btn-info-icon {
+    display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    color: var(--c-white);
-    background-color: var(--c-gray6);
-    font-size: .75rem;
-    line-height: 1.2;
+    margin-left: 8px;
+    min-width: 16px;
+    min-height: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    color: #fff;
+    position: relative;
 }
-
-.tooltip-content {
-    background-color: rgba(0, 0, 0, .7);
-    color: var(--c-white);
-    padding: .75rem;
-    font-size: .75rem;
-    line-height: 1.5;
-    min-width: 8rem;
-    max-width: 10rem;
-    border-radius: .25rem;
+.tooltip-container .btn-info-icon:after {
+    content: 'i';
+    font-weight: 400;
+    font-size: 12px;
+    font-style: normal;
+    left: 0;
+    top: auto !important;
+    height: 100%;
+}
+.tooltip-container .btn-info-icon .cp-tooltip {
+    pointer-events: none;
+    background-color: rgba(0, 0, 0, .80);
+    color: #fff;
+    padding: 8px;
+    border-radius: 4px;
+    position: absolute;
+    left: calc(100% + 12px);
+    cursor: auto;
+    font-size: 12px;
+    text-align: left;
+    width: 225px;
+    opacity: 0;
+    transform: scale(.1);
+    transition: opacity ease .1s, transform ease .1s;
+    transform-origin: left;
+    z-index: 100;
+    font-weight: 400;
+    line-height: 18px;
+    font-family: 'Conv_apercu_regular','Helvetica','Sans-Serif','Arial';
+    -webkit-text-stroke: 0;
+}
+.top-cp-tooltip {
+    top: 0;
+}
+.bottom-cp-tooltip {
+    bottom: 0;
+}
+.tooltip-container .btn-info-icon .cp-tooltip::before {
+    content: "";
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
-    left: calc(100% + .5rem);
-    opacity: 0;
-    pointer-events: none;
-    transition: ease-in-out .2s;
-    z-index: 3;
+    left: -5px;
+    transform: rotate(90deg) translate(-50%);
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, .80) transparent transparent transparent;
 }
-
-.bf-tooltip:hover .tooltip-content {
+.top-cp-tooltip::before {
+    top: 10px !important;
+}
+.bottom-cp-tooltip::before {
+    bottom: 0 !important;
+    top: unset !important;
+}
+.tooltip-container .btn-info-icon:hover .cp-tooltip {
     opacity: 1;
+    transform: scale(1);
 }
 
-.bf-tooltip.tooltip-right .tooltip-content {
-    left: auto;
-    right: calc(100% + .5rem);
+.draggable-list-view .d-item .copy{
+    width: 70% !important;
+    max-width: 70% !important;
 }
 
-.tooltip-content.to-bottom {
-    top: 2rem;
+.draggable-list-view.carousel-items .d-item span.title {
+    width: 50% !important;
+    max-width: 50% !important;
 }
 
-.tooltip-content {
-    min-width: 12rem;
+#rssFeedDialog .modal-body {
+    overflow: auto;
+    max-height: calc(90vh - 124px);
 }
 
-.primary-bg {
-    background-color: var(--c-primary);
+.slide {
+    transform: none !important;
+    -webkit-transform: none !important;
+}
+
+#loader {
+    border: 6px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 4px solid var(--c-primary);
+    width: 30px;
+    height: 30px;
+    -webkit-animation: spin 1s linear infinite; 
+    animation: spin 1s linear infinite;
+}
+
+.empty-state {
+    min-height: 15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    border-radius: 0.25rem;
+    background-color: var(--c-gray1);
+    border: 1px solid var(--c-gray3);
+}
+
+.empty-state h4 {
+    color: var(--c-gray6);
+    font-weight: 700;
+    font-family: 'Conv_apercu_bold', 'Helvetica', 'Sans-Serif', 'Arial';
 }

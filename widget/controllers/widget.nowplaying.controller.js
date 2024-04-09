@@ -35,6 +35,11 @@
 				NowPlaying.volume = setting.volume;
 			});
 
+			if (!NowPlaying.item || !NowPlaying.item.guid) {
+				audioPlayer.pause();
+				return Location.goToHome();
+			}
+
 			buildfire.notes && buildfire.notes.onSeekTo && buildfire.notes.onSeekTo(function (data) {
 				NowPlaying.changeTime(data.time);
 			});

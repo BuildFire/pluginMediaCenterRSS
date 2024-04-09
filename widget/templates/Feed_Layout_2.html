@@ -21,9 +21,9 @@
 								</vg-volume>
 								<vg-fullscreen-button></vg-fullscreen-button>
 							</vg-controls>
-							<vg-overlay-play></vg-overlay-play>
+							<vg-overlay-play ng-if="!WidgetMedia.loadingVideo"></vg-overlay-play>
 						</videogular>
-						<embed-video id="vimeoPlayer" data-ng-if="WidgetMedia.videoUrl" data-ng-href="{{WidgetMedia.videoUrl}}" controls=0></embed-video>
+						<embed-video id="vimeoPlayer" data-ng-if="WidgetMedia.videoUrl" data-ng-href="{{WidgetMedia.videoUrl}}" controls='!WidgetMedia.isVideoPlayerSupported'></embed-video>
 						<img src="../../../styles/media/holder-16x9.gif" ng-if="WidgetMedia.loadingVideo">
 					</div>
 					<div ng-switch-when="AUDIO">
@@ -62,7 +62,7 @@
 				<i class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
 				  style="font-size: 2em !important;">play_arrow</i>
 			  </a>
-			  <a class="media-action video" ng-click="WidgetMedia.API.play()"
+			  <a class="media-action video" ng-click="!WidgetMedia.loadingVideo && WidgetMedia.API.play()"
 				ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">
 				<i class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
 				  style="font-size: 2em !important; letter-spacing: normal;">play_arrow</i>
