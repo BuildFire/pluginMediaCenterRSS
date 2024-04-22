@@ -70,6 +70,7 @@ cssTasks.forEach(function (task) {
 });
 
 const widgetJSFiles = [
+    "assets/js/utils.js",
     "widget/assets/js/lodash.js",
     "widget/assets/js/jquery.truncate.js",
     "widget/assets/js/ng-videosharing-embed.min.js",

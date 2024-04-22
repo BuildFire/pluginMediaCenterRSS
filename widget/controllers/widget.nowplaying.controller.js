@@ -50,6 +50,15 @@
 			var first = true;
 			audioPlayer.onEvent(function (e) {
 				switch (e.event) {
+					case 'play':
+					case 'resume':
+						utils.trackItemWatchState({
+							state: 'play',
+							currentTime: e.data.track.lastPosition,
+							item: NowPlaying.item,
+							itemType: 'audio'
+						});
+						break;
 					case 'skip':
 						NowPlaying.changeTime(e.data);
 						break;
@@ -69,6 +78,12 @@
 						break;
 					case 'pause':
 						NowPlaying.playing = false;
+						utils.trackItemWatchState({
+							state: 'pause',
+							currentTime: NowPlaying.currentTime,
+							item: NowPlaying.item,
+							itemType: 'audio'
+						});
 						break;
 					case 'next':
 						NowPlaying.currentTrack = e.data.track;

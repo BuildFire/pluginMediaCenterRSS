@@ -677,6 +677,9 @@
                     if (pushToHistory) {
                         Buildfire.history.push(item.title, {});
                     }
+                    utils.isItemPlayed = null;
+                    utils.analyticsTrackingInterval = null;
+                    utils.lastAnalyticsTime = null;
                     Location.goTo('#/item');
                 };
 

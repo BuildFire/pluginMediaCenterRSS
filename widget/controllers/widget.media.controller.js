@@ -211,6 +211,7 @@
                     } else {
                         WidgetMedia.medium = MEDIUM_TYPES.OTHER;
                     }
+                    utils.trackOpenedItem({...WidgetMedia.item, type: WidgetMedia.medium});
                 };
 
                 var initScrollHandler = function () {
@@ -312,10 +313,16 @@
                 WidgetMedia.isVideoPlayed = false;
                 WidgetMedia.playInterval = null;
                 WidgetMedia.lastAnalyticsTime = 0;
-                $rootScope.onVideoStateChange = function (videoState) {
-                    /**
-                     * TODO: here to handle analytics comes from user actions
-                     */
+                $rootScope.onVideoStateChange = function (videoState, videoCurrentTime) { // videoCurrentTime in seconds
+                    if (typeof videoCurrentTime !== 'number') {
+                        videoCurrentTime = WidgetMedia.API.currentTime/1000;
+                    }
+                    utils.trackItemWatchState({
+                        state: videoState,
+                        currentTime: videoCurrentTime,
+                        item: WidgetMedia.item,
+                        itemType: 'video'
+                    });
                 }
 
                 /**
