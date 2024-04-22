@@ -309,6 +309,15 @@
                     WidgetMedia.API.stop();
                 };
 
+                WidgetMedia.isVideoPlayed = false;
+                WidgetMedia.playInterval = null;
+                WidgetMedia.lastAnalyticsTime = 0;
+                $rootScope.onVideoStateChange = function (videoState) {
+                    /**
+                     * TODO: here to handle analytics comes from user actions
+                     */
+                }
+
                 /**
                  * WidgetMedia.sourceChanged() method
                  * will be called when videogular player source has changed.

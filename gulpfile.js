@@ -95,6 +95,7 @@ const widgetJSFiles = [
 const jsTasks = [
     // { name: "widgetJS", src: "widget/**/*.js", dest: "/widget" },
     {name: "widgetJS", src: widgetJSFiles, dest: "/widget"},
+    {name: "widgetVideoPlayersJS", src: "widget/assets/js/videoPlayers/**/*.js", dest: "/widget/videoPlayers"},
     {name: "sharedJS", src: "widget/global/**/*.js", dest: "/widget/global"},
     {name: "controlContentJS", src: "control/content/**/*.js", dest: "/control/content"},
     {name: "controlDesignJS", src: "control/design/**/*.js", dest: "/control/design"},
@@ -181,7 +182,8 @@ gulp.task('html', function () {
     /// replace all the <!-- build:bundleJSFiles  --> comment bodies
     /// with scripts.min.js with cache buster
         .pipe(htmlReplace({
-            bundleJSFiles: "scripts.min.js?v=" + (new Date().getTime())
+            bundleJSFiles: "videoPlayers/scripts.min.js?v=" + (new Date().getTime())
+            , bundleVideoPlayerJSFiles: "scripts.min.js?v=" + (new Date().getTime())
             , bundleSharedJSFilesWidget: "global/scripts.min.js?v=" + (new Date().getTime())
             , bundleSharedJSFilesCP: "../../widget/global/scripts.min.js?v=" + (new Date().getTime())
             , bundleCSSFiles: "styles/styles.min.css?v=" + (new Date().getTime())
