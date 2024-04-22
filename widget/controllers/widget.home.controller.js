@@ -490,7 +490,7 @@
                                     if (WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged)
                                         WidgetHome.renderFeedItems();
                                     
-                                    utils.feedsCache = WidgetHome.feedsCache;
+                                    state.currentFeedsData = WidgetHome.feedsCache;
                                     WidgetHome.loading = false;
                                     WidgetHome.dataTotallyLoaded = true;
                                     processDeeplink(WidgetHome.deeplinkData, false);

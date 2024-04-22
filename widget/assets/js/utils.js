@@ -1,13 +1,11 @@
 const utils = {
-    openedItems: [],
-
     isItemPlayed: null,
     analyticsTrackingInterval: null,
     lastAnalyticsTime: null,
 
     trackOpenedItem(item) {
-        if (!utils.openedItems.includes(item.guid)) {
-            utils.openedItems.push(item.guid);
+        if (!state.openedItems.includes(item.guid)) {
+            state.openedItems.push(item.guid);
             const metaData = {
                 itemId: item.guid,
                 itemTitle: item.title,
