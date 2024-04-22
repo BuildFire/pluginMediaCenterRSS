@@ -2,6 +2,7 @@
 	<div class="media-center-plugin layout2 layout2-detail">
 		<div class="people-banner" style="background:url('{{WidgetMedia.imageUrl|resizeImage:340:190}}') no-repeat; background-position:center center; background-size:cover !important;">
 			<div class="people-bg padding-bottom-fifteen clearfix">
+				<img src="../../../styles/media/holder-16x9.gif" ng-if="WidgetMedia.loadingThumbnail">
 				<div ng-switch="WidgetMedia.medium" class="people-holder clearfix">
 					<div ng-switch-when="VIDEO" class="videogular-container" ng-style="{'min-height': (9 * deviceWidth / 16) + 'px' }">
 						<videogular ng-if="WidgetMedia.isVideoPlayerSupported" vg-player-ready="WidgetMedia.onPlayerReady($API)"

@@ -5,7 +5,7 @@ const utils = {
     analyticsTrackingInterval: null,
     lastAnalyticsTime: null,
 
-    trackOpenedItem: function (item) {
+    trackOpenedItem(item) {
         if (!utils.openedItems.includes(item.guid)) {
             utils.openedItems.push(item.guid);
             const metaData = {
@@ -28,8 +28,8 @@ const utils = {
         }
     },
 
-    trackItemWatchState: function (options) {
-        const {state, currentTime, item, itemType} = options;
+    trackItemWatchState(options) {
+        const { state, currentTime, item, itemType } = options;
 
         const metaData = {
             itemId: item.guid,
@@ -53,7 +53,7 @@ const utils = {
                     utils.lastAnalyticsTime += 5;
                     metaData._buildfire = { aggregationValue: 5 }; // 5 seconds
                     AnalyticsManager.trackEvent(eventKey, metaData);
-                }, 5*1000);
+                }, 5 * 1000);
             }
         } else if (state === 'pause') {
             if (utils.analyticsTrackingInterval) {
@@ -67,4 +67,40 @@ const utils = {
         }
     },
 
+    /**
+     * @name getImageUrl()
+     * Used to extract image url
+     * @param item
+     * @returns {*}
+     */
+    getImageUrl(item) {
+        var i = 0,
+            length = 0,
+            imageUrl = '';
+        if (item.image && item.image.url) {
+            imageUrl = item.image.url;
+        } else if (item.enclosures && item.enclosures.length > 0) {
+            length = item.enclosures.length;
+            for (i = 0; i < length; i++) {
+                if (item.enclosures[i].type.indexOf('image') === 0 || item.enclosures[i].type.indexOf('img') != -1) {
+                    imageUrl = item.enclosures[i].url;
+                    break;
+                }
+            }
+        }
+        if (imageUrl) {
+            return imageUrl;
+        }
+        else {
+            if (item['media:thumbnail'] && item['media:thumbnail']['@'] && item['media:thumbnail']['@'].url) {
+                return item['media:thumbnail']['@'].url;
+            } else if (item['media:group'] && item['media:group']['media:content'] && item['media:group']['media:content']['media:thumbnail'] && item['media:group']['media:content']['media:thumbnail']['@'] && item['media:group']['media:content']['media:thumbnail']['@'].url) {
+                return item['media:group']['media:content']['media:thumbnail']['@'].url;
+            } else if (item.description) {
+                return $filter('extractImgSrc')(item.description);
+            } else {
+                return '';
+            }
+        }
+    }
 }

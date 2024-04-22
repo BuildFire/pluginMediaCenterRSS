@@ -1,5 +1,6 @@
 <div class="holder padding-zero customBackground" ng-class="{'hideAndShow': hideandshow}">
   <div class="media-center-plugin layout1-detail">
+    <img src="../../../styles/media/holder-16x9.gif" ng-if="WidgetMedia.loadingThumbnail">
     <div ng-switch="WidgetMedia.medium" class="media-center-banner clearfix">
       <div ng-switch-when="VIDEO" class="videogular-container"
         ng-style="{'min-height': (9 * deviceWidth / 16) + 'px' }">
@@ -67,7 +68,7 @@
           <i class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
             style="font-size: 2em !important;">play_arrow</i>
         </a>
-        <a class="media-action video" ng-click="!WidgetMedia.loadingVideo && WidgetMedia.API.play()"
+        <a class="media-action video" ng-click="!WidgetMedia.loadingVideo && !WidgetMedia.loadingThumbnail && WidgetMedia.API.play()"
           ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">
           <i class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
             style="font-size: 2em !important; letter-spacing: normal;">play_arrow</i>

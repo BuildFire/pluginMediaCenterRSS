@@ -9,6 +9,7 @@
         <div class="down-arrow"></div>
       </div>
     </div>
+    <img src="../../../styles/media/holder-16x9.gif" ng-if="WidgetMedia.loadingThumbnail">
     <div ng-switch="WidgetMedia.medium" class="media-center-banner clearfix">
       <div ng-switch-when="VIDEO" class="videogular-container" ng-style="{'min-height': (9 * deviceWidth / 16) + 'px' }">
         <videogular ng-if="WidgetMedia.isVideoPlayerSupported" vg-player-ready="WidgetMedia.onPlayerReady($API)"

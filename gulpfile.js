@@ -70,7 +70,7 @@ cssTasks.forEach(function (task) {
 });
 
 const widgetJSFiles = [
-    "assets/js/utils.js",
+    "widget/assets/js/utils.js",
     "widget/assets/js/lodash.js",
     "widget/assets/js/jquery.truncate.js",
     "widget/assets/js/ng-videosharing-embed.min.js",
@@ -183,8 +183,8 @@ gulp.task('html', function () {
     /// replace all the <!-- build:bundleJSFiles  --> comment bodies
     /// with scripts.min.js with cache buster
         .pipe(htmlReplace({
-            bundleJSFiles: "videoPlayers/scripts.min.js?v=" + (new Date().getTime())
-            , bundleVideoPlayerJSFiles: "scripts.min.js?v=" + (new Date().getTime())
+            bundleJSFiles: "scripts.min.js?v=" + (new Date().getTime())
+            , bundleVideoPlayerJSFiles: "videoPlayers/scripts.min.js?v=" + (new Date().getTime())
             , bundleSharedJSFilesWidget: "global/scripts.min.js?v=" + (new Date().getTime())
             , bundleSharedJSFilesCP: "../../widget/global/scripts.min.js?v=" + (new Date().getTime())
             , bundleCSSFiles: "styles/styles.min.css?v=" + (new Date().getTime())

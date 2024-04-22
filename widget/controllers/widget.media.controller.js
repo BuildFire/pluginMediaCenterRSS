@@ -291,6 +291,29 @@
                     bookmarks.sync($scope);
                 }
 
+                if (WidgetMedia.item.id && !WidgetMedia.item.videoUrl && !WidgetMedia.item.audioUrl && !WidgetMedia.item.imageUrl) {
+                    WidgetMedia.loadingThumbnail = true;
+                    if (!$scope.$$phase) $scope.$digest();
+                    const gettingFullDataInterval = setInterval(function () {
+                        if (utils.feedsCache) {
+                            for(const key in utils.feedsCache) {
+                                let cachedItem = utils.feedsCache[key].items.find(item => item.guid === WidgetMedia.item.id);
+                                if (cachedItem) {
+                                    WidgetMedia.item = cachedItem;
+                                    if (!WidgetMedia.item.imageSrcUrl) {
+                                        WidgetMedia.item.imageSrcUrl = utils.getImageUrl(WidgetMedia.item);
+                                    }
+                                    clearInterval(gettingFullDataInterval);
+                                    filterItemType(WidgetMedia.item);
+                                    bookmarks.sync($scope);
+                                    WidgetMedia.loadingThumbnail = false;
+                                    if (!$scope.$$phase) $scope.$digest();
+                                }
+                            }
+                        }
+                    }, 500);
+                }
+
                 /**
                  * WidgetMedia.onPlayerReady() method
                  * will be called on videogular player ready.
