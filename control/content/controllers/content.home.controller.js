@@ -3,8 +3,8 @@
 (function (angular) {
   angular
     .module('mediaCenterRSSPluginContent')
-    .controller('ContentHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'TAG_NAMES', 'LAYOUTS', 'FeedParseService', '$timeout', 'Utils',
-      function ($scope, DataStore, Buildfire, TAG_NAMES, LAYOUTS, FeedParseService, $timeout, Utils) {
+    .controller('ContentHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'TAG_NAMES', 'LAYOUTS', 'FeedParseService', '$timeout', 'Utils', 'MEDIUM_TYPES',
+      function ($scope, DataStore, Buildfire, TAG_NAMES, LAYOUTS, FeedParseService, $timeout, Utils, MEDIUM_TYPES) {
         /*
          * Private variables
          *
@@ -275,6 +275,42 @@
           }
         }
 
+        // new CP function to get feed data
+        // this will be used to register/unregister analytics
+        ContentHome.getIndexedFeedItems = function (feedTag, feedURL, filterRegistered, callback) {
+          searchEngine.getIndexedFeedData(feedTag, (err, hits) => {
+            if (err) return callback(err);
+
+            // hit proxy server to fetch the feed items
+            FeedParseService.getFeedData(feedURL).then((result) => {
+              // map throw items to get items type
+              let indexedFeedItems = hits.map(_item => {
+                const proxyItem = result.data.items.find(_proxyItem => _proxyItem.guid === _item._source.data.id);
+
+                let enclosureData = sharedUtils.checkEnclosuresTag(proxyItem, MEDIUM_TYPES);
+                let mediaTagData = sharedUtils.checkMediaTag(proxyItem, MEDIUM_TYPES);
+
+                if (enclosureData) {
+                  _item.type = enclosureData.medium;
+                } else if (mediaTagData) {
+                  _item.type = mediaTagData.medium;
+                }
+                return _item;
+              });
+              
+              // filter items to include only non-registered to analytics
+              if(filterRegistered) {
+                indexedFeedItems = indexedFeedItems.filter(_item => !_item._source.data.registeredToAnalytics);
+              }
+
+              callback(null, indexedFeedItems);
+            }).catch((err) => {
+              callback(err);
+            });
+          }
+        )};
+
+
         const handleFeedInsertion = (item, values, type) => {
           const insertFeedToList = (feed) => {
             if (item) { // update RSS feed
@@ -398,9 +434,8 @@
             if (isChanged) {
               ContentHome.handleLoaderDialog("Indexing Data", "Indexing data for search results, please wait...", true);
               searchEngine.insertFeed(ContentHome.activeRssFeed, (err, result) => {
-                ContentHome.activeRssFeed = null;
-                ContentHome.handleLoaderDialog();
                 if (err) {
+                  ContentHome.handleLoaderDialog();
                   if (err.errorMessage && err.innerError && err.innerError.error) {
                     if (err.innerError.error === 'no feeds available in the specified url') {
                       // don't show indexing error because the feed is empty
@@ -415,6 +450,22 @@
                     handleSearchEngineErrors('indexing');
                   }
                   console.error(err);
+                } else {
+                  ContentHome.handleLoaderDialog("Prepare Analytics", "Prepare analytics for data, please wait...", true);
+                  ContentHome.getIndexedFeedItems(`rss_feed_${ContentHome.activeRssFeed.id}`, ContentHome.activeRssFeed.url, true, (err, indexedFeedItems) => {
+                    ContentHome.activeRssFeed = null;
+                    if(err) {
+                      ContentHome.handleLoaderDialog();
+                      console.error(err);
+                    } else {
+                      AnalyticsManager.registerFeedAnalytics(indexedFeedItems, (error, result) => {
+                        searchEngine.updateFeedRecords(indexedFeedItems, (e, r) => {
+                          // hide the CP loader and end the procees
+                          ContentHome.handleLoaderDialog();
+                        });
+                      });
+                    }
+                  });
                 }
               });
             } else {

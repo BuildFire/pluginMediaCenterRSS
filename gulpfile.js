@@ -70,6 +70,7 @@ cssTasks.forEach(function (task) {
 });
 
 const widgetJSFiles = [
+    "widget/assets/js/state.js",
     "widget/assets/js/utils.js",
     "widget/assets/js/lodash.js",
     "widget/assets/js/jquery.truncate.js",

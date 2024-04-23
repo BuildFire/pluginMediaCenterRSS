@@ -2,21 +2,21 @@ class AnalyticsManager {
   // register feed data when adding new feed URL
   static registerFeedAnalytics(feedData, callback) {
     const registeringArray = [];
-    feedData.items.forEach(item => {
+    feedData.forEach(item => {
       registeringArray.push({
-        title: `${item.title} - Opens Count`,
-        key: '${item.id}_opensCount',
+        title: `${item._source.data.title} - Opens Count`,
+        key: `${item._source.data.id}_opensCount`,
         description: 'event description is mentioned in table below',
       });
-      if (item.type === 'video' || item.type === 'audio') {
+      if (item.type === "VIDEO" || item.type === "AUDIO") {
         registeringArray.push({
-          title: `${item.title} - Total Watch Duration`,
-          key: '${item.id}_secondsWatch',
+          title: `${item._source.data.title} - Total Watch Duration`,
+          key: `${item._source.data.id}_secondsWatch`,
           description: 'event description is mentioned in table below'
         });
         registeringArray.push({
-          title: `${item.title} - Plays Count`,
-          key: '${item.id}_playsCount',
+          title: `${item._source.data.title} - Plays Count`,
+          key: `${item._source.data.id}_playsCount`,
           description: 'event description is mentioned in table below'
         });
       }
@@ -27,11 +27,11 @@ class AnalyticsManager {
   // unregister feed data when deleting feed URL
   static unRegisterFeedAnalytics(feedData, callback) {
     const unregisterArray = [];
-    feedData.items.forEach(item => {
-      unregisterArray.push('${item.id}_opensCount');
-      if (item.type === 'video' || item.type === 'audio') {
-        unregisterArray.push('${item.id}_secondsWatch');
-        unregisterArray.push('${item.id}_playsCount');
+    feedData.forEach(item => {
+      unregisterArray.push(`${item._source.data.id}_opensCount`);
+      if (item.type === "VIDEO" || item.type === "AUDIO") {
+        unregisterArray.push(`${item._source.data.id}_secondsWatch`);
+        unregisterArray.push(`${item._source.data.id}_playsCount`);
       }
     });
     buildfire.analytics.bulkUnregisterEvents(unregisterArray, callback);

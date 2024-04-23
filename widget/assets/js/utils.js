@@ -34,11 +34,11 @@ const utils = {
             itemTitle: item.title,
             imageUrl: item.imageSrcUrl,
         };
-        const eventKey = `${item.guid}_SecondsWatch`; 
+        const eventKey = `${item.guid}_secondsWatch`; 
         if (state === 'play') {
             if (!utils.isItemPlayed) {
                 utils.isItemPlayed = true;
-                AnalyticsManager.trackEvent(`${item.guid}_PlaysCount`, metaData);
+                AnalyticsManager.trackEvent(`${item.guid}_playsCount`, metaData);
                 if (itemType === 'video') {
                     AnalyticsManager.trackEvent(`videoPlaysCount`, metaData);
                 } else {

@@ -82,8 +82,25 @@
           });
         return deferred.promise;
       };
+      var getFeedData = function (_feedURL) {
+        var deferred = $q.defer();
+        if (!_feedURL) {
+          deferred.reject(new Error('Undefined feed url'));
+        }
+        $http.post('https://proxy.buildfire.com/parsefeedurl', {
+            feedUrl: _feedURL
+          })
+          .success(function (response) {
+            deferred.resolve(response);
+          })
+          .error(function (error) {
+            deferred.reject(error);
+          });
+        return deferred.promise;
+      };
       return {
-        validateFeedUrl: validateFeedUrl
+        validateFeedUrl: validateFeedUrl,
+        getFeedData: getFeedData
       };
     }])
     .factory("Utils", ['$q', '$http', function ($q, $http) {

@@ -73,4 +73,56 @@ const searchEngine = {
 
     return options;
   },
+  getIndexedFeedData(feedTag, callback) {
+    this.getIndexedFeedPage({page: 0, pageSize: 2500, feedTag}, [], callback);
+  },
+  
+  getIndexedFeedPage(options, hits, callback) {
+    const {page, pageSize, feedTag} = options;
+    buildfire.services.searchEngine.search({ tag: feedTag, pageSize, page},
+    (err, res) => {
+      if (err) return callback(err);
+
+      hits = hits.concat(res.hits.hits);
+      if (res && res.total > ((page+1)*pageSize)) {
+        options.page += 1;
+        return this.getIndexedFeedPage(options, hits, callback);
+      }
+      return callback(null, hits);
+    });
+  },
+
+  updateFeedRecords(records, callback) {
+    const promises = [];
+    records.forEach(_record => {
+      promises.push( new Promise((resolve, reject) => 
+        buildfire.services.searchEngine.update(
+          {
+            id: _record._id,
+            title: _record._source.data.title,
+            tag: _record._source.tag,
+            data: {
+              ..._record._source.data,
+              registeredToAnalytics: true,
+            }
+          },
+          (err, result) => {
+            if (err) return reject(err);
+            else resolve();
+          })))
+    });
+    this.sendPromisesInBatches(promises, 10, callback);
+  },
+  // function to divide requests and send them batch by batch
+  sendPromisesInBatches(promises, batchSize, callback) {
+    if (promises.length === 0) {
+        return callback();
+    }
+
+    const batch = promises.splice(0, batchSize);
+    // this way will not stop if some requests failed 
+    Promise.allSettled(batch)
+      .then(() => this.sendPromisesInBatches(promises, batchSize, callback))
+      .catch(err => callback(err))
+}
 };
