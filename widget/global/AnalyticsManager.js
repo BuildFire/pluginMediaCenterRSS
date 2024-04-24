@@ -1,23 +1,25 @@
 class AnalyticsManager {
   // register feed data when adding new feed URL
   static registerFeedAnalytics(feedData, callback) {
+    if (!feedData || !feedData.length) return callback();
+
     const registeringArray = [];
     feedData.forEach(item => {
       registeringArray.push({
         title: `${item._source.data.title} - Opens Count`,
         key: `${item._source.data.id}_opensCount`,
-        description: 'event description is mentioned in table below',
+        description: 'Track how often users open the item, gauging its popularity and engagement.',
       });
       if (item.type === "VIDEO" || item.type === "AUDIO") {
         registeringArray.push({
           title: `${item._source.data.title} - Total Watch Duration`,
           key: `${item._source.data.id}_secondsWatch`,
-          description: 'event description is mentioned in table below'
+          description: 'Track total content watch time.'
         });
         registeringArray.push({
           title: `${item._source.data.title} - Plays Count`,
           key: `${item._source.data.id}_playsCount`,
-          description: 'event description is mentioned in table below'
+          description: 'Track how often users play the item, gauging its popularity and engagement.'
         });
       }
     });
@@ -26,6 +28,8 @@ class AnalyticsManager {
 
   // unregister feed data when deleting feed URL
   static unRegisterFeedAnalytics(feedData, callback) {
+    if (!feedData || !feedData.length) return callback();
+    
     const unregisterArray = [];
     feedData.forEach(item => {
       unregisterArray.push(`${item._source.data.id}_opensCount`);
@@ -35,7 +39,6 @@ class AnalyticsManager {
       }
     });
     buildfire.analytics.bulkUnregisterEvents(unregisterArray, callback);
-
   }
 
   static trackEvent(eventKey, metaData) {
@@ -47,31 +50,31 @@ class AnalyticsManager {
       {
         title: `Total Video Opens Count`,
         key: 'videoOpensCount',
-        description: 'Number of opens',
-      },
-      {
-        title: `Total Video Plays Count`,
-        key: 'videoPlaysCount',
-        description: 'Number of plays',
+        description: 'Track all videos opens count in the app, offering insights into overall engagement and popularity.',
       },
       {
         title: `Total Audio Opens Count`,
         key: 'audioOpensCount',
-        description: 'Number of opens',
-      },
-      {
-        title: `Total Audio Plays Count`,
-        key: 'audioPlaysCount',
-        description: 'Number of plays',
+        description: 'Track all audios opens count in the app, offering insights into overall engagement and popularity.',
       },
       {
         title: `Total Articles Opens Count`,
         key: 'articleOpensCount',
-        description: 'Number of opens',
+        description: 'Track all articles opens count in the app, offering insights into overall engagement and popularity.',
+      },
+      {
+        title: `Total Video Plays Count`,
+        key: 'videoPlaysCount',
+        description: 'Track total videos plays count in the app, offering insights into overall engagement and popularity.',
+      },
+      {
+        title: `Total Audio Plays Count`,
+        key: 'audioPlaysCount',
+        description: 'Track total audios plays count in the app, offering insights into overall engagement and popularity.',
       },
     ];
 
     // bulkRegister is a new method will be added to the sdk
-    buildfire.analytics.bulkRegister(registeringArray, callback);
+    buildfire.analytics.bulkRegisterEvents(registeringArray, { silentNotification: true }, callback);
   }
 }

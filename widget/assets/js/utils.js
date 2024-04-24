@@ -13,10 +13,10 @@ const utils = {
             };
             AnalyticsManager.trackEvent(`${item.guid}_opensCount`, metaData);
             switch (item.type) {
-                case 'video':
+                case 'VIDEO':
                     AnalyticsManager.trackEvent('videoOpensCount', metaData);
                     break;
-                case 'audio':
+                case 'AUDIO':
                     AnalyticsManager.trackEvent('audioOpensCount', metaData);
                     break;
                 default:
