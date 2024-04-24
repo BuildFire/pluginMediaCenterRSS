@@ -345,12 +345,14 @@
                     WidgetMedia.API.stop();
                 };
 
-                WidgetMedia.isVideoPlayed = false;
-                WidgetMedia.playInterval = null;
-                WidgetMedia.lastAnalyticsTime = 0;
                 $rootScope.onVideoStateChange = function (videoState, videoCurrentTime) { // videoCurrentTime in seconds
                     if (typeof videoCurrentTime !== 'number') {
-                        videoCurrentTime = WidgetMedia.API.currentTime/1000;
+                        videoCurrentTime = WidgetMedia.API ? WidgetMedia.API.currentTime/1000 : 0;
+                    }
+                    if (videoState === 'play') {
+                        WidgetMedia.isVideoPlaying = true;
+                    } else if (videoState === 'pause') {
+                        WidgetMedia.isVideoPlaying = false;
                     }
                     utils.trackItemWatchState({
                         state: videoState,
@@ -572,6 +574,7 @@
                  * will called when controller scope has been destroyed.
                  */
                 $scope.$on("$destroy", function () {
+                    $rootScope.onVideoStateChange('pause');
                     DataStore.clearListener();
                     onRefresh.clear();
                     Buildfire.datastore.onRefresh(function () {

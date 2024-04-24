@@ -138,6 +138,10 @@
      */
     .filter("timeCorrect", function () {
       return function (x) {
+        const hours = x.split(':')[0];
+        const min = x.split(':')[1];
+        if (hours && min && hours.length === 2 && min.length === 2) return x;
+        
         x = '0' + x.substring(1);
         return x;
       };

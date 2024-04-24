@@ -66,8 +66,10 @@
 			  </a>
 			  <a class="media-action video" ng-click="!WidgetMedia.loadingVideo && WidgetMedia.API.play()"
 				ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">
-				<i class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
+				<i ng-if="!WidgetMedia.isVideoPlaying" class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
 				  style="font-size: 2em !important; letter-spacing: normal;">play_arrow</i>
+				<i ng-if="WidgetMedia.isVideoPlaying" class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
+				  style="font-size: 2em !important; letter-spacing: normal;">pause</i>
 			  </a>
 			</div>
 		  </div>

@@ -57,10 +57,13 @@ const utils = {
             if (utils.analyticsTrackingInterval) {
                 clearInterval(utils.analyticsTrackingInterval);
                 utils.analyticsTrackingInterval = null;
+
                 const extraTime = currentTime - utils.lastAnalyticsTime;
-                utils.lastAnalyticsTime += extraTime;
-                metaData._buildfire = { aggregationValue: parseInt(extraTime) };
-                AnalyticsManager.trackEvent(eventKey, metaData);
+                if (currentTime > 0 && extraTime > 0) {
+                    utils.lastAnalyticsTime += extraTime;
+                    metaData._buildfire = { aggregationValue: parseInt(extraTime) };
+                    AnalyticsManager.trackEvent(eventKey, metaData);
+                }
             }
         }
     },
