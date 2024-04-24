@@ -232,18 +232,35 @@
                 }, (err, isConfirmed) => {
                   if (err) console.error(err);
                   if (isConfirmed) {
-                    ContentHome.handleLoaderDialog("Deleting Data", "Deleting data, please wait...", true);
-                    searchEngine.deleteFeed(options.item.id, (err, result) => {
-                      ContentHome.handleLoaderDialog();
-                      if (err) {
+                    // unregister analytics
+                    ContentHome.handleLoaderDialog("Deleting Analytics", "Deleting analytics, please wait...", true);
+                    ContentHome.getIndexedFeedItems(`rss_feed_${options.item.id}`, options.item.url, false, (err, indexedFeedItems) => {
+                      if(err) {
+                        ContentHome.handleLoaderDialog();
                         handleSearchEngineErrors('deleting');
-                        return console.error(err);
+                        console.error(err);
+                      } else {
+                        AnalyticsManager.unRegisterFeedAnalytics(indexedFeedItems, (error, result) => {
+                          if(error) {
+                            ContentHome.handleLoaderDialog();
+                            handleSearchEngineErrors('deleting');
+                            return console.error(err);
+                          }
+                          ContentHome.handleLoaderDialog("Deleting Data", "Deleting data, please wait...", true);
+                          searchEngine.deleteFeed(options.item.id, (err, result) => {
+                            ContentHome.handleLoaderDialog();
+                            if (err) {
+                              handleSearchEngineErrors('deleting');
+                              return console.error(err);
+                            }
+                            
+                            ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter((el, ind) => el.id !== options.item.id);
+                            ContentHome.sortableList.remove(options.item.id);
+                            ContentHome.toggleEmptyScreen();
+                            $scope.$digest();
+                          });
+                        });
                       }
-                      
-                      ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter((el, ind) => el.id !== options.item.id);
-                      ContentHome.sortableList.remove(options.item.id);
-                      ContentHome.toggleEmptyScreen();
-                      $scope.$digest();
                     });
                   }
                 })
@@ -387,14 +404,29 @@
                       if (isChanged) {
                         // delete old search engine data
                         ContentHome.handleLoaderDialog("Deleting Old Data", "Deleting old search data, please wait...", true);
-                        searchEngine.deleteFeed(item.id, (err, result) => {
-                          if (err) {
+                        ContentHome.getIndexedFeedItems(`rss_feed_${item.id}`, item.url, false, (err, indexedFeedItems) => {
+                          if(err) {
                             ContentHome.handleLoaderDialog();
-                            ContentHome.activeRssFeed = null;
                             handleSearchEngineErrors('updating');
-                            return console.error(err);
+                            console.error(err);
+                          } else {
+                            AnalyticsManager.unRegisterFeedAnalytics(indexedFeedItems, (error, result) => {
+                              if(err) {
+                                ContentHome.handleLoaderDialog();
+                                handleSearchEngineErrors('updating');
+                                return console.error(err);
+                              }
+                              searchEngine.deleteFeed(item.id, (err, result) => {
+                                if (err) {
+                                  ContentHome.handleLoaderDialog();
+                                  ContentHome.activeRssFeed = null;
+                                  handleSearchEngineErrors('updating');
+                                  return console.error(err);
+                                }
+                                insertFeedToList(feed);
+                              });
+                            });
                           }
-                          insertFeedToList(feed);
                         });
                       } else {
                         insertFeedToList(feed);
@@ -458,10 +490,17 @@
                     ContentHome.activeRssFeed = null;
                     if(err) {
                       ContentHome.handleLoaderDialog();
+                      handleSearchEngineErrors('analytics');
                       console.error(err);
                     } else {
                       AnalyticsManager.registerFeedAnalytics(indexedFeedItems, (error, result) => {
+                        if (error) {
+                          ContentHome.handleLoaderDialog();
+                          handleSearchEngineErrors('analytics');
+                          return console.error(error);
+                        }
                         searchEngine.updateFeedRecords(indexedFeedItems, (e, r) => {
+                          if (e) console.error(e);
                           // hide the CP loader and end the procees
                           ContentHome.handleLoaderDialog();
                         });
@@ -528,7 +567,6 @@
               } else {
                 ContentHome.data.content.feeds = ContentHome.clearUpFeeds(ContentHome.data.content.feeds);
               }
-              console.log('0>>>>>', newObj, ContentHome.masterData);
               saveData(JSON.parse(angular.toJson(newObj)), TAG_NAMES.RSS_FEED_INFO);
             }, 500);
           }
@@ -557,11 +595,36 @@
               title = "Title Key Error";
               message = "Invalid Title Key. Please correct the key in the feed's advanced settings and try again. Without correct key feed items won't show in search results.";
               break;
+            case 'analytics':
+              title = "Analytics Error";
+              message = "Error setting analytics. Please try adding the feed again.";
+              break;
             default:
               break;
           }
           buildfire.dialog.alert({ title, message });
         };
+
+        const syncFeedAnalytics = (feeds) => {
+          if (!feeds.length) return;
+
+          const rssFeed = feeds.shift();
+          if (rssFeed.type !== 'rss') return syncFeedAnalytics(feeds);
+          
+          ContentHome.getIndexedFeedItems(`rss_feed_${rssFeed.id}`, rssFeed.url, true, (err, indexedFeedItems) => {
+            if (err) {
+              console.error(err);
+              return syncFeedAnalytics(feeds);
+            } else {
+              AnalyticsManager.registerFeedAnalytics(indexedFeedItems, (error, result) => {
+                searchEngine.updateFeedRecords(indexedFeedItems, (e, r) => {
+                  if (e) console.error(e);
+                  return syncFeedAnalytics(feeds);
+                });
+              });
+            }
+          });
+        }
 
         /**
          * init() private function
@@ -577,6 +640,14 @@
               updateMasterItem(_defaultData);
               ContentHome.data = angular.copy(_defaultData);
             } else {
+              if (ContentHome.data.default) {
+                ContentHome.data.default = false;
+                saveDataWithDelay({...ContentHome.data, default: false});
+                AnalyticsManager.init();
+              } else if (ContentHome.data.content.feeds && ContentHome.data.content.feeds.length) {
+                const feeds = angular.copy(ContentHome.data.content.feeds);
+                syncFeedAnalytics(feeds);
+              }
               if (ContentHome.data.content && !ContentHome.data.content.carouselImages) {
                 ContentHome.editor.loadItems([]);
               }

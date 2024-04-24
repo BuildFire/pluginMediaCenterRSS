@@ -93,9 +93,13 @@ const searchEngine = {
   },
 
   updateFeedRecords(records, callback) {
-    const promises = [];
-    records.forEach(_record => {
-      promises.push( new Promise((resolve, reject) => 
+    if (!records.length) return callback();
+
+    const batchSize = 10;
+    const batch = records.splice(0, batchSize);
+
+    const promises = batch.map(_record => 
+      new Promise((resolve, reject) => 
         buildfire.services.searchEngine.update(
           {
             id: _record._id,
@@ -114,20 +118,9 @@ const searchEngine = {
           (err, result) => {
             if (err) return reject(err);
             else resolve();
-          })))
-    });
-    this.sendPromisesInBatches(promises, 10, callback);
+          }))
+      );
+    
+    Promise.allSettled(promises).then(() => this.updateFeedRecords(records, callback));
   },
-  // function to divide requests and send them batch by batch
-  sendPromisesInBatches(promises, batchSize, callback) {
-    if (promises.length === 0) {
-        return callback();
-    }
-
-    const batch = promises.splice(0, batchSize);
-    // this way will not stop if some requests failed 
-    Promise.allSettled(batch)
-      .then(() => this.sendPromisesInBatches(promises, batchSize, callback))
-      .catch(err => callback(err))
-}
 };
