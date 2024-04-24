@@ -292,8 +292,10 @@
 
                 if (enclosureData) {
                   _item.type = enclosureData.medium;
+                  _item.src = enclosureData.src;
                 } else if (mediaTagData) {
                   _item.type = mediaTagData.medium;
+                  _item.src = mediaTagData.src;
                 }
                 return _item;
               });

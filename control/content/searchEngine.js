@@ -101,9 +101,14 @@ const searchEngine = {
             id: _record._id,
             title: _record._source.data.title,
             tag: _record._source.tag,
+            description: _record._source.searchable.description,
+            keywords: _record._source.searchable.keywords,
+            imageUrl: _record._source.image_url,
             data: {
               ..._record._source.data,
               registeredToAnalytics: true,
+              type: _record.type,
+              src: _record.src
             }
           },
           (err, result) => {

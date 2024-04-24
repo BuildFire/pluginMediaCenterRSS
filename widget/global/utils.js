@@ -6,6 +6,8 @@ const sharedUtils = {
      * @returns {*}
      */
     checkEnclosuresTag: function (_item, MEDIUM_TYPES) {
+        if (_item.src && _item.medium) return _item;
+
         let medium = MEDIUM_TYPES.OTHER;
         if (_item.enclosures && _item.enclosures.length > 0 && _item.enclosures[0].url && _item.enclosures[0].type) {
             if (_item.enclosures[0].type.indexOf('video/') === 0) {
