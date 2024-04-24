@@ -71,7 +71,7 @@ const utils = {
      * @param item
      * @returns {*}
      */
-    getImageUrl(item) {
+    getImageUrl(item, $filter) {
         var i = 0,
             length = 0,
             imageUrl = '';

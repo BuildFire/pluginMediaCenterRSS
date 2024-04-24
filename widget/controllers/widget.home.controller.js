@@ -46,7 +46,12 @@
                     if ($scope.first && data) {
                         if (data.feed) {
                             toggleDeeplinkSkeleton();
-                            const item = {...data.feed, guid: data.link};
+                            const item = {
+                                ...data.feed,
+                                guid: data.link,
+                                imageSrcUrl: data.feed.image_url ,
+                                pubDate: data.feed.publish_date 
+                            };
                             WidgetHome.proceedToItem(-1, item, pushToHistory);
                         } else if (data.link) {
                             var targetGuid = data.link;
@@ -630,11 +635,11 @@
                     }
                 };
                 WidgetHome.proceedToItem = function (index, item, pushToHistory) {
-                    setTimeout(function () {
-                        toggleDeeplinkSkeleton();
-                        viewedItems.markViewed($scope, item.guid);
-                    }, 500);
                     if (WidgetHome.items[index]) {
+                        setTimeout(function () {
+                            toggleDeeplinkSkeleton();
+                            viewedItems.markViewed($scope, item.guid);
+                        }, 500);
                         WidgetHome.items[index].index = index;
                     }
                     // ItemDetailsService.setData(WidgetHome.items[index]);

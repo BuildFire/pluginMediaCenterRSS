@@ -301,6 +301,8 @@
 					this.url = track && track.link;
 				} else if (track && track.enclosures && track.enclosures[0] && track.enclosures[0].url && track.enclosures[0].url.substring(track.enclosures[0].url.length - 4, track.enclosures[0].url.length)) {
 					this.url = track.enclosures[0].url;
+				} else if (track.src) {
+					this.url = track.src;
 				} else {
 					console.error('**************************URL not found***********************');
 				}

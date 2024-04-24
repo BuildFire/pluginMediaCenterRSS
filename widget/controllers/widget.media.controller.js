@@ -6,7 +6,6 @@
         .controller('WidgetMediaCtrl', ['$scope', '$sce', 'DataStore', 'Buildfire', 'TAG_NAMES', 'ItemDetailsService', '$filter', 'Location', 'MEDIUM_TYPES', '$rootScope',
             function ($scope, $sce, DataStore, Buildfire, TAG_NAMES, ItemDetailsService, $filter, Location, MEDIUM_TYPES, $rootScope) {
 
-                console.log('Widget.media.controller loaded successfully------------------------------------------->>>>>>>>>>>>>>>>>>>.');
                 $rootScope.deviceHeight = window.innerHeight;
                 $rootScope.deviceWidth = window.innerWidth;
 
@@ -242,8 +241,6 @@
                             $rootScope.backgroundImageItem = WidgetMedia.data.design.itemDetailsBgImage;
                             initScrollHandler();
                         }
-                        console.log('$rootScope.backgroundImage', $rootScope.backgroundImage);
-                        console.log('$rootScope.backgroundImageItem', $rootScope.backgroundImageItem);
                         if (WidgetMedia.data.content && (!WidgetMedia.data.content.rssUrl || WidgetMedia.data.content.rssUrl !== currentRssUrl)) {
                             if ($rootScope.data.design.itemDetailsLayout == WidgetMedia.data.design.itemDetailsLayout) {
                                 resetDefaults();
@@ -272,30 +269,50 @@
                         Buildfire.spinner.show();
                     }
 
-                    if (WidgetMedia.item.id && !WidgetMedia.item.videoUrl && !WidgetMedia.item.audioUrl && !WidgetMedia.item.imageUrl) {
-                        WidgetMedia.loadingThumbnail = true;
-                        if (!$scope.$$phase) $scope.$digest();
-                        const gettingFullDataInterval = setInterval(function () {
-                            if (state.currentFeedsData) {
-                                for(const key in state.currentFeedsData) {
-                                    let cachedItem = state.currentFeedsData[key].items.find(item => item.guid === WidgetMedia.item.id);
-                                    if (cachedItem) {
-                                        WidgetMedia.item = cachedItem;
-                                        if (!WidgetMedia.item.imageSrcUrl) {
-                                            WidgetMedia.item.imageSrcUrl = utils.getImageUrl(WidgetMedia.item);
+                    if (WidgetMedia.item) {
+                        if (WidgetMedia.item.id && (!WidgetMedia.item.type || !WidgetMedia.item.src)) {
+                            WidgetMedia.loadingThumbnail = true;
+                            if (!$scope.$$phase) $scope.$digest();
+                            const gettingFullDataInterval = setInterval(function () {
+                                if (state.currentFeedsData) {
+                                    for(const key in state.currentFeedsData) {
+                                        let cachedItem = state.currentFeedsData[key].items.find(item => item.guid === WidgetMedia.item.id);
+                                        if (cachedItem) {
+                                            WidgetMedia.item = cachedItem;
+                                            if (!WidgetMedia.item.imageSrcUrl) {
+                                                WidgetMedia.item.imageSrcUrl = utils.getImageUrl(WidgetMedia.item, $filter);
+                                            }
+                                            clearInterval(gettingFullDataInterval);
+                                            filterItemType(WidgetMedia.item);
+                                            bookmarks.sync($scope);
+                                            WidgetMedia.loadingThumbnail = false;
+                                            ItemDetailsService.setData(WidgetMedia.item);
+                                            if (!$scope.$$phase) $scope.$digest();
                                         }
-                                        clearInterval(gettingFullDataInterval);
-                                        filterItemType(WidgetMedia.item);
-                                        bookmarks.sync($scope);
-                                        WidgetMedia.loadingThumbnail = false;
-                                        ItemDetailsService.setData(WidgetMedia.item);
-                                        if (!$scope.$$phase) $scope.$digest();
                                     }
                                 }
+                            }, 500);
+                        } else if (WidgetMedia.item.type && WidgetMedia.item.src) {
+                            WidgetMedia.item.link = WidgetMedia.item.url;
+                            const filterOption = {
+                                medium: WidgetMedia.item.type,
+                                src: WidgetMedia.item.src,
+                                link: WidgetMedia.item.url,
+                            };
+                            if (WidgetMedia.item.type === MEDIUM_TYPES.VIDEO) {
+                                filterOption.type = "video/mp4";
+                            } else if (WidgetMedia.item.type === MEDIUM_TYPES.AUDIO) {
+                                filterOption.type = "audio/mp3";
                             }
-                        }, 500);
-                    } else if (!WidgetMedia.item.imageSrcUrl) {
-                        WidgetMedia.item.imageSrcUrl = utils.getImageUrl(WidgetMedia.item);
+                            filterItemType(filterOption);
+                            bookmarks.sync($scope);
+                            if (!WidgetMedia.item.imageSrcUrl) {
+                                WidgetMedia.item.imageSrcUrl = utils.getImageUrl(WidgetMedia.item, $filter);
+                            }
+                        } else {
+                            filterItemType(WidgetMedia.item);
+                            bookmarks.sync($scope);
+                        }
                     }
                 };
 
@@ -308,14 +325,6 @@
                  * DataStore.onUpdate() will invoked when there is some change in datastore
                  */
                 DataStore.onUpdate().then(null, null, onUpdateCallback);
-
-                /**
-                 * filterItemType() method will be called if WidgetMedia.item is not null
-                 */
-                if (WidgetMedia.item) {
-                    filterItemType(WidgetMedia.item);
-                    bookmarks.sync($scope);
-                }
 
                 /**
                  * WidgetMedia.onPlayerReady() method
