@@ -233,7 +233,7 @@
                   if (err) console.error(err);
                   if (isConfirmed) {
                     // unregister analytics
-                    ContentHome.handleLoaderDialog("Deleting Analytics", "Deleting analytics, please wait...", true);
+                    ContentHome.handleLoaderDialog("Deleting Analytics", "Deleting analytics, this may take a while please wait...", true);
                     ContentHome.getIndexedFeedItems(`rss_feed_${options.item.id}`, options.item.url, false, (err, indexedFeedItems) => {
                       if(err) {
                         ContentHome.handleLoaderDialog();
@@ -403,7 +403,7 @@
                       }
                       if (isChanged) {
                         // delete old search engine data
-                        ContentHome.handleLoaderDialog("Deleting Old Data", "Deleting old search data, please wait...", true);
+                        ContentHome.handleLoaderDialog("Deleting Old Data", "Deleting old search data, this may take a while please wait...", true);
                         ContentHome.getIndexedFeedItems(`rss_feed_${item.id}`, item.url, false, (err, indexedFeedItems) => {
                           if(err) {
                             ContentHome.handleLoaderDialog();
