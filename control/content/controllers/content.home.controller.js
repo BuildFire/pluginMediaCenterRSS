@@ -599,30 +599,67 @@
               title = "Analytics Error";
               message = "Error setting analytics. Please try adding the feed again.";
               break;
+            case 'analyticsUpdates':
+              title = "Analytics Error";
+              message = "An error while occurred updating the analytics.";
+              break;
             default:
               break;
           }
           buildfire.dialog.alert({ title, message });
         };
 
+        /**
+         * syncFeedAnalytics(feeds) private function
+         * It will sync the feed items with the analytics and search engine
+         * @param feeds is an array of feeds
+         */
+        let showUpdateDialog = false;
+        let updateAnalyticsError = false;
         const syncFeedAnalytics = (feeds) => {
-          if (!feeds.length) return;
+          if (!feeds.length) {
+            ContentHome.handleLoaderDialog();
+            if (updateAnalyticsError) {
+              handleSearchEngineErrors('analyticsUpdates');
+            } else if (showUpdateDialog) {
+              buildfire.dialog.alert({
+                title: "Analytics Updates",
+                message: "Analytics updated successfully.",
+              });
+            }
+            return;
+          }
 
           const rssFeed = feeds.shift();
           if (rssFeed.type !== 'rss') return syncFeedAnalytics(feeds);
           
           ContentHome.getIndexedFeedItems(`rss_feed_${rssFeed.id}`, rssFeed.url, true, (err, indexedFeedItems) => {
-            if (err) {
-              console.error(err);
-              return syncFeedAnalytics(feeds);
-            } else {
-              AnalyticsManager.registerFeedAnalytics(indexedFeedItems, (error, result) => {
-                searchEngine.updateFeedRecords(indexedFeedItems, (e, r) => {
-                  if (e) console.error(e);
-                  return syncFeedAnalytics(feeds);
-                });
+            if (err) console.error(err);
+            if (!indexedFeedItems || !indexedFeedItems.length) return syncFeedAnalytics(feeds);
+
+            if (!showUpdateDialog && indexedFeedItems.length > 10) {
+              showUpdateDialog = true;
+              ContentHome.handleLoaderDialog("Updating Analytics", "Updating analytics, this may take a while please wait...", true);
+              buildfire.dialog.alert({
+                title: "Analytics Updates",
+                message: "We are improving your Analytics, please do not close your browser or leave the plugin until you see success dialog. This may take a while...",
               });
             }
+            AnalyticsManager.registerFeedAnalytics(indexedFeedItems, (error, result) => {
+              if (error) {
+                console.error(error);
+                updateAnalyticsError = true;
+                return syncFeedAnalytics(feeds);
+              }
+
+              searchEngine.updateFeedRecords(indexedFeedItems, (e, r) => {
+                if (e) {
+                  console.error(e);
+                  updateAnalyticsError = true;
+                }
+                return syncFeedAnalytics(feeds);
+              });
+            });
           });
         }
 
