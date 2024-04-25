@@ -314,6 +314,17 @@
                             bookmarks.sync($scope);
                         }
                     }
+
+                    // check if a audio is playing
+                    audioPlayer.isPaused((err, isPaused) => {
+                        if (err) return console.err(err);
+                      
+                        if (isPaused) {
+                            $rootScope.audioPlayerPlaying = false;
+                        } else {
+                            $rootScope.audioPlayerPlaying = true;
+                        }
+                    });
                 };
 
                 /**
@@ -418,16 +429,18 @@
                  * callback will be called when audio player fires an event
                  */
                 audioPlayer.onEvent(function (e) {
-                    if (e.event == "timeUpdate") {
+                    if (e.event === 'play' || e.event === 'resume') {
+                        $rootScope.audioPlayerPlaying = true;
+                    } else if (e.event == "timeUpdate") {
                         WidgetMedia.audio.currentTime = e.data.currentTime;
                         WidgetMedia.audio.duration = e.data.duration;
 						WidgetMedia.audio.maxRange = Math.floor(e.data.duration);
                         $scope.$apply();
                     } else if (e.event == "audioEnded") {
-                        WidgetMedia.audio.playing = false;
+                        $rootScope.audioPlayerPlaying = false;
                         $scope.$apply();
                     } else if (e.event == "pause") {
-                        WidgetMedia.audio.playing = false;
+                        $rootScope.audioPlayerPlaying = false;
                         $scope.$apply();
                     }
                 });
@@ -439,14 +452,6 @@
                 WidgetMedia.playAudio = function () {
                     Buildfire.history.push('Now Playing', {});
                     Location.goTo('#/nowplaying');
-
-                    /* WidgetMedia.audio.playing = true;
-                     if (WidgetMedia.audio.paused) {
-                     audioPlayer.play();
-                     }
-                     else if (WidgetMedia.audio.track) {
-                     audioPlayer.play({url: WidgetMedia.audio.track});
-                     }*/
                 };
 
 
@@ -455,7 +460,6 @@
                  * will be called when you click pause button
                  */
                 WidgetMedia.pause = function () {
-                    WidgetMedia.audio.paused = true;
                     audioPlayer.pause();
                 };
 

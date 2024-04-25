@@ -52,6 +52,7 @@
 				switch (e.event) {
 					case 'play':
 					case 'resume':
+						NowPlaying.playing = true;
 						$rootScope.audioPlayerPlaying = true;
 						utils.trackItemWatchState({
 							state: 'play',

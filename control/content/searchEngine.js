@@ -83,7 +83,10 @@ const searchEngine = {
     (err, res) => {
       if (err) return callback(err);
 
-      hits = hits.concat(res.hits.hits);
+      if (res && res.hits && res.hits.hits && res.hits.hits.length) {
+        hits = hits.concat(res.hits.hits);
+      }
+      
       if (res && res.total > ((page+1)*pageSize)) {
         options.page += 1;
         return this.getIndexedFeedPage(options, hits, callback);
