@@ -637,12 +637,11 @@
                 WidgetHome.proceedToItem = function (index, item, pushToHistory) {
                     if (WidgetHome.items[index]) {
                         setTimeout(function () {
-                            toggleDeeplinkSkeleton();
                             viewedItems.markViewed($scope, item.guid);
                         }, 500);
                         WidgetHome.items[index].index = index;
                     }
-                    // ItemDetailsService.setData(WidgetHome.items[index]);
+                    toggleDeeplinkSkeleton();
                     ItemDetailsService.setData(item);
                     // Buildfire.history.push(WidgetHome.items[index].title, {});
                     if (pushToHistory) {
