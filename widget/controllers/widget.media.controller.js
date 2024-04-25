@@ -347,7 +347,11 @@
 
                 $rootScope.onVideoStateChange = function (videoState, videoCurrentTime) { // videoCurrentTime in seconds
                     if (typeof videoCurrentTime !== 'number') {
-                        videoCurrentTime = WidgetMedia.API ? WidgetMedia.API.currentTime/1000 : 0;
+                        if (WidgetMedia.API) {
+                            videoCurrentTime = WidgetMedia.API.currentTime/1000;
+                        } else if (window.videoPlayer && window.videoPlayer.getCurrentTime) {
+                            videoCurrentTime = window.videoPlayer.getCurrentTime();
+                        }
                     }
                     if (videoState === 'play') {
                         WidgetMedia.isVideoPlaying = true;

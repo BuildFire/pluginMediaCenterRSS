@@ -64,9 +64,11 @@
           ng-click="WidgetMedia.bookmark($event)" role="button"></i>
       </div>
       <div class="link-list">
-        <a class="media-action" ng-click="WidgetMedia.playAudio()" ng-if="WidgetMedia.medium == 'AUDIO'">
-          <i class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
-            style="font-size: 2em !important;">play_arrow</i>
+        <a class="media-action" ng-click="audioPlayerPlaying ? WidgetMedia.pause() : WidgetMedia.playAudio()" ng-if="WidgetMedia.medium == 'AUDIO'">
+          <i ng-if="!audioPlayerPlaying" class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
+            style="font-size: 2em !important; letter-spacing: normal;">play_arrow</i>
+          <i ng-if="audioPlayerPlaying" class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
+            style="font-size: 2em !important; letter-spacing: normal;">pause</i>
         </a>
         <a class="media-action video" ng-click="(!WidgetMedia.loadingVideo && !WidgetMedia.loadingThumbnail) && (WidgetMedia.isVideoPlaying ? WidgetMedia.API.pause() : WidgetMedia.API.play())"
           ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">

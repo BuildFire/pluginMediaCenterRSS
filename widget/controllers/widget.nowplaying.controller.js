@@ -52,6 +52,7 @@
 				switch (e.event) {
 					case 'play':
 					case 'resume':
+						$rootScope.audioPlayerPlaying = true;
 						utils.trackItemWatchState({
 							state: 'play',
 							currentTime: e.data.track.lastPosition,
@@ -73,10 +74,12 @@
 						NowPlaying.maxRange = Math.floor(e.data.duration);
 						break;
 					case 'audioEnded':
+						$rootScope.audioPlayerPlaying = false;
 						NowPlaying.playing = false;
 						NowPlaying.paused = false;
 						break;
 					case 'pause':
+						$rootScope.audioPlayerPlaying = false;
 						NowPlaying.playing = false;
 						utils.trackItemWatchState({
 							state: 'pause',
