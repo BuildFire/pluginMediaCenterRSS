@@ -680,7 +680,9 @@
               if (ContentHome.data.default) {
                 ContentHome.data.default = false;
                 saveDataWithDelay({...ContentHome.data, default: false});
-                AnalyticsManager.init();
+                AnalyticsManager.init((err) => {
+                  if (err) console.error(err);
+                });
               } else if (ContentHome.data.content.feeds && ContentHome.data.content.feeds.length) {
                 const feeds = angular.copy(ContentHome.data.content.feeds);
                 syncFeedAnalytics(feeds);
@@ -862,7 +864,7 @@
 
         ContentHome.toggleEmptyScreen = function (){
           const loadingContainer = document.getElementById('emptyListContainer');
-          if (!ContentHome.sortableList.items.length) {
+          if (!ContentHome.sortableList || !ContentHome.sortableList.items || !ContentHome.sortableList.items.length) {
             loadingContainer.classList.remove('hidden');
             loadingContainer.innerHTML = '<h4>No Feeds Found.</h4>';
           } else {

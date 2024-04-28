@@ -98,7 +98,7 @@ const searchEngine = {
   updateFeedRecords(records, callback) {
     if (!records.length) return callback();
 
-    const batchSize = 10;
+    const batchSize = 20;
     const batch = records.splice(0, batchSize);
 
     const promises = batch.map(_record => 
