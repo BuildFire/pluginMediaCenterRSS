@@ -79,7 +79,7 @@ const searchEngine = {
   
   getIndexedFeedPage(options, hits, callback) {
     const {page, pageSize, feedTag} = options;
-    buildfire.services.searchEngine.search({ tag: feedTag, pageSize, page},
+    buildfire.services.searchEngine.search({ tag: feedTag, pageSize, pageIndex: page},
     (err, res) => {
       if (err) return callback(err);
 
