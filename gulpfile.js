@@ -70,8 +70,6 @@ cssTasks.forEach(function (task) {
 });
 
 const widgetJSFiles = [
-    "widget/assets/js/state.js",
-    "widget/assets/js/utils.js",
     "widget/assets/js/lodash.js",
     "widget/assets/js/jquery.truncate.js",
     "widget/assets/js/ng-videosharing-embed.min.js",
@@ -79,6 +77,8 @@ const widgetJSFiles = [
     "widget/assets/js/videogular.js",
     "widget/assets/js/videogular-controls.js",
     "widget/assets/js/videogular-overlay-play.js",
+    "widget/assets/js/vimeoPlayer.min.js",
+    "widget/assets/js/youtubePlayer.min.js",
     "widget/app.js",
     "widget/modals.js",
     "widget/app.services.js",
@@ -97,7 +97,6 @@ const widgetJSFiles = [
 const jsTasks = [
     // { name: "widgetJS", src: "widget/**/*.js", dest: "/widget" },
     {name: "widgetJS", src: widgetJSFiles, dest: "/widget"},
-    {name: "widgetVideoPlayersJS", src: "widget/assets/js/videoPlayers/**/*.js", dest: "/widget/videoPlayers"},
     {name: "sharedJS", src: "widget/global/**/*.js", dest: "/widget/global"},
     {name: "controlContentJS", src: "control/content/**/*.js", dest: "/control/content"},
     {name: "controlDesignJS", src: "control/design/**/*.js", dest: "/control/design"},
@@ -185,7 +184,6 @@ gulp.task('html', function () {
     /// with scripts.min.js with cache buster
         .pipe(htmlReplace({
             bundleJSFiles: "scripts.min.js?v=" + (new Date().getTime())
-            , bundleVideoPlayerJSFiles: "videoPlayers/scripts.min.js?v=" + (new Date().getTime())
             , bundleSharedJSFilesWidget: "global/scripts.min.js?v=" + (new Date().getTime())
             , bundleSharedJSFilesCP: "../../widget/global/scripts.min.js?v=" + (new Date().getTime())
             , bundleCSSFiles: "styles/styles.min.css?v=" + (new Date().getTime())
