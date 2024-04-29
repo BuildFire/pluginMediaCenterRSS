@@ -59,7 +59,7 @@ var viewedItems = {
 			var ls_viewedItems = localStorage.getItem('viewedItems');
 			if (!ls_viewedItems) return [];
 			const item = JSON.parse(ls_viewedItems)[this.id];
-			if (item) return JSON.parse(ls_viewedItems)[this.id];
+			if (item) return item;
 			else return [];
 		} catch (e) {
 			console.warn(e);
