@@ -3,8 +3,8 @@
 (function (angular) {
     angular
         .module('mediaCenterRSSPluginWidget')
-        .controller('WidgetHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope', 'FEED_IMAGES',
-            function ($scope, DataStore, Buildfire, FeedParseService, TAG_NAMES, ItemDetailsService, Location, $filter, Underscore, $rootScope, FEED_IMAGES) {
+        .controller('WidgetHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope', 'FEED_IMAGES', 'trackAnalyticsActions', 'utils', 
+            function ($scope, DataStore, Buildfire, FeedParseService, TAG_NAMES, ItemDetailsService, Location, $filter, Underscore, $rootScope, FEED_IMAGES, trackAnalyticsActions, utils) {
 
                 if (window.device) {
                     if (window.device.platform === 'Android') {
@@ -476,6 +476,7 @@
                                     if (Object.keys(el).length > 0)
                                         WidgetHome.feedsCache[el.id] = el.result ?? {};
                                 });
+                                $rootScope.$broadcast('deeplinkItemReady', WidgetHome.feedsCache);
                                 if (!$scope.$$phase) $scope.$digest();
                                 WidgetHome.renderFeedItems();
                                 processDeeplink(WidgetHome.deeplinkData, false);
@@ -495,7 +496,7 @@
                                     if (WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged)
                                         WidgetHome.renderFeedItems();
                                     
-                                    state.currentFeedsData = WidgetHome.feedsCache;
+                                    $rootScope.$broadcast('deeplinkItemReady', WidgetHome.feedsCache);
                                     WidgetHome.loading = false;
                                     WidgetHome.dataTotallyLoaded = true;
                                     processDeeplink(WidgetHome.deeplinkData, false);
@@ -647,9 +648,9 @@
                     if (pushToHistory) {
                         Buildfire.history.push(item.title, {});
                     }
-                    utils.isItemPlayed = null;
-                    utils.analyticsTrackingInterval = null;
-                    utils.lastAnalyticsTime = null;
+                    trackAnalyticsActions.isItemPlayed = null;
+                    trackAnalyticsActions.analyticsTrackingInterval = null;
+                    trackAnalyticsActions.lastAnalyticsTime = null;
                     Location.goTo('#/item');
                 };
 

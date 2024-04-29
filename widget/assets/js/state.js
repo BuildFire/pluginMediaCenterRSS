@@ -1,4 +1,0 @@
-const state = {
-    openedItems: [],
-    currentFeedsData: [],
-};

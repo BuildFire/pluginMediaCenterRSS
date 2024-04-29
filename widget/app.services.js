@@ -112,6 +112,140 @@
       return _;
     }])
 
+    /*
+     * A factory which is used to track analytics actions
+     */
+    .factory('trackAnalyticsActions', ['MEDIUM_TYPES', function (MEDIUM_TYPES) {
+      let analyticsTrackingInterval = null;
+      let lastAnalyticsTime = null;
+      let openedItems = [];
+      let playedItems = [];
+
+      function trackPlayedItem(options) {
+        const { item, itemType } = options;
+
+        const metaData = {
+          itemId: item.guid,
+          itemTitle: item.title,
+          imageUrl: item.imageSrcUrl,
+        };
+
+        if (!playedItems.includes(item.guid)) {
+          playedItems.push(item.guid);
+          AnalyticsManager.trackEvent(`${item.guid}_playsCount`, metaData);
+          if (itemType === 'video') {
+            AnalyticsManager.trackEvent(`videoPlaysCount`, metaData);
+          } else {
+            AnalyticsManager.trackEvent(`audioPlaysCount`, metaData);
+          }
+        }
+      }
+
+      function trackOpenedItem(item) {
+        if (!openedItems.includes(item.guid)) {
+          openedItems.push(item.guid);
+          const metaData = {
+            itemId: item.guid,
+            itemTitle: item.title,
+            imageUrl: item.imageSrcUrl,
+          };
+          AnalyticsManager.trackEvent(`${item.guid}_opensCount`, metaData);
+          switch (item.type) {
+            case MEDIUM_TYPES.VIDEO:
+              AnalyticsManager.trackEvent('videoOpensCount', metaData);
+              break;
+            case MEDIUM_TYPES.AUDIO:
+              AnalyticsManager.trackEvent('audioOpensCount', metaData);
+              break;
+            default:
+              AnalyticsManager.trackEvent('articleOpensCount', metaData);
+              break;
+          }
+        }
+      }
+
+      function trackItemWatchState(options) {
+        const { state, currentTime, item, itemType } = options;
+
+        const metaData = {
+          itemId: item.guid,
+          itemTitle: item.title,
+          imageUrl: item.imageSrcUrl,
+        };
+        const eventKey = `${item.guid}_secondsWatch`;
+        if (state === 'play') {
+          trackPlayedItem({ item, itemType });
+          
+          if (!analyticsTrackingInterval) {
+            analyticsTrackingInterval = setInterval(() => {
+              lastAnalyticsTime += 5;
+              metaData._buildfire = { aggregationValue: 5 }; // 5 seconds
+              AnalyticsManager.trackEvent(eventKey, metaData);
+            }, 5 * 1000);
+          }
+        } else if (state === 'pause') {
+          if (analyticsTrackingInterval) {
+            clearInterval(analyticsTrackingInterval);
+            analyticsTrackingInterval = null;
+
+            const extraTime = currentTime - lastAnalyticsTime;
+            if (currentTime > 0 && extraTime > 0) {
+              lastAnalyticsTime += extraTime;
+              metaData._buildfire = { aggregationValue: parseInt(extraTime) };
+              AnalyticsManager.trackEvent(eventKey, metaData);
+            }
+          }
+        }
+      }
+
+      return {
+        trackPlayedItem,
+        trackOpenedItem,
+        trackItemWatchState
+      }
+    }])
+
+    .factory('utils', ['$filter' , function ($filter) {
+      /**
+     * @name getImageUrl()
+     * Used to extract image url
+     * @param item
+     * @returns {*}
+     */
+      function getImageUrl(item) {
+        var i = 0,
+          length = 0,
+          imageUrl = '';
+        if (item.image && item.image.url) {
+          imageUrl = item.image.url;
+        } else if (item.enclosures && item.enclosures.length > 0) {
+          length = item.enclosures.length;
+          for (i = 0; i < length; i++) {
+            if (item.enclosures[i].type.indexOf('image') === 0 || item.enclosures[i].type.indexOf('img') != -1) {
+              imageUrl = item.enclosures[i].url;
+              break;
+            }
+          }
+        }
+        if (imageUrl) {
+          return imageUrl;
+        }
+        else {
+          if (item['media:thumbnail'] && item['media:thumbnail']['@'] && item['media:thumbnail']['@'].url) {
+            return item['media:thumbnail']['@'].url;
+          } else if (item['media:group'] && item['media:group']['media:content'] && item['media:group']['media:content']['media:thumbnail'] && item['media:group']['media:content']['media:thumbnail']['@'] && item['media:group']['media:content']['media:thumbnail']['@'].url) {
+            return item['media:group']['media:content']['media:thumbnail']['@'].url;
+          } else if (item.description) {
+            return $filter('extractImgSrc')(item.description);
+          } else {
+            return '';
+          }
+        }
+      }
+
+      return { getImageUrl }
+    }])
+
     /**
      * A factory which is used to hold selected item before going on item details page.
      */

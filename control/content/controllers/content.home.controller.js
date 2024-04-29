@@ -234,12 +234,14 @@
                   if (isConfirmed) {
                     // unregister analytics
                     ContentHome.handleLoaderDialog("Deleting Analytics", "Deleting analytics, this may take a while please wait...", true);
-                    ContentHome.getIndexedFeedItems(`rss_feed_${options.item.id}`, options.item.url, false, (err, indexedFeedItems) => {
+                    ContentHome.getIndexedFeedItems(`rss_feed_${options.item.id}`, options.item.url, (err, indexedFeedItems) => {
                       if(err) {
                         ContentHome.handleLoaderDialog();
                         handleSearchEngineErrors('deleting');
                         console.error(err);
                       } else {
+                        // filter items to include only registered to analytics
+                        indexedFeedItems = indexedFeedItems.filter(_item => _item._source.data.registeredToAnalytics);
                         AnalyticsManager.unRegisterFeedAnalytics(indexedFeedItems, (error, result) => {
                           if(error) {
                             ContentHome.handleLoaderDialog();
@@ -294,7 +296,7 @@
 
         // new CP function to get feed data
         // this will be used to register/unregister analytics
-        ContentHome.getIndexedFeedItems = function (feedTag, feedURL, filterRegistered, callback) {
+        ContentHome.getIndexedFeedItems = function (feedTag, feedURL, callback) {
           searchEngine.getIndexedFeedData(feedTag, (err, hits) => {
             if (err) return callback(err);
 
@@ -316,11 +318,6 @@
                 }
                 return _item;
               });
-              
-              // filter items to include only non-registered to analytics
-              if(filterRegistered) {
-                indexedFeedItems = indexedFeedItems.filter(_item => !_item._source.data.registeredToAnalytics);
-              }
 
               callback(null, indexedFeedItems);
             }).catch((err) => {
@@ -404,12 +401,14 @@
                       if (isChanged) {
                         // delete old search engine data
                         ContentHome.handleLoaderDialog("Deleting Old Data", "Deleting old search data, this may take a while please wait...", true);
-                        ContentHome.getIndexedFeedItems(`rss_feed_${item.id}`, item.url, false, (err, indexedFeedItems) => {
+                        ContentHome.getIndexedFeedItems(`rss_feed_${item.id}`, item.url, (err, indexedFeedItems) => {
                           if(err) {
                             ContentHome.handleLoaderDialog();
                             handleSearchEngineErrors('updating');
                             console.error(err);
                           } else {
+                            // filter items to include only registered to analytics
+                            indexedFeedItems = indexedFeedItems.filter(_item => _item._source.data.registeredToAnalytics);
                             AnalyticsManager.unRegisterFeedAnalytics(indexedFeedItems, (error, result) => {
                               if(err) {
                                 ContentHome.handleLoaderDialog();
@@ -486,13 +485,15 @@
                   console.error(err);
                 } else {
                   ContentHome.handleLoaderDialog("Prepare Analytics", "Prepare analytics for data, please wait...", true);
-                  ContentHome.getIndexedFeedItems(`rss_feed_${ContentHome.activeRssFeed.id}`, ContentHome.activeRssFeed.url, true, (err, indexedFeedItems) => {
+                  ContentHome.getIndexedFeedItems(`rss_feed_${ContentHome.activeRssFeed.id}`, ContentHome.activeRssFeed.url, (err, indexedFeedItems) => {
                     ContentHome.activeRssFeed = null;
                     if(err) {
                       ContentHome.handleLoaderDialog();
                       handleSearchEngineErrors('analytics');
                       console.error(err);
                     } else {
+                      // filter items to include only non-registered to analytics
+                      indexedFeedItems = indexedFeedItems.filter(_item => !_item._source.data.registeredToAnalytics);
                       AnalyticsManager.registerFeedAnalytics(indexedFeedItems, (error, result) => {
                         if (error) {
                           ContentHome.handleLoaderDialog();
@@ -633,18 +634,20 @@
           const rssFeed = feeds.shift();
           if (rssFeed.type !== 'rss') return syncFeedAnalytics(feeds);
           
-          ContentHome.getIndexedFeedItems(`rss_feed_${rssFeed.id}`, rssFeed.url, true, (err, indexedFeedItems) => {
+          ContentHome.getIndexedFeedItems(`rss_feed_${rssFeed.id}`, rssFeed.url, (err, indexedFeedItems) => {
             if (err) console.error(err);
             if (!indexedFeedItems || !indexedFeedItems.length) return syncFeedAnalytics(feeds);
 
-            if (!showUpdateDialog && indexedFeedItems.length > 10) {
+            if (!showUpdateDialog && indexedFeedItems.length > 20) {
               showUpdateDialog = true;
               ContentHome.handleLoaderDialog("Updating Analytics", "Updating analytics, this may take a while please wait...", true);
               buildfire.dialog.alert({
                 title: "Analytics Updates",
-                message: "We are improving your Analytics, please do not close your browser or leave the plugin until you see success dialog. This may take a while...",
+                message: "We are updating your Analytics, please do not close your browser or leave the plugin until you see success dialog. This may take a while...",
               });
             }
+            // filter items to include only non-registered to analytics
+            indexedFeedItems = indexedFeedItems.filter(_item => !_item._source.data.registeredToAnalytics);
             AnalyticsManager.registerFeedAnalytics(indexedFeedItems, (error, result) => {
               if (error) {
                 console.error(error);

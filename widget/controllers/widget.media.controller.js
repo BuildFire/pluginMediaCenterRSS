@@ -3,8 +3,8 @@
 (function (angular) {
     angular
         .module('mediaCenterRSSPluginWidget')
-        .controller('WidgetMediaCtrl', ['$scope', '$sce', 'DataStore', 'Buildfire', 'TAG_NAMES', 'ItemDetailsService', '$filter', 'Location', 'MEDIUM_TYPES', '$rootScope',
-            function ($scope, $sce, DataStore, Buildfire, TAG_NAMES, ItemDetailsService, $filter, Location, MEDIUM_TYPES, $rootScope) {
+        .controller('WidgetMediaCtrl', ['$scope', '$sce', 'DataStore', 'Buildfire', 'TAG_NAMES', 'ItemDetailsService', '$filter', 'Location', 'MEDIUM_TYPES', '$rootScope', 'trackAnalyticsActions', 'utils', 
+            function ($scope, $sce, DataStore, Buildfire, TAG_NAMES, ItemDetailsService, $filter, Location, MEDIUM_TYPES, $rootScope, trackAnalyticsActions, utils) {
 
                 $rootScope.deviceHeight = window.innerHeight;
                 $rootScope.deviceWidth = window.innerWidth;
@@ -210,7 +210,7 @@
                     } else {
                         WidgetMedia.medium = MEDIUM_TYPES.OTHER;
                     }
-                    utils.trackOpenedItem({...WidgetMedia.item, type: WidgetMedia.medium});
+                    trackAnalyticsActions.trackOpenedItem({...WidgetMedia.item, type: WidgetMedia.medium});
                 };
 
                 var initScrollHandler = function () {
@@ -273,16 +273,15 @@
                         if (WidgetMedia.item.id && (!WidgetMedia.item.type || !WidgetMedia.item.src)) {
                             WidgetMedia.loadingThumbnail = true;
                             if (!$scope.$$phase) $scope.$digest();
-                            const gettingFullDataInterval = setInterval(function () {
-                                if (state.currentFeedsData) {
-                                    for(const key in state.currentFeedsData) {
-                                        let cachedItem = state.currentFeedsData[key].items.find(item => item.guid === WidgetMedia.item.id);
+                            $rootScope.$on('deeplinkItemReady', function(event, data) {
+                                if (data) {
+                                    for(const key in data) {
+                                        let cachedItem = data[key].items.find(item => item.guid === WidgetMedia.item.id);
                                         if (cachedItem) {
                                             WidgetMedia.item = cachedItem;
                                             if (!WidgetMedia.item.imageSrcUrl) {
-                                                WidgetMedia.item.imageSrcUrl = utils.getImageUrl(WidgetMedia.item, $filter);
+                                                WidgetMedia.item.imageSrcUrl = utils.getImageUrl(WidgetMedia.item);
                                             }
-                                            clearInterval(gettingFullDataInterval);
                                             filterItemType(WidgetMedia.item);
                                             bookmarks.sync($scope);
                                             WidgetMedia.loadingThumbnail = false;
@@ -291,7 +290,7 @@
                                         }
                                     }
                                 }
-                            }, 500);
+                            });
                         } else if (WidgetMedia.item.type && WidgetMedia.item.src) {
                             WidgetMedia.item.link = WidgetMedia.item.url;
                             const filterOption = {
@@ -307,7 +306,7 @@
                             filterItemType(filterOption);
                             bookmarks.sync($scope);
                             if (!WidgetMedia.item.imageSrcUrl) {
-                                WidgetMedia.item.imageSrcUrl = utils.getImageUrl(WidgetMedia.item, $filter);
+                                WidgetMedia.item.imageSrcUrl = utils.getImageUrl(WidgetMedia.item);
                             }
                         } else {
                             filterItemType(WidgetMedia.item);
@@ -369,12 +368,15 @@
                     } else if (videoState === 'pause') {
                         WidgetMedia.isVideoPlaying = false;
                     }
-                    utils.trackItemWatchState({
-                        state: videoState,
-                        currentTime: videoCurrentTime,
-                        item: WidgetMedia.item,
-                        itemType: 'video'
-                    });
+
+                    if (typeof videoCurrentTime === 'number' && videoCurrentTime > 0) {
+                        trackAnalyticsActions.trackItemWatchState({
+                            state: videoState,
+                            currentTime: videoCurrentTime,
+                            item: WidgetMedia.item,
+                            itemType: 'video'
+                        });
+                    }
                 }
 
                 /**

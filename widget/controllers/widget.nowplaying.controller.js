@@ -7,7 +7,8 @@
 		'Location',
 		'ItemDetailsService',
 		'Modals',
-		function ($scope, Buildfire, $rootScope, $timeout, Location, ItemDetailsService, Modals) {
+		'trackAnalyticsActions',
+		function ($scope, Buildfire, $rootScope, $timeout, Location, ItemDetailsService, Modals, trackAnalyticsActions) {
 			console.log('----------------------------Now Playing controller loaded-------------------');
 			//$rootScope.blackBackground = true;
 			$rootScope.showFeed = false;
@@ -21,10 +22,6 @@
 			 */
 			NowPlaying.item = ItemDetailsService.getData();
 			if (NowPlaying.item) NowPlaying.currentTrack = new Track(NowPlaying.item);
-
-			console.log('NowPlaying.currentTrack--------------------------------------', NowPlaying.currentTrack);
-
-			console.log('NowPlaying.Item--------------------------------------------', NowPlaying.item);
 
 			/**
 			 * audioPlayer is Buildfire.services.media.audioPlayer.
@@ -54,7 +51,7 @@
 					case 'resume':
 						NowPlaying.playing = true;
 						$rootScope.audioPlayerPlaying = true;
-						utils.trackItemWatchState({
+						trackAnalyticsActions.trackItemWatchState({
 							state: 'play',
 							currentTime: e.data.track.lastPosition,
 							item: NowPlaying.item,
@@ -82,7 +79,7 @@
 					case 'pause':
 						$rootScope.audioPlayerPlaying = false;
 						NowPlaying.playing = false;
-						utils.trackItemWatchState({
+						trackAnalyticsActions.trackItemWatchState({
 							state: 'pause',
 							currentTime: NowPlaying.currentTime,
 							item: NowPlaying.item,
