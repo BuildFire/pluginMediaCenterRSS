@@ -99,6 +99,7 @@
          */
         ContentHome.rssFeedUrl = '';
         ContentHome.activeRssFeed = null;
+        ContentHome.deletingFeed = null;
 
         ContentHome.prepareFeeds = (feeds) => {
           return feeds.map(el => {
@@ -233,9 +234,11 @@
                   if (err) console.error(err);
                   if (isConfirmed) {
                     // unregister analytics
+                    ContentHome.deletingFeed = options.item;
                     ContentHome.handleLoaderDialog("Deleting Analytics", "Deleting analytics, this may take a while please wait...", true);
                     ContentHome.getIndexedFeedItems(`rss_feed_${options.item.id}`, options.item.url, (err, indexedFeedItems) => {
                       if(err) {
+                        ContentHome.deletingFeed = null;
                         ContentHome.handleLoaderDialog();
                         handleSearchEngineErrors('deleting');
                         console.error(err);
@@ -244,12 +247,14 @@
                         indexedFeedItems = indexedFeedItems.filter(_item => _item._source.data.registeredToAnalytics);
                         AnalyticsManager.unRegisterFeedAnalytics(indexedFeedItems, (error, result) => {
                           if(error) {
+                            ContentHome.deletingFeed = null;
                             ContentHome.handleLoaderDialog();
                             handleSearchEngineErrors('deleting');
                             return console.error(err);
                           }
                           ContentHome.handleLoaderDialog("Deleting Data", "Deleting data, please wait...", true);
                           searchEngine.deleteFeed(options.item.id, (err, result) => {
+                            ContentHome.deletingFeed = null;
                             ContentHome.handleLoaderDialog();
                             if (err) {
                               handleSearchEngineErrors('deleting');
@@ -636,7 +641,10 @@
           
           ContentHome.getIndexedFeedItems(`rss_feed_${rssFeed.id}`, rssFeed.url, (err, indexedFeedItems) => {
             if (err) console.error(err);
-            if (!indexedFeedItems || !indexedFeedItems.length) return syncFeedAnalytics(feeds);
+
+            // if the feed is under processing 'delete/update' then skip the analytics update
+            const feedStillCanUpdate = !((ContentHome.deletingFeed && ContentHome.deletingFeed.id === rssFeed.id) || (ContentHome.activeRssFeed && ContentHome.activeRssFeed.id === rssFeed.id));
+            if (!indexedFeedItems || !indexedFeedItems.length || !feedStillCanUpdate) return syncFeedAnalytics(feeds);
 
             // filter items to include only non-registered to analytics
             indexedFeedItems = indexedFeedItems.filter(_item => !_item._source.data.registeredToAnalytics);
