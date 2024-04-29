@@ -638,6 +638,9 @@
             if (err) console.error(err);
             if (!indexedFeedItems || !indexedFeedItems.length) return syncFeedAnalytics(feeds);
 
+            // filter items to include only non-registered to analytics
+            indexedFeedItems = indexedFeedItems.filter(_item => !_item._source.data.registeredToAnalytics);
+
             if (!showUpdateDialog && indexedFeedItems.length > 20) {
               showUpdateDialog = true;
               ContentHome.handleLoaderDialog("Updating Analytics", "Updating analytics, this may take a while please wait...", true);
@@ -646,8 +649,6 @@
                 message: "We are updating your Analytics, please do not close your browser or leave the plugin until you see success dialog. This may take a while...",
               });
             }
-            // filter items to include only non-registered to analytics
-            indexedFeedItems = indexedFeedItems.filter(_item => !_item._source.data.registeredToAnalytics);
             AnalyticsManager.registerFeedAnalytics(indexedFeedItems, (error, result) => {
               if (error) {
                 console.error(error);

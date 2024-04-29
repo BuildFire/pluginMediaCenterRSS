@@ -33,10 +33,28 @@
                         this.deeplinkSkeleton = null;
                     }
                 };
+
+                function extractItemFromFeeds(feeds = {}, itemId) {
+                    if (!feeds || typeof feeds !== 'object' || !itemId) return null;
+                    let itemData = null;
+                    
+                    Object.keys(feeds).forEach(key => {
+                        if (feeds[key].items && feeds[key].items.length) {
+                            let feedItem = feeds[key].items.find(el => el.guid == itemId);
+                            if (feedItem) {
+                                const index = feeds[key].items.indexOf(feedItem);
+                                itemData = { feedItem, index };
+                            }
+                        }
+                    });
+                    return itemData;
+                }
                 
-                $scope.deeplinkItemId = null;
+                $scope.deeplinkData = null;
                 $scope.isDeeplinkItemOpened = false;
                 $scope.first = true;
+                $scope.waitingForDeeplinkEvent = false;
+                $scope.deeplinkFinished = false;
                 /**
                  * @name processDeeplink
                  * @type {function}
@@ -45,6 +63,7 @@
                 const processDeeplink = (data, pushToHistory=true) => {
                     if ($scope.first && data) {
                         if (data.feed) {
+                            $scope.waitingForDeeplinkEvent = true;
                             toggleDeeplinkSkeleton();
                             const item = {
                                 ...data.feed,
@@ -57,25 +76,18 @@
                             var targetGuid = data.link;
 
                             if(WidgetHome.data && WidgetHome.data.content.feeds?.length) {
-                                Object.keys(WidgetHome.feedsCache).forEach(key => {
-                                    console.log(WidgetHome.feedsCache[key])
-                                    if (WidgetHome.feedsCache[key].items && WidgetHome.feedsCache[key].items.length) {
-                                        let feedItem = WidgetHome.feedsCache[key].items.find(el => el.guid == targetGuid),
-                                        index = WidgetHome.feedsCache[key].items.indexOf(feedItem);
-                                        if(feedItem) {
-                                            if (data.timeIndex) {
-                                                WidgetHome.feedsCache[key].items[index].seekTo = data.timeIndex;
-                                            }
-                                            $rootScope.deeplinkFirstNav = true;
-                                            $scope.isDeeplinkItemOpened = true;
-                                            WidgetHome.goToItem(index, feedItem, pushToHistory);
-                                        } else if (WidgetHome.dataTotallyLoaded) {
-                                            toggleDeeplinkSkeleton();
-                                        }
-                                    } else if (WidgetHome.dataTotallyLoaded) {
-                                        toggleDeeplinkSkeleton();
+                                const itemData = extractItemFromFeeds(WidgetHome.feedsCache, targetGuid);
+                                if(itemData && itemData.feedItem) {
+                                    if (data.timeIndex) {
+                                        WidgetHome.feedsCache[key].items[itemData.index].seekTo = data.timeIndex;
                                     }
-                                });
+                                    $rootScope.deeplinkFirstNav = true;
+                                    $scope.isDeeplinkItemOpened = true;
+                                    WidgetHome.goToItem(itemData.index, itemData.feedItem, pushToHistory);
+                                    $scope.deeplinkFinished = true;
+                                } else if (WidgetHome.dataTotallyLoaded) {
+                                    toggleDeeplinkSkeleton();
+                                }
                             } else {
                                 var itemLinks = _items.map(function (item) {
                                     return item.guid
@@ -91,6 +103,7 @@
                                     $rootScope.deeplinkFirstNav = true;
                                     $scope.isDeeplinkItemOpened = true;
                                     WidgetHome.goToItem(index, _items[index], pushToHistory);
+                                    $scope.deeplinkFinished = true;
                                 }
                                 $scope.first = false;
                             }
@@ -168,14 +181,17 @@
                 buildfire.deeplink.getData(function (data) {
                     if (!data) return;
 
-                    WidgetHome.deeplinkData = data;
-                    $scope.deeplinkItemId = data.link;
+                    $scope.deeplinkData = data;
                     toggleDeeplinkSkeleton(true);
                 });
                 buildfire.deeplink.onUpdate(function (data) {
                     if (!data) return;
 
+                    $scope.deeplinkData = data;
                     processDeeplink(data, true);
+                    if ($scope.waitingForDeeplinkEvent) {
+                        WidgetHome.handleInitialParsing();
+                    }
                 });
 
                 /** 
@@ -185,6 +201,7 @@
                 WidgetHome.data = null;
                 WidgetHome.view = null;
                 WidgetHome.feedsCache = {};
+                WidgetHome.feedsData = {};
                 WidgetHome.currentFeed = null;
 
                 /**
@@ -240,8 +257,6 @@
                 var getFeedDataSuccess = function (result) {
                     // compare the first item, last item, and length of the cached feed vs fetched feed
                     var isUnchanged = checkFeedEquality(_items, result.data.items);
-                    console.warn(isUnchanged);
-                    
                     WidgetHome.loading = false;
                     result.rssUrl = WidgetHome.data.content.rssUrl ? WidgetHome.data.content.rssUrl : false;
                     cacheManager.setItem(undefined, result, () => { });
@@ -267,7 +282,7 @@
                     viewedItems.sync(WidgetHome.items);
                     bookmarks.sync($scope);
                     WidgetHome.loadMore();
-                    processDeeplink(WidgetHome.deeplinkData, false);
+                    processDeeplink($scope.deeplinkData, false);
 
                     isInit = false;
 
@@ -382,6 +397,7 @@
                         const tabBar = new mdc.tabBar.MDCTabBar(tabs);
                         tabBar.listen('MDCTabBar:activated', (event) => {
                             WidgetHome.activeTab = event.detail.index;
+                            WidgetHome.parseFeed(WidgetHome.data.content.feeds[WidgetHome.activeTab]);
                             WidgetHome.currentFeed = WidgetHome.data.content.feeds[event.detail.index];
                             WidgetHome.renderFeedItems();
                             WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged = false;
@@ -421,9 +437,6 @@
                     let fetchedItemsString = fetchedItems.map(element => {
                         return element.guid + element.link
                     }).sort().toString();
-                    // console.log("sameLength: " + sameLength)
-                    // console.log("currentItemsString: " + currentItemsString)
-                    // console.log("fetchedItemsString: " + fetchedItemsString)
                     return sameLength && currentItemsString === fetchedItemsString;
                 }
 
@@ -431,6 +444,56 @@
                     WidgetHome.feedsCache[id].items?.forEach((item) => {
                         item.imageSrcUrl = utils.getImageUrl(item);
                     });
+                }
+
+                WidgetHome.parseFeed = (feed, callback) => {
+                    if (!feed || WidgetHome.feedsData[feed.id]) return;
+                    if (!WidgetHome.feedsCache[feed.id] || !WidgetHome.feedsCache[feed.id].items || !WidgetHome.feedsCache[feed.id].items.length) {
+                        WidgetHome.loading = true;
+                        if (!$scope.$$phase) $scope.$digest();
+                    }
+                    
+                    WidgetHome.fetchFeedResults(feed).then((result) => {
+                        let isChanged = !WidgetHome.checkFeedEquality(WidgetHome.feedsCache[feed.id].items ?? [], result.data.items);
+                        WidgetHome.feedsCache[feed.id] = {
+                            isChanged,
+                            items: result.data.items ?? []
+                        };
+                        WidgetHome.feedsData[feed.id] = result.data;
+
+                        if (!$scope.$$phase) $scope.$digest();
+                        cacheManager.setItem(feed.id, WidgetHome.feedsCache[feed.id], () => { });
+
+                        if (isChanged) WidgetHome.renderFeedItems();
+                        WidgetHome.loading = false;
+                       
+                        if (Object.keys(WidgetHome.feedsData).length === WidgetHome.data.content.feeds.length) WidgetHome.dataTotallyLoaded = true;
+
+                        if (!$scope.$$phase) $scope.$digest();
+                        if (callback) callback();
+                    }).catch((err) => console.error(err));
+                }
+
+                WidgetHome.handleInitialParsing = () => {
+                    if ($scope.deeplinkData) {
+                        if ($scope.waitingForDeeplinkEvent) {
+                            const itemData = extractItemFromFeeds(WidgetHome.feedsCache, $scope.deeplinkData.link);
+                            if (itemData && itemData.feedItem) {
+                                $scope.deeplinkFinished = true;
+                                ItemDetailsService.setData(itemData.feedItem);
+                                $rootScope.$broadcast('deeplinkItemReady', itemData.feedItem);
+                            }
+                        } else {
+                            processDeeplink($scope.deeplinkData, false);
+                        }
+                        if (!$scope.deeplinkFinished && !WidgetHome.dataTotallyLoaded) {
+                            const nextFeedIndex = WidgetHome.data.content.feeds.findIndex(feed => !WidgetHome.feedsData[feed.id]);
+                            WidgetHome.parseFeed(WidgetHome.data.content.feeds[nextFeedIndex], WidgetHome.handleInitialParsing);
+                        }
+                    } else {
+                        const firstFeed = WidgetHome.data.content.feeds[0];
+                        WidgetHome.parseFeed(firstFeed, WidgetHome.handleInitialParsing);
+                    }
                 }
 
                 WidgetHome.initializePlugin = function () {
@@ -457,7 +520,7 @@
                         }
                         //if settings data has feeds proceed with new logic
                         else if (settings.data.content.feeds && !settings.data.content.rssUrl) {
-                            processDeeplink(WidgetHome.deeplinkData, false);
+                            processDeeplink($scope.deeplinkData, false);
                             if (!settings.data.content.feeds.length) {
                                 WidgetHome.isItems = false;
                                 WidgetHome.loading = false;
@@ -465,7 +528,6 @@
                             let cachePromises = [], dataPromises = [];
                             settings.data.content.feeds.map((feed) => {
                                 cachePromises.push(cacheManager.getItem(feed.id).then(r => ({ id: feed.id, result: r })));
-                                dataPromises.push(WidgetHome.fetchFeedResults(feed).then(r => ({ id: feed.id, result: r })));
                             });
                             WidgetHome.initializeTabs();
 
@@ -476,32 +538,13 @@
                                     if (Object.keys(el).length > 0)
                                         WidgetHome.feedsCache[el.id] = el.result ?? {};
                                 });
-                                $rootScope.$broadcast('deeplinkItemReady', WidgetHome.feedsCache);
                                 if (!$scope.$$phase) $scope.$digest();
                                 WidgetHome.renderFeedItems();
-                                processDeeplink(WidgetHome.deeplinkData, false);
                                 if (WidgetHome.isItems) {
                                     WidgetHome.loading = false;
                                 }
-                                Promise.all(dataPromises).then(dataResults => {
-                                    dataResults.forEach((el) => {
-                                        let isUnchanged = WidgetHome.checkFeedEquality(WidgetHome.feedsCache[el.id].items ?? [], el.result.data.items);
-                                        WidgetHome.feedsCache[el.id] = {
-                                            items: el.result.data.items ?? [],
-                                            isChanged: !isUnchanged
-                                        };
-                                        if (!$scope.$$phase) $scope.$digest();
-                                        cacheManager.setItem(el.id, WidgetHome.feedsCache[el.id], () => { });
-                                    });
-                                    if (WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged)
-                                        WidgetHome.renderFeedItems();
-                                    
-                                    $rootScope.$broadcast('deeplinkItemReady', WidgetHome.feedsCache);
-                                    WidgetHome.loading = false;
-                                    WidgetHome.dataTotallyLoaded = true;
-                                    processDeeplink(WidgetHome.deeplinkData, false);
-                                    if (!$scope.$$phase) $scope.$digest();
-                                }).catch((err) => console.error(err));
+                                
+                                WidgetHome.handleInitialParsing();
                             }).catch((err) => {
                                 console.error(err)
                             });

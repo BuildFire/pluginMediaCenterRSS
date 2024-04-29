@@ -274,21 +274,16 @@
                             WidgetMedia.loadingThumbnail = true;
                             if (!$scope.$$phase) $scope.$digest();
                             $rootScope.$on('deeplinkItemReady', function(event, data) {
-                                if (data) {
-                                    for(const key in data) {
-                                        let cachedItem = data[key].items.find(item => item.guid === WidgetMedia.item.id);
-                                        if (cachedItem) {
-                                            WidgetMedia.item = cachedItem;
-                                            if (!WidgetMedia.item.imageSrcUrl) {
-                                                WidgetMedia.item.imageSrcUrl = utils.getImageUrl(WidgetMedia.item);
-                                            }
-                                            filterItemType(WidgetMedia.item);
-                                            bookmarks.sync($scope);
-                                            WidgetMedia.loadingThumbnail = false;
-                                            ItemDetailsService.setData(WidgetMedia.item);
-                                            if (!$scope.$$phase) $scope.$digest();
-                                        }
+                                if (data && WidgetMedia.loadingThumbnail) {
+                                    WidgetMedia.item = data;
+                                    if (!WidgetMedia.item.imageSrcUrl) {
+                                        WidgetMedia.item.imageSrcUrl = utils.getImageUrl(WidgetMedia.item);
                                     }
+                                    filterItemType(WidgetMedia.item);
+                                    bookmarks.sync($scope);
+                                    WidgetMedia.loadingThumbnail = false;
+                                    ItemDetailsService.setData(WidgetMedia.item);
+                                    if (!$scope.$$phase) $scope.$digest();
                                 }
                             });
                         } else if (WidgetMedia.item.type && WidgetMedia.item.src) {
