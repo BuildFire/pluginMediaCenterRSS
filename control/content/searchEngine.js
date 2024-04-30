@@ -113,7 +113,7 @@ const searchEngine = {
             imageUrl: _record._source.image_url,
             data: {
               ..._record._source.data,
-              registeredToAnalytics: true,
+              registeredToAnalytics: _record.registeredToAnalytics ? _record.registeredToAnalytics : false,
               type: _record.type,
               src: _record.src
             }
