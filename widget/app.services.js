@@ -188,10 +188,10 @@
             clearInterval(analyticsTrackingInterval);
             analyticsTrackingInterval = null;
 
-            const extraTime = currentTime - lastAnalyticsTime;
+            const extraTime = parseInt(currentTime - lastAnalyticsTime);
             if (currentTime > 0 && extraTime > 0) {
               lastAnalyticsTime += extraTime;
-              metaData._buildfire = { aggregationValue: parseInt(extraTime) };
+              metaData._buildfire = { aggregationValue: extraTime };
               AnalyticsManager.trackEvent(eventKey, metaData);
             }
           }
