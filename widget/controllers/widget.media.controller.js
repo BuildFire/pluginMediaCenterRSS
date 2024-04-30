@@ -364,7 +364,7 @@
                         WidgetMedia.isVideoPlaying = false;
                     }
 
-                    if (typeof videoCurrentTime === 'number' && videoCurrentTime > 0) {
+                    if (typeof videoCurrentTime === 'number') {
                         trackAnalyticsActions.trackItemWatchState({
                             state: videoState,
                             currentTime: videoCurrentTime,
