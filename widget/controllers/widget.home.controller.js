@@ -471,7 +471,12 @@
 
                         if (!$scope.$$phase) $scope.$digest();
                         if (callback) callback();
-                    }).catch((err) => console.error(err));
+                    }).catch((err) => {
+                        console.error(err);
+
+                        WidgetHome.loading = false;
+                        if (!$scope.$$phase) $scope.$digest();
+                    });
                 }
 
                 WidgetHome.handleInitialParsing = () => {
