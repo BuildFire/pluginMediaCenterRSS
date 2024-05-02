@@ -205,6 +205,12 @@
 				$rootScope.playlist = true;
 			};
 			NowPlaying.changeTime = function (time) {
+				trackAnalyticsActions.trackItemWatchState({
+					state: 'buffer',
+					currentTime: time,
+					item: NowPlaying.item,
+					itemType: 'audio'
+				});
 				audioPlayer.setTime(time);
 			};
 			NowPlaying.getSettings = function () {

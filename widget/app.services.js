@@ -175,6 +175,9 @@
         const eventKey = `${item.guid}_secondsWatch`;
         if (state === 'play') {
           trackPlayedItem({ item, itemType });
+          if (currentTime) {
+            lastAnalyticsTime = currentTime;
+          }
           
           if (!analyticsTrackingInterval) {
             analyticsTrackingInterval = setInterval(() => {
@@ -189,12 +192,14 @@
             analyticsTrackingInterval = null;
 
             const extraTime = parseInt(currentTime - lastAnalyticsTime);
-            if (currentTime > 0 && extraTime > 0) {
-              lastAnalyticsTime += extraTime;
+            lastAnalyticsTime = currentTime;
+            if (currentTime > 0 && extraTime > 0 && extraTime <= 5) {
               metaData._buildfire = { aggregationValue: extraTime };
               AnalyticsManager.trackEvent(eventKey, metaData);
             }
           }
+        } else if (state === 'buffer' && currentTime) {
+          lastAnalyticsTime = currentTime;
         }
       }
 
