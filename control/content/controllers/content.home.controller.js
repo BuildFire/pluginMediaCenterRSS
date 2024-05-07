@@ -749,11 +749,13 @@
               updateMasterItem(_defaultData);
               ContentHome.data = angular.copy(_defaultData);
             } else {
-              if (ContentHome.data.default) {
-                ContentHome.data.default = false;
-                saveDataWithDelay({...ContentHome.data, default: false});
+              if (!ContentHome.data.analyticsRegistered) {
                 AnalyticsManager.init((err) => {
                   if (err) console.error(err);
+
+                  ContentHome.data.analyticsRegistered = true;
+                  ContentHome.data.default = false;
+                  saveDataWithDelay({...ContentHome.data, default: false, analyticsRegistered: true});
                 });
               } else if (ContentHome.data.content.feeds && ContentHome.data.content.feeds.length) {
                 const feeds = angular.copy(ContentHome.data.content.feeds);
