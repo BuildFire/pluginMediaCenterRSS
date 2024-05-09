@@ -73,4 +73,57 @@ const searchEngine = {
 
     return options;
   },
+  getIndexedFeedData(feedTag, callback) {
+    this.getIndexedFeedPage({page: 0, pageSize: 2500, feedTag}, [], callback);
+  },
+  
+  getIndexedFeedPage(options, hits, callback) {
+    const {page, pageSize, feedTag} = options;
+    buildfire.services.searchEngine.search({ tag: feedTag, pageSize, pageIndex: page},
+    (err, res) => {
+      if (err) return callback(err);
+
+      if (res && res.hits && res.hits.hits && res.hits.hits.length) {
+        hits = hits.concat(res.hits.hits);
+      }
+      
+      if (res && res.hits && res.hits.total > ((page+1)*pageSize)) {
+        options.page += 1;
+        return this.getIndexedFeedPage(options, hits, callback);
+      }
+      return callback(null, hits);
+    });
+  },
+
+  updateFeedRecords(records, callback) {
+    if (!records || !records.length) return callback();
+
+    const batchSize = 20;
+    const batch = records.splice(0, batchSize);
+
+    const promises = batch.map(_record => 
+      new Promise((resolve, reject) => 
+        buildfire.services.searchEngine.update(
+          {
+            id: _record._id,
+            title: _record._source.data.title,
+            tag: _record._source.tag,
+            description: _record._source.searchable.description,
+            keywords: _record._source.searchable.keywords,
+            imageUrl: _record._source.image_url,
+            data: {
+              ..._record._source.data,
+              registeredToAnalytics: _record.registeredToAnalytics ? _record.registeredToAnalytics : false,
+              type: _record.type,
+              src: _record.src
+            }
+          },
+          (err, result) => {
+            if (err) return reject(err);
+            else resolve();
+          }))
+      );
+    
+    Promise.allSettled(promises).then(() => this.updateFeedRecords(records, callback));
+  },
 };

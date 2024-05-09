@@ -77,6 +77,8 @@ const widgetJSFiles = [
     "widget/assets/js/videogular.js",
     "widget/assets/js/videogular-controls.js",
     "widget/assets/js/videogular-overlay-play.js",
+    "widget/assets/js/vimeoPlayer.min.js",
+    "widget/assets/js/youtubePlayer.min.js",
     "widget/app.js",
     "widget/modals.js",
     "widget/app.services.js",

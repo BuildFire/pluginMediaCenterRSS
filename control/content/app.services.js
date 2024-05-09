@@ -63,6 +63,7 @@
      * A REST-ful factory used to validate RSS feed url.
      */
     .factory("FeedParseService", ['$q', '$http', function ($q, $http) {
+      const validFeedsData = [];
       var validateFeedUrl = function (_feedUrl) {
         var deferred = $q.defer();
         if (!_feedUrl) {
@@ -82,8 +83,31 @@
           });
         return deferred.promise;
       };
+      var getFeedData = function (_feedURL) {
+        var deferred = $q.defer();
+        if (!_feedURL) {
+          deferred.reject(new Error('Undefined feed url'));
+        }
+        const feedData = validFeedsData.find(feed => feed.feedURL === _feedURL);
+        if (feedData && feedData.response) {
+          deferred.resolve(feedData.response);
+          return deferred.promise;
+        }
+        $http.post('https://proxy.buildfire.com/parsefeedurl', {
+            feedUrl: _feedURL
+          })
+          .success(function (response) {
+            validFeedsData.push({feedURL: _feedURL, response});
+            deferred.resolve(response);
+          })
+          .error(function (error) {
+            deferred.reject(error);
+          });
+        return deferred.promise;
+      };
       return {
-        validateFeedUrl: validateFeedUrl
+        validateFeedUrl: validateFeedUrl,
+        getFeedData: getFeedData
       };
     }])
     .factory("Utils", ['$q', '$http', function ($q, $http) {

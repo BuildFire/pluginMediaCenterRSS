@@ -3,8 +3,8 @@
 (function (angular) {
   angular
     .module('mediaCenterRSSPluginContent')
-    .controller('ContentHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'TAG_NAMES', 'LAYOUTS', 'FeedParseService', '$timeout', 'Utils',
-      function ($scope, DataStore, Buildfire, TAG_NAMES, LAYOUTS, FeedParseService, $timeout, Utils) {
+    .controller('ContentHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'TAG_NAMES', 'LAYOUTS', 'FeedParseService', '$timeout', 'Utils', 'MEDIUM_TYPES',
+      function ($scope, DataStore, Buildfire, TAG_NAMES, LAYOUTS, FeedParseService, $timeout, Utils, MEDIUM_TYPES) {
         /*
          * Private variables
          *
@@ -99,6 +99,7 @@
          */
         ContentHome.rssFeedUrl = '';
         ContentHome.activeRssFeed = null;
+        ContentHome.deletingFeed = null;
 
         ContentHome.prepareFeeds = (feeds) => {
           return feeds.map(el => {
@@ -125,6 +126,7 @@
               values = {
                 rssFeedTitle: feed.title,
                 rssFeedUrl: feed.url,
+                enableFeedAnalytics: feed.advancedConfig.enableFeedAnalytics,
                 enableSearchEngineConfig: feed.advancedConfig.enableSearchEngineConfig,
                 uniqueKey: feed.advancedConfig.searchEngineItemConfig.uniqueKey,
                 titleKey: feed.advancedConfig.searchEngineItemConfig.titleKey,
@@ -148,6 +150,7 @@
         ContentHome.showFeedDialog = (type, item) => {
           let dialogOptions;
           if (item) {
+            item = new Feed({...item, type});
             const _feed = new Feed({...item, type});
             const values = ContentHome.prepareDialogValues(_feed, type);
             dialogOptions = {
@@ -232,19 +235,34 @@
                 }, (err, isConfirmed) => {
                   if (err) console.error(err);
                   if (isConfirmed) {
-                    ContentHome.handleLoaderDialog("Deleting Data", "Deleting data, please wait...", true);
-                    searchEngine.deleteFeed(options.item.id, (err, result) => {
-                      ContentHome.handleLoaderDialog();
-                      if (err) {
-                        handleSearchEngineErrors('deleting');
-                        return console.error(err);
-                      }
-                      
-                      ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter((el, ind) => el.id !== options.item.id);
-                      ContentHome.sortableList.remove(options.item.id);
-                      ContentHome.toggleEmptyScreen();
-                      $scope.$digest();
-                    });
+                    // unregister analytics
+                    ContentHome.deletingFeed = options.item;
+                    if (ContentHome.deletingFeed.advancedConfig.enableFeedAnalytics) {
+                      ContentHome.handleLoaderDialog("Deleting Analytics", "Deleting analytics, this may take a while please wait...", true);
+                      ContentHome.getIndexedFeedItems(`rss_feed_${options.item.id}`, options.item.url, (err, indexedFeedItems) => {
+                        if(err || !indexedFeedItems || !indexedFeedItems.length) {
+                          ContentHome.deletingFeed = null;
+                          ContentHome.handleLoaderDialog();
+                          handleSearchEngineErrors('deleting');
+                          console.error(err);
+                        } else {
+                          // filter items to include only registered to analytics
+                          indexedFeedItems = indexedFeedItems.filter(_item => _item._source.data.registeredToAnalytics);
+                          AnalyticsManager.unRegisterFeedAnalytics(indexedFeedItems, (error, result) => {
+                            if(error) {
+                              ContentHome.deletingFeed = null;
+                              ContentHome.handleLoaderDialog();
+                              handleSearchEngineErrors('deleting');
+                              return console.error(err);
+                            }
+
+                            handleDeleteSearchEngineData(options.item);
+                          });
+                        }
+                      });
+                    } else {
+                      handleDeleteSearchEngineData(options.item);
+                    }
                   }
                 })
                 break;
@@ -273,6 +291,55 @@
           } else {
             ContentHome.subPages.cpLoader.close();
           }
+        }
+
+        // new CP function to get feed data
+        // this will be used to register/unregister analytics
+        ContentHome.getIndexedFeedItems = function (feedTag, feedURL, callback) {
+          searchEngine.getIndexedFeedData(feedTag, (err, hits) => {
+            if (err) return callback(err);
+
+            // hit proxy server to fetch the feed items
+            FeedParseService.getFeedData(feedURL).then((result) => {
+              // map throw items to get items type
+              let indexedFeedItems = hits.map(_item => {
+                const proxyItem = result.data.items.find(_proxyItem => _proxyItem.guid === _item._source.data.id);
+
+                let enclosureData = sharedUtils.checkEnclosuresTag(proxyItem, MEDIUM_TYPES);
+                let mediaTagData = sharedUtils.checkMediaTag(proxyItem, MEDIUM_TYPES);
+
+                if (enclosureData) {
+                  _item.type = enclosureData.medium;
+                  _item.src = enclosureData.src;
+                } else if (mediaTagData) {
+                  _item.type = mediaTagData.medium;
+                  _item.src = mediaTagData.src;
+                }
+                return _item;
+              });
+
+              callback(null, indexedFeedItems);
+            }).catch((err) => {
+              callback(err);
+            });
+          }
+        )};
+
+        const handleDeleteSearchEngineData = (item) => {
+          ContentHome.handleLoaderDialog("Deleting Data", "Deleting data, please wait...", true);
+          searchEngine.deleteFeed(item.id, (err, result) => {
+            ContentHome.deletingFeed = null;
+            ContentHome.handleLoaderDialog();
+            if (err) {
+              handleSearchEngineErrors('deleting');
+              return console.error(err);
+            }
+            
+            ContentHome.data.content.feeds = ContentHome.data.content.feeds.filter((el, ind) => el.id !== item.id);
+            ContentHome.sortableList.remove(item.id);
+            ContentHome.toggleEmptyScreen();
+            $scope.$digest();
+          });
         }
 
         const handleFeedInsertion = (item, values, type) => {
@@ -313,6 +380,7 @@
                 url: values.rssFeedUrl,
                 type,
                 advancedConfig: {
+                  enableFeedAnalytics: values.enableFeedAnalytics,
                   enableSearchEngineConfig: values.enableSearchEngineConfig,
                   searchEngineItemConfig: {
                     uniqueKey: values.uniqueKey,
@@ -339,6 +407,7 @@
                 } else {
                   ContentHome.activeRssFeed = feed;
                   if (item) {
+                    ContentHome.activeRssFeed.isAnalyticsFlagChanged = item.advancedConfig.enableFeedAnalytics !== feed.advancedConfig.enableFeedAnalytics;
                     searchEngine.hasFeedConfigChanged(feed, (err, isChanged) => {
                       if (err) {
                         ContentHome.handleLoaderDialog();
@@ -348,18 +417,71 @@
                       }
                       if (isChanged) {
                         // delete old search engine data
-                        ContentHome.handleLoaderDialog("Deleting Old Data", "Deleting old search data, please wait...", true);
-                        searchEngine.deleteFeed(item.id, (err, result) => {
-                          if (err) {
-                            ContentHome.handleLoaderDialog();
-                            ContentHome.activeRssFeed = null;
-                            handleSearchEngineErrors('updating');
-                            return console.error(err);
-                          }
-                          insertFeedToList(feed);
-                        });
+                        ContentHome.handleLoaderDialog("Deleting Old Data", "Deleting old search data, this may take a while please wait...", true);
+                        if (item.advancedConfig.enableFeedAnalytics) {
+                          // do unregister analytics
+                          ContentHome.getIndexedFeedItems(`rss_feed_${item.id}`, item.url, (err, indexedFeedItems) => {
+                            if(err || !indexedFeedItems || !indexedFeedItems.length) {
+                              ContentHome.handleLoaderDialog();
+                              handleSearchEngineErrors('updating');
+                              console.error(err);
+                            } else {
+                              // filter items to include only registered to analytics
+                              indexedFeedItems = indexedFeedItems.filter(_item => _item._source.data.registeredToAnalytics);
+                              AnalyticsManager.unRegisterFeedAnalytics(indexedFeedItems, (error, result) => {
+                                if(error) {
+                                  ContentHome.handleLoaderDialog();
+                                  handleSearchEngineErrors('updating');
+                                  return console.error(error);
+                                }
+                                searchEngine.deleteFeed(item.id, (err, result) => {
+                                  if (err) {
+                                    ContentHome.handleLoaderDialog();
+                                    ContentHome.activeRssFeed = null;
+                                    handleSearchEngineErrors('updating');
+                                    return console.error(err);
+                                  }
+                                  insertFeedToList(feed);
+                                });
+                              });
+                            }
+                          });
+                        } else {
+                          searchEngine.deleteFeed(item.id, (err, result) => {
+                            if (err) {
+                              ContentHome.handleLoaderDialog();
+                              ContentHome.activeRssFeed = null;
+                              handleSearchEngineErrors('updating');
+                              return console.error(err);
+                            }
+                            insertFeedToList(feed);
+                          });
+                        }
                       } else {
-                        insertFeedToList(feed);
+                        if (item.advancedConfig.enableFeedAnalytics && !feed.advancedConfig.enableFeedAnalytics) {
+                          // unregister analytics
+                          ContentHome.handleLoaderDialog("Deleting Analytics", "Deleting analytics, this may take a while please wait...", true);
+                          ContentHome.getIndexedFeedItems(`rss_feed_${item.id}`, item.url, (err, indexedFeedItems) => {
+                            if(err || !indexedFeedItems || !indexedFeedItems.length) {
+                              ContentHome.handleLoaderDialog();
+                              handleSearchEngineErrors('updating');
+                              console.error(err);
+                            } else {
+                              // filter items to include only registered to analytics
+                              indexedFeedItems = indexedFeedItems.filter(_item => _item._source.data.registeredToAnalytics);
+                              AnalyticsManager.unRegisterFeedAnalytics(indexedFeedItems, (error, result) => {
+                                if(error) {
+                                  ContentHome.handleLoaderDialog();
+                                  handleSearchEngineErrors('updating');
+                                  return console.error(error);
+                                }
+                                insertFeedToList(feed);
+                              });
+                            }
+                          });
+                        } else {
+                          insertFeedToList(feed);
+                        }
                       }
                     });
                   } else {
@@ -395,12 +517,11 @@
               return console.error(err);
             }
 
-            if (isChanged) {
+            if (isChanged || ContentHome.activeRssFeed.isAnalyticsFlagChanged) {
               ContentHome.handleLoaderDialog("Indexing Data", "Indexing data for search results, please wait...", true);
               searchEngine.insertFeed(ContentHome.activeRssFeed, (err, result) => {
-                ContentHome.activeRssFeed = null;
-                ContentHome.handleLoaderDialog();
                 if (err) {
+                  ContentHome.handleLoaderDialog();
                   if (err.errorMessage && err.innerError && err.innerError.error) {
                     if (err.innerError.error === 'no feeds available in the specified url') {
                       // don't show indexing error because the feed is empty
@@ -415,6 +536,42 @@
                     handleSearchEngineErrors('indexing');
                   }
                   console.error(err);
+                } else {
+                  ContentHome.getIndexedFeedItems(`rss_feed_${ContentHome.activeRssFeed.id}`, ContentHome.activeRssFeed.url, (err, indexedFeedItems) => {
+                    if(err || !indexedFeedItems || !indexedFeedItems.length) {
+                      ContentHome.activeRssFeed = null;
+                      ContentHome.handleLoaderDialog();
+                      handleSearchEngineErrors('analytics');
+                      console.error(err);
+                    } else {
+                      // filter items to include only non-registered to analytics
+                      indexedFeedItems = indexedFeedItems.filter(_item => !_item._source.data.registeredToAnalytics);
+                      if (ContentHome.activeRssFeed.advancedConfig.enableFeedAnalytics) {
+                        ContentHome.handleLoaderDialog("Prepare Analytics", "Prepare analytics for data, please wait...", true);
+                        ContentHome.activeRssFeed = null;
+                        AnalyticsManager.registerFeedAnalytics(indexedFeedItems, (error, result) => {
+                          if (error) {
+                            ContentHome.handleLoaderDialog();
+                            handleSearchEngineErrors('analytics');
+                            return console.error(error);
+                          }
+                          indexedFeedItems = indexedFeedItems.map(item => ({...item, registeredToAnalytics: true}));
+                          searchEngine.updateFeedRecords(indexedFeedItems, (e, r) => {
+                            if (e) console.error(e);
+                            // hide the CP loader and end the procees
+                            ContentHome.handleLoaderDialog();
+                          });
+                        });
+                      } else {
+                        ContentHome.activeRssFeed = null;
+                        searchEngine.updateFeedRecords(indexedFeedItems, (e, r) => {
+                          if (e) console.error(e);
+                          // hide the CP loader and end the procees
+                          ContentHome.handleLoaderDialog();
+                        });
+                      }
+                    }
+                  });
                 }
               });
             } else {
@@ -475,7 +632,6 @@
               } else {
                 ContentHome.data.content.feeds = ContentHome.clearUpFeeds(ContentHome.data.content.feeds);
               }
-              console.log('0>>>>>', newObj, ContentHome.masterData);
               saveData(JSON.parse(angular.toJson(newObj)), TAG_NAMES.RSS_FEED_INFO);
             }, 500);
           }
@@ -504,11 +660,80 @@
               title = "Title Key Error";
               message = "Invalid Title Key. Please correct the key in the feed's advanced settings and try again. Without correct key feed items won't show in search results.";
               break;
+            case 'analytics':
+              title = "Analytics Error";
+              message = "Error setting analytics. Please try adding the feed again.";
+              break;
+            case 'analyticsUpdates':
+              title = "Analytics Error";
+              message = "An error while occurred updating the analytics.";
+              break;
             default:
               break;
           }
           buildfire.dialog.alert({ title, message });
         };
+
+        /**
+         * syncFeedAnalytics(feeds) private function
+         * It will sync the feed items with the analytics and search engine
+         * @param feeds is an array of feeds
+         */
+        let showUpdateDialog = false;
+        let updateAnalyticsError = false;
+        const syncFeedAnalytics = (feeds) => {
+          if (!feeds.length) {
+            ContentHome.handleLoaderDialog();
+            if (updateAnalyticsError) {
+              handleSearchEngineErrors('analyticsUpdates');
+            } else if (showUpdateDialog) {
+              buildfire.dialog.alert({
+                title: "Analytics Updates",
+                message: "Analytics updated successfully.",
+              });
+            }
+            return;
+          }
+
+          const rssFeed = feeds.shift();
+          if (rssFeed.type !== 'rss' || !rssFeed.advancedConfig || !rssFeed.advancedConfig.enableFeedAnalytics) return syncFeedAnalytics(feeds);
+          
+          ContentHome.getIndexedFeedItems(`rss_feed_${rssFeed.id}`, rssFeed.url, (err, indexedFeedItems) => {
+            if (err) console.error(err);
+
+            // if the feed is under processing 'delete/update' then skip the analytics update
+            const feedStillCanUpdate = !((ContentHome.deletingFeed && ContentHome.deletingFeed.id === rssFeed.id) || (ContentHome.activeRssFeed && ContentHome.activeRssFeed.id === rssFeed.id));
+            if (!indexedFeedItems || !indexedFeedItems.length || !feedStillCanUpdate) return syncFeedAnalytics(feeds);
+
+            // filter items to include only non-registered to analytics
+            indexedFeedItems = indexedFeedItems.filter(_item => !_item._source.data.registeredToAnalytics);
+
+            if (!showUpdateDialog && indexedFeedItems.length > 20) {
+              showUpdateDialog = true;
+              ContentHome.handleLoaderDialog("Updating Analytics", "Updating analytics, this may take a while please wait...", true);
+              buildfire.dialog.alert({
+                title: "Analytics Updates",
+                message: "We are updating your Analytics, please do not close your browser or leave the plugin until you see success dialog. This may take a while...",
+              });
+            }
+            AnalyticsManager.registerFeedAnalytics(indexedFeedItems, (error, result) => {
+              if (error) {
+                console.error(error);
+                updateAnalyticsError = true;
+                return syncFeedAnalytics(feeds);
+              }
+
+              indexedFeedItems = indexedFeedItems.map(item => ({...item, registeredToAnalytics: true}));
+              searchEngine.updateFeedRecords(indexedFeedItems, (e, r) => {
+                if (e) {
+                  console.error(e);
+                  updateAnalyticsError = true;
+                }
+                return syncFeedAnalytics(feeds);
+              });
+            });
+          });
+        }
 
         /**
          * init() private function
@@ -524,6 +749,18 @@
               updateMasterItem(_defaultData);
               ContentHome.data = angular.copy(_defaultData);
             } else {
+              if (!ContentHome.data.analyticsRegistered) {
+                AnalyticsManager.init((err) => {
+                  if (err) console.error(err);
+
+                  ContentHome.data.analyticsRegistered = true;
+                  ContentHome.data.default = false;
+                  saveDataWithDelay({...ContentHome.data, default: false, analyticsRegistered: true});
+                });
+              } else if (ContentHome.data.content.feeds && ContentHome.data.content.feeds.length) {
+                const feeds = angular.copy(ContentHome.data.content.feeds);
+                syncFeedAnalytics(feeds);
+              }
               if (ContentHome.data.content && !ContentHome.data.content.carouselImages) {
                 ContentHome.editor.loadItems([]);
               }
@@ -701,7 +938,7 @@
 
         ContentHome.toggleEmptyScreen = function (){
           const loadingContainer = document.getElementById('emptyListContainer');
-          if (!ContentHome.sortableList.items.length) {
+          if (!ContentHome.sortableList || !ContentHome.sortableList.items || !ContentHome.sortableList.items.length) {
             loadingContainer.classList.remove('hidden');
             loadingContainer.innerHTML = '<h4>No Feeds Found.</h4>';
           } else {

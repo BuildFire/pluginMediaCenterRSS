@@ -9,9 +9,11 @@
         <div class="down-arrow"></div>
       </div>
     </div>
+    <img src="../../../styles/media/holder-16x9.gif" ng-if="WidgetMedia.loadingThumbnail">
     <div ng-switch="WidgetMedia.medium" class="media-center-banner clearfix">
       <div ng-switch-when="VIDEO" class="videogular-container" ng-style="{'min-height': (9 * deviceWidth / 16) + 'px' }">
         <videogular ng-if="WidgetMedia.isVideoPlayerSupported" vg-player-ready="WidgetMedia.onPlayerReady($API)"
+          vg-update-state="onVideoStateChange($state)"
           vg-change-source="WidgetMedia.sourceChanged($source)" vg-theme="WidgetMedia.videoPlayerConfig.theme.url"
           vg-error="WidgetMedia.onVideoError($event)" vg-can-play="WidgetMedia.videoLoaded()">
           <vg-media vg-src="WidgetMedia.videoPlayerConfig.sources" vg-tracks="WidgetMedia.videoPlayerConfig.tracks"
@@ -69,13 +71,17 @@
       </div>
       <div class="link-list">
         <a class="media-action" ng-click="WidgetMedia.playAudio()" ng-if="WidgetMedia.medium == 'AUDIO'">
-          <i class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
-            style="font-size: 2em !important;">play_arrow</i>
+          <i ng-if="!audioPlayerPlaying" class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
+            style="font-size: 2em !important; letter-spacing: normal;">play_arrow</i>
+          <i ng-if="audioPlayerPlaying" class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
+            style="font-size: 2em !important; letter-spacing: normal;">pause</i>
         </a>
         <a class="media-action video" ng-click="!WidgetMedia.loadingVideo && WidgetMedia.API.play()"
           ng-if="WidgetMedia.isVideoPlayerSupported && WidgetMedia.medium == 'VIDEO'">
-          <i class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
+          <i ng-if="!WidgetMedia.isVideoPlaying" class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
             style="font-size: 2em !important; letter-spacing: normal;">play_arrow</i>
+          <i ng-if="WidgetMedia.isVideoPlaying" class="btn btn-success material-icons" aria-hidden="true" id="startIcon"
+            style="font-size: 2em !important; letter-spacing: normal;">pause</i>
         </a>
       </div>
     </div>

@@ -414,6 +414,10 @@ html[browser="Firefox"] .layout3 .list-layout .list-item-media .list-media-holde
     margin-top: 15px;
 }
 
+#description {
+	word-break: break-word;
+}
+
 /*Style to fix height and width of description images*/
 #description img {
     height: auto !important;

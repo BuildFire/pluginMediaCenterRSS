@@ -7,7 +7,8 @@
 		'Location',
 		'ItemDetailsService',
 		'Modals',
-		function ($scope, Buildfire, $rootScope, $timeout, Location, ItemDetailsService, Modals) {
+		'trackAnalyticsActions',
+		function ($scope, Buildfire, $rootScope, $timeout, Location, ItemDetailsService, Modals, trackAnalyticsActions) {
 			console.log('----------------------------Now Playing controller loaded-------------------');
 			//$rootScope.blackBackground = true;
 			$rootScope.showFeed = false;
@@ -21,10 +22,6 @@
 			 */
 			NowPlaying.item = ItemDetailsService.getData();
 			if (NowPlaying.item) NowPlaying.currentTrack = new Track(NowPlaying.item);
-
-			console.log('NowPlaying.currentTrack--------------------------------------', NowPlaying.currentTrack);
-
-			console.log('NowPlaying.Item--------------------------------------------', NowPlaying.item);
 
 			/**
 			 * audioPlayer is Buildfire.services.media.audioPlayer.
@@ -50,6 +47,17 @@
 			var first = true;
 			audioPlayer.onEvent(function (e) {
 				switch (e.event) {
+					case 'play':
+					case 'resume':
+						NowPlaying.playing = true;
+						$rootScope.audioPlayerPlaying = true;
+						trackAnalyticsActions.trackItemWatchState({
+							state: 'play',
+							currentTime: e.data.track.lastPosition,
+							item: NowPlaying.item,
+							itemType: 'audio'
+						});
+						break;
 					case 'skip':
 						NowPlaying.changeTime(e.data);
 						break;
@@ -64,11 +72,19 @@
 						NowPlaying.maxRange = Math.floor(e.data.duration);
 						break;
 					case 'audioEnded':
+						$rootScope.audioPlayerPlaying = false;
 						NowPlaying.playing = false;
 						NowPlaying.paused = false;
 						break;
 					case 'pause':
+						$rootScope.audioPlayerPlaying = false;
 						NowPlaying.playing = false;
+						trackAnalyticsActions.trackItemWatchState({
+							state: 'pause',
+							currentTime: NowPlaying.currentTime,
+							item: NowPlaying.item,
+							itemType: 'audio'
+						});
 						break;
 					case 'next':
 						NowPlaying.currentTrack = e.data.track;
@@ -189,6 +205,12 @@
 				$rootScope.playlist = true;
 			};
 			NowPlaying.changeTime = function (time) {
+				trackAnalyticsActions.trackItemWatchState({
+					state: 'buffer',
+					currentTime: time,
+					item: NowPlaying.item,
+					itemType: 'audio'
+				});
 				audioPlayer.setTime(time);
 			};
 			NowPlaying.getSettings = function () {
@@ -286,6 +308,8 @@
 					this.url = track && track.link;
 				} else if (track && track.enclosures && track.enclosures[0] && track.enclosures[0].url && track.enclosures[0].url.substring(track.enclosures[0].url.length - 4, track.enclosures[0].url.length)) {
 					this.url = track.enclosures[0].url;
+				} else if (track.src) {
+					this.url = track.src;
 				} else {
 					console.error('**************************URL not found***********************');
 				}

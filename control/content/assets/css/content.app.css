@@ -1,3 +1,7 @@
+.main_view {
+    padding-right: 8px;
+}
+
 /*style to fix bottom margin for alert messages*/
 .margin-fix{
     margin-bottom: 30px;

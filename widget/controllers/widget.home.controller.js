@@ -3,8 +3,8 @@
 (function (angular) {
     angular
         .module('mediaCenterRSSPluginWidget')
-        .controller('WidgetHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope', 'FEED_IMAGES',
-            function ($scope, DataStore, Buildfire, FeedParseService, TAG_NAMES, ItemDetailsService, Location, $filter, Underscore, $rootScope, FEED_IMAGES) {
+        .controller('WidgetHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope', 'FEED_IMAGES', 'trackAnalyticsActions', 'utils', 
+            function ($scope, DataStore, Buildfire, FeedParseService, TAG_NAMES, ItemDetailsService, Location, $filter, Underscore, $rootScope, FEED_IMAGES, trackAnalyticsActions, utils) {
 
                 if (window.device) {
                     if (window.device.platform === 'Android') {
@@ -33,79 +33,84 @@
                         this.deeplinkSkeleton = null;
                     }
                 };
-                // show the deeplink skeleton if the deeplink is present
-                buildfire.deeplink.getData(function (data) {
-                    if (data && data.link) toggleDeeplinkSkeleton(true);
-                });
 
-                $scope.deeplinkItemId = null;
+                function extractItemFromFeeds(feeds = {}, itemId) {
+                    if (!feeds || typeof feeds !== 'object' || !itemId) return null;
+                    let itemData = null;
+                    
+                    Object.keys(feeds).forEach(key => {
+                        if (feeds[key].items && feeds[key].items.length) {
+                            let feedItem = feeds[key].items.find(el => el.guid == itemId);
+                            if (feedItem) {
+                                const index = feeds[key].items.indexOf(feedItem);
+                                itemData = { feedItem, index };
+                            }
+                        }
+                    });
+                    return itemData;
+                }
+                
+                $scope.deeplinkData = null;
                 $scope.isDeeplinkItemOpened = false;
                 $scope.first = true;
+                $scope.waitingForDeeplinkEvent = false;
+                $scope.deeplinkFinished = false;
                 /**
-                 * @name handleBookmarkNav
+                 * @name processDeeplink
                  * @type {function}
                  * Handles incoming bookmark navigation
                  */
-                var handleBookmarkNav = function handleBookmarkNav() {
-                    if ($scope.first) {
-                        const processDeeplink = (data, pushToHistory=true) => {
-                            if (data && data.link) {
-                                var targetGuid = data.link;
+                const processDeeplink = (data, pushToHistory=true) => {
+                    if ($scope.first && data) {
+                        if (data.feed) {
+                            $scope.waitingForDeeplinkEvent = true;
+                            toggleDeeplinkSkeleton();
+                            const item = {
+                                ...data.feed,
+                                guid: data.link,
+                                imageSrcUrl: data.feed.image_url ,
+                                pubDate: data.feed.publish_date 
+                            };
+                            WidgetHome.proceedToItem(-1, item, pushToHistory);
+                        } else if (data.link) {
+                            var targetGuid = data.link;
 
-                                if(WidgetHome.data && WidgetHome.data.content.feeds?.length) {
-                                    Object.keys(WidgetHome.feedsCache).forEach(key => {
-                                        console.log(WidgetHome.feedsCache[key])
-                                        if (WidgetHome.feedsCache[key].items && WidgetHome.feedsCache[key].items.length) {
-                                            let feedItem = WidgetHome.feedsCache[key].items.find(el => el.guid == targetGuid),
-                                            index = WidgetHome.feedsCache[key].items.indexOf(feedItem);
-                                            if(feedItem) {
-                                                if (data.timeIndex) {
-                                                    WidgetHome.feedsCache[key].items[index].seekTo = data.timeIndex;
-                                                }
-                                                $rootScope.deeplinkFirstNav = true;
-                                                $scope.isDeeplinkItemOpened = true;
-                                                WidgetHome.goToItem(index, feedItem, pushToHistory);
-                                            } else if (WidgetHome.dataTotallyLoaded) {
-                                                toggleDeeplinkSkeleton();
-                                            }
-                                        } else if (WidgetHome.dataTotallyLoaded) {
-                                            toggleDeeplinkSkeleton();
-                                        }
-                                    });
-                                } else {
-                                    var itemLinks = _items.map(function (item) {
-                                        return item.guid
-                                    });
-                                    var index = itemLinks.indexOf(targetGuid);
-                                    if (index < 0 && WidgetHome.dataTotallyLoaded) {
-                                        console.warn('bookmarked item not found.');
-                                        toggleDeeplinkSkeleton();
-                                    } else {
-                                        if (data.timeIndex) {
-                                            _items[index].seekTo = data.timeIndex;
-                                        }
-                                        $rootScope.deeplinkFirstNav = true;
-                                        $scope.isDeeplinkItemOpened = true;
-                                        WidgetHome.goToItem(index, _items[index], pushToHistory);
+                            if(WidgetHome.data && WidgetHome.data.content.feeds?.length) {
+                                const itemData = extractItemFromFeeds(WidgetHome.feedsCache, targetGuid);
+                                if(itemData && itemData.feedItem) {
+                                    if (data.timeIndex) {
+                                        WidgetHome.feedsCache[key].items[itemData.index].seekTo = data.timeIndex;
                                     }
-                                    $scope.first = false;
+                                    $rootScope.deeplinkFirstNav = true;
+                                    $scope.isDeeplinkItemOpened = true;
+                                    WidgetHome.goToItem(itemData.index, itemData.feedItem, pushToHistory);
+                                    $scope.deeplinkFinished = true;
+                                } else if (WidgetHome.dataTotallyLoaded) {
+                                    toggleDeeplinkSkeleton();
                                 }
-                                if (!$scope.$$phase) $scope.$apply();
+                            } else {
+                                var itemLinks = _items.map(function (item) {
+                                    return item.guid
+                                });
+                                var index = itemLinks.indexOf(targetGuid);
+                                if (index < 0 && WidgetHome.dataTotallyLoaded) {
+                                    console.warn('bookmarked item not found.');
+                                    toggleDeeplinkSkeleton();
+                                } else {
+                                    if (data.timeIndex) {
+                                        _items[index].seekTo = data.timeIndex;
+                                    }
+                                    $rootScope.deeplinkFirstNav = true;
+                                    $scope.isDeeplinkItemOpened = true;
+                                    WidgetHome.goToItem(index, _items[index], pushToHistory);
+                                    $scope.deeplinkFinished = true;
+                                }
+                                $scope.first = false;
                             }
+                            if (!$scope.$$phase) $scope.$apply();
                         }
-                        buildfire.deeplink.getData(function (data) {
-                            if (!data) return;
-                            if ($scope.deeplinkItemId !== data.link || !$scope.isDeeplinkItemOpened) {
-                                $scope.deeplinkItemId = data.link;
-                                processDeeplink(data, false);
-                            }
-                        });
-                        buildfire.deeplink.onUpdate(function (data) {
-                            if (!data) return;
-                            processDeeplink(data, true);
-                        });
                     }
-                };
+                }
 
                 /** 
                  * Private variables
@@ -172,6 +177,23 @@
                     }
                 };
 
+                // show the deeplink skeleton if the deeplink is present
+                buildfire.deeplink.getData(function (data) {
+                    if (!data) return;
+
+                    $scope.deeplinkData = data;
+                    toggleDeeplinkSkeleton(true);
+                });
+                buildfire.deeplink.onUpdate(function (data) {
+                    if (!data) return;
+
+                    $scope.deeplinkData = data;
+                    processDeeplink(data, true);
+                    if ($scope.waitingForDeeplinkEvent) {
+                        WidgetHome.handleInitialParsing();
+                    }
+                });
+
                 /** 
                  * @name WidgetHome.data is used to hold user's data object which used throughout the app.
                  * @type {object}
@@ -179,6 +201,7 @@
                 WidgetHome.data = null;
                 WidgetHome.view = null;
                 WidgetHome.feedsCache = {};
+                WidgetHome.feedsData = {};
                 WidgetHome.currentFeed = null;
 
                 /**
@@ -220,42 +243,6 @@
                     }
                 };
 
-                /**
-                 * @name getImageUrl()
-                 * Used to extract image url
-                 * @param item
-                 * @returns {*}
-                 */
-                var getImageUrl = function (item) {
-                    var i = 0,
-                        length = 0,
-                        imageUrl = '';
-                    if (item.image && item.image.url) {
-												imageUrl = item.image.url;
-                    } else if (item.enclosures && item.enclosures.length > 0) {
-                        length = item.enclosures.length;
-                        for (i = 0; i < length; i++) {
-                            if (item.enclosures[i].type.indexOf('image') === 0 || item.enclosures[i].type.indexOf('img') != -1) {
-                                imageUrl = item.enclosures[i].url;
-                                break;
-                            }
-                        }
-                    } 
-										if(imageUrl){
-											return imageUrl;
-										}
-										else {
-                        if (item['media:thumbnail'] && item['media:thumbnail']['@'] && item['media:thumbnail']['@'].url) {
-                            return item['media:thumbnail']['@'].url;
-                        } else if (item['media:group'] && item['media:group']['media:content'] && item['media:group']['media:content']['media:thumbnail'] && item['media:group']['media:content']['media:thumbnail']['@'] && item['media:group']['media:content']['media:thumbnail']['@'].url) {
-                            return item['media:group']['media:content']['media:thumbnail']['@'].url;
-                        } else if (item.description) {
-                            return $filter('extractImgSrc')(item.description);
-                        } else {
-                            return '';
-                        }
-                    }
-                };
 
                 /**
                  * @name getFeedData()
@@ -270,8 +257,6 @@
                 var getFeedDataSuccess = function (result) {
                     // compare the first item, last item, and length of the cached feed vs fetched feed
                     var isUnchanged = checkFeedEquality(_items, result.data.items);
-                    console.warn(isUnchanged);
-                    
                     WidgetHome.loading = false;
                     result.rssUrl = WidgetHome.data.content.rssUrl ? WidgetHome.data.content.rssUrl : false;
                     cacheManager.setItem(undefined, result, () => { });
@@ -284,7 +269,7 @@
                     }
                     if (result.data && result.data.items.length > 0) {
                         result.data.items.forEach(function (item) {
-                            item.imageSrcUrl = getImageUrl(item);
+                            item.imageSrcUrl = utils.getImageUrl(item);
                         });
                         _items = result.data.items;
                         WidgetHome.isItems = true;
@@ -297,7 +282,7 @@
                     viewedItems.sync(WidgetHome.items);
                     bookmarks.sync($scope);
                     WidgetHome.loadMore();
-                    handleBookmarkNav();
+                    processDeeplink($scope.deeplinkData, false);
 
                     isInit = false;
 
@@ -412,6 +397,7 @@
                         const tabBar = new mdc.tabBar.MDCTabBar(tabs);
                         tabBar.listen('MDCTabBar:activated', (event) => {
                             WidgetHome.activeTab = event.detail.index;
+                            WidgetHome.parseFeed(WidgetHome.data.content.feeds[WidgetHome.activeTab]);
                             WidgetHome.currentFeed = WidgetHome.data.content.feeds[event.detail.index];
                             WidgetHome.renderFeedItems();
                             WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged = false;
@@ -451,16 +437,68 @@
                     let fetchedItemsString = fetchedItems.map(element => {
                         return element.guid + element.link
                     }).sort().toString();
-                    // console.log("sameLength: " + sameLength)
-                    // console.log("currentItemsString: " + currentItemsString)
-                    // console.log("fetchedItemsString: " + fetchedItemsString)
                     return sameLength && currentItemsString === fetchedItemsString;
                 }
 
                 WidgetHome.prepareFeedImages = (id) => {
                     WidgetHome.feedsCache[id].items?.forEach((item) => {
-                        item.imageSrcUrl = getImageUrl(item);
+                        item.imageSrcUrl = utils.getImageUrl(item);
                     });
+                }
+
+                WidgetHome.parseFeed = (feed, callback) => {
+                    if (!feed || WidgetHome.feedsData[feed.id]) return;
+                    if (!WidgetHome.feedsCache[feed.id] || !WidgetHome.feedsCache[feed.id].items || !WidgetHome.feedsCache[feed.id].items.length) {
+                        WidgetHome.loading = true;
+                        if (!$scope.$$phase) $scope.$digest();
+                    }
+                    
+                    WidgetHome.fetchFeedResults(feed).then((result) => {
+                        let isChanged = !WidgetHome.checkFeedEquality(WidgetHome.feedsCache[feed.id].items ?? [], result.data.items);
+                        WidgetHome.feedsCache[feed.id] = {
+                            isChanged,
+                            items: result.data.items ?? []
+                        };
+                        WidgetHome.feedsData[feed.id] = result.data;
+
+                        if (!$scope.$$phase) $scope.$digest();
+                        cacheManager.setItem(feed.id, WidgetHome.feedsCache[feed.id], () => { });
+
+                        if (isChanged) WidgetHome.renderFeedItems();
+                        WidgetHome.loading = false;
+                       
+                        if (Object.keys(WidgetHome.feedsData).length === WidgetHome.data.content.feeds.length) WidgetHome.dataTotallyLoaded = true;
+
+                        if (!$scope.$$phase) $scope.$digest();
+                        if (callback) callback();
+                    }).catch((err) => {
+                        console.error(err);
+
+                        WidgetHome.loading = false;
+                        if (!$scope.$$phase) $scope.$digest();
+                    });
+                }
+
+                WidgetHome.handleInitialParsing = () => {
+                    if ($scope.deeplinkData) {
+                        if ($scope.waitingForDeeplinkEvent) {
+                            const itemData = extractItemFromFeeds(WidgetHome.feedsCache, $scope.deeplinkData.link);
+                            if (itemData && itemData.feedItem) {
+                                $scope.deeplinkFinished = true;
+                                ItemDetailsService.setData(itemData.feedItem);
+                                $rootScope.$broadcast('deeplinkItemReady', itemData.feedItem);
+                            }
+                        } else {
+                            processDeeplink($scope.deeplinkData, false);
+                        }
+                        if (!$scope.deeplinkFinished && !WidgetHome.dataTotallyLoaded) {
+                            const nextFeedIndex = WidgetHome.data.content.feeds.findIndex(feed => !WidgetHome.feedsData[feed.id]);
+                            WidgetHome.parseFeed(WidgetHome.data.content.feeds[nextFeedIndex], WidgetHome.handleInitialParsing);
+                        }
+                    } else {
+                        const firstFeed = WidgetHome.data.content.feeds[0];
+                        WidgetHome.parseFeed(firstFeed, WidgetHome.handleInitialParsing);
+                    }
                 }
 
                 WidgetHome.initializePlugin = function () {
@@ -487,7 +525,7 @@
                         }
                         //if settings data has feeds proceed with new logic
                         else if (settings.data.content.feeds && !settings.data.content.rssUrl) {
-                            handleBookmarkNav();
+                            processDeeplink($scope.deeplinkData, false);
                             if (!settings.data.content.feeds.length) {
                                 WidgetHome.isItems = false;
                                 WidgetHome.loading = false;
@@ -495,7 +533,6 @@
                             let cachePromises = [], dataPromises = [];
                             settings.data.content.feeds.map((feed) => {
                                 cachePromises.push(cacheManager.getItem(feed.id).then(r => ({ id: feed.id, result: r })));
-                                dataPromises.push(WidgetHome.fetchFeedResults(feed).then(r => ({ id: feed.id, result: r })));
                             });
                             WidgetHome.initializeTabs();
 
@@ -508,28 +545,11 @@
                                 });
                                 if (!$scope.$$phase) $scope.$digest();
                                 WidgetHome.renderFeedItems();
-                                handleBookmarkNav();
                                 if (WidgetHome.isItems) {
                                     WidgetHome.loading = false;
                                 }
-                                Promise.all(dataPromises).then(dataResults => {
-                                    dataResults.forEach((el) => {
-                                        let isUnchanged = WidgetHome.checkFeedEquality(WidgetHome.feedsCache[el.id].items ?? [], el.result.data.items);
-                                        WidgetHome.feedsCache[el.id] = {
-                                            items: el.result.data.items ?? [],
-                                            isChanged: !isUnchanged
-                                        };
-                                        if (!$scope.$$phase) $scope.$digest();
-                                        cacheManager.setItem(el.id, WidgetHome.feedsCache[el.id], () => { });
-                                    });
-                                    if (WidgetHome.feedsCache[WidgetHome.currentFeed.id].isChanged)
-                                        WidgetHome.renderFeedItems();
-                                    
-                                    WidgetHome.loading = false;
-                                    WidgetHome.dataTotallyLoaded = true;
-                                    handleBookmarkNav();
-                                    if (!$scope.$$phase) $scope.$digest();
-                                }).catch((err) => console.error(err));
+                                
+                                WidgetHome.handleInitialParsing();
                             }).catch((err) => {
                                 console.error(err)
                             });
@@ -664,19 +684,21 @@
                     }
                 };
                 WidgetHome.proceedToItem = function (index, item, pushToHistory) {
-                    setTimeout(function () {
-                        toggleDeeplinkSkeleton();
-                        viewedItems.markViewed($scope, item.guid);
-                    }, 500);
                     if (WidgetHome.items[index]) {
+                        setTimeout(function () {
+                            viewedItems.markViewed($scope, item.guid);
+                        }, 500);
                         WidgetHome.items[index].index = index;
                     }
-                    // ItemDetailsService.setData(WidgetHome.items[index]);
+                    toggleDeeplinkSkeleton();
                     ItemDetailsService.setData(item);
                     // Buildfire.history.push(WidgetHome.items[index].title, {});
                     if (pushToHistory) {
                         Buildfire.history.push(item.title, {});
                     }
+                    trackAnalyticsActions.isItemPlayed = null;
+                    trackAnalyticsActions.analyticsTrackingInterval = null;
+                    trackAnalyticsActions.lastAnalyticsTime = null;
                     Location.goTo('#/item');
                 };
 

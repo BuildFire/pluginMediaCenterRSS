@@ -3,10 +3,9 @@
 (function (angular) {
     angular
         .module('mediaCenterRSSPluginWidget')
-        .controller('WidgetMediaCtrl', ['$scope', '$sce', 'DataStore', 'Buildfire', 'TAG_NAMES', 'ItemDetailsService', '$filter', 'Location', 'MEDIUM_TYPES', '$rootScope',
-            function ($scope, $sce, DataStore, Buildfire, TAG_NAMES, ItemDetailsService, $filter, Location, MEDIUM_TYPES, $rootScope) {
+        .controller('WidgetMediaCtrl', ['$scope', '$sce', 'DataStore', 'Buildfire', 'TAG_NAMES', 'ItemDetailsService', '$filter', 'Location', 'MEDIUM_TYPES', '$rootScope', 'trackAnalyticsActions', 'utils', 
+            function ($scope, $sce, DataStore, Buildfire, TAG_NAMES, ItemDetailsService, $filter, Location, MEDIUM_TYPES, $rootScope, trackAnalyticsActions, utils) {
 
-                console.log('Widget.media.controller loaded successfully------------------------------------------->>>>>>>>>>>>>>>>>>>.');
                 $rootScope.deviceHeight = window.innerHeight;
                 $rootScope.deviceWidth = window.innerWidth;
 
@@ -211,6 +210,7 @@
                     } else {
                         WidgetMedia.medium = MEDIUM_TYPES.OTHER;
                     }
+                    trackAnalyticsActions.trackOpenedItem({...WidgetMedia.item, type: WidgetMedia.medium});
                 };
 
                 var initScrollHandler = function () {
@@ -241,8 +241,6 @@
                             $rootScope.backgroundImageItem = WidgetMedia.data.design.itemDetailsBgImage;
                             initScrollHandler();
                         }
-                        console.log('$rootScope.backgroundImage', $rootScope.backgroundImage);
-                        console.log('$rootScope.backgroundImageItem', $rootScope.backgroundImageItem);
                         if (WidgetMedia.data.content && (!WidgetMedia.data.content.rssUrl || WidgetMedia.data.content.rssUrl !== currentRssUrl)) {
                             if ($rootScope.data.design.itemDetailsLayout == WidgetMedia.data.design.itemDetailsLayout) {
                                 resetDefaults();
@@ -270,6 +268,57 @@
                     if (WidgetMedia.data && WidgetMedia.data.design && WidgetMedia.data.design.itemDetailsLayout === 'Feed_Layout_3') {
                         Buildfire.spinner.show();
                     }
+
+                    if (WidgetMedia.item) {
+                        if (WidgetMedia.item.id && (!WidgetMedia.item.type || !WidgetMedia.item.src)) {
+                            WidgetMedia.loadingThumbnail = true;
+                            if (!$scope.$$phase) $scope.$digest();
+                            $rootScope.$on('deeplinkItemReady', function(event, data) {
+                                if (data && WidgetMedia.loadingThumbnail) {
+                                    WidgetMedia.item = data;
+                                    if (!WidgetMedia.item.imageSrcUrl) {
+                                        WidgetMedia.item.imageSrcUrl = utils.getImageUrl(WidgetMedia.item);
+                                    }
+                                    filterItemType(WidgetMedia.item);
+                                    bookmarks.sync($scope);
+                                    WidgetMedia.loadingThumbnail = false;
+                                    ItemDetailsService.setData(WidgetMedia.item);
+                                    if (!$scope.$$phase) $scope.$digest();
+                                }
+                            });
+                        } else if (WidgetMedia.item.type && WidgetMedia.item.src) {
+                            WidgetMedia.item.link = WidgetMedia.item.url;
+                            const filterOption = {
+                                medium: WidgetMedia.item.type,
+                                src: WidgetMedia.item.src,
+                                link: WidgetMedia.item.url,
+                            };
+                            if (WidgetMedia.item.type === MEDIUM_TYPES.VIDEO) {
+                                filterOption.type = "video/mp4";
+                            } else if (WidgetMedia.item.type === MEDIUM_TYPES.AUDIO) {
+                                filterOption.type = "audio/mp3";
+                            }
+                            filterItemType(filterOption);
+                            bookmarks.sync($scope);
+                            if (!WidgetMedia.item.imageSrcUrl) {
+                                WidgetMedia.item.imageSrcUrl = utils.getImageUrl(WidgetMedia.item);
+                            }
+                        } else {
+                            filterItemType(WidgetMedia.item);
+                            bookmarks.sync($scope);
+                        }
+                    }
+
+                    // check if a audio is playing
+                    audioPlayer.isPaused((err, isPaused) => {
+                        if (err) return console.err(err);
+                      
+                        if (isPaused) {
+                            $rootScope.audioPlayerPlaying = false;
+                        } else {
+                            $rootScope.audioPlayerPlaying = true;
+                        }
+                    });
                 };
 
                 /**
@@ -281,14 +330,6 @@
                  * DataStore.onUpdate() will invoked when there is some change in datastore
                  */
                 DataStore.onUpdate().then(null, null, onUpdateCallback);
-
-                /**
-                 * filterItemType() method will be called if WidgetMedia.item is not null
-                 */
-                if (WidgetMedia.item) {
-                    filterItemType(WidgetMedia.item);
-                    bookmarks.sync($scope);
-                }
 
                 /**
                  * WidgetMedia.onPlayerReady() method
@@ -308,6 +349,30 @@
                     console.error('Error While playing:', $event);
                     WidgetMedia.API.stop();
                 };
+
+                $rootScope.onVideoStateChange = function (videoState, videoCurrentTime) { // videoCurrentTime in seconds
+                    if (typeof videoCurrentTime !== 'number') {
+                        if (WidgetMedia.API) {
+                            videoCurrentTime = WidgetMedia.API.currentTime/1000;
+                        } else if (window.videoPlayer && window.videoPlayer.getCurrentTime) {
+                            videoCurrentTime = window.videoPlayer.getCurrentTime();
+                        }
+                    }
+                    if (videoState === 'play') {
+                        WidgetMedia.isVideoPlaying = true;
+                    } else if (videoState === 'pause') {
+                        WidgetMedia.isVideoPlaying = false;
+                    }
+
+                    if (typeof videoCurrentTime === 'number') {
+                        trackAnalyticsActions.trackItemWatchState({
+                            state: videoState,
+                            currentTime: videoCurrentTime,
+                            item: WidgetMedia.item,
+                            itemType: 'video'
+                        });
+                    }
+                }
 
                 /**
                  * WidgetMedia.sourceChanged() method
@@ -361,16 +426,18 @@
                  * callback will be called when audio player fires an event
                  */
                 audioPlayer.onEvent(function (e) {
-                    if (e.event == "timeUpdate") {
+                    if (e.event === 'play' || e.event === 'resume') {
+                        $rootScope.audioPlayerPlaying = true;
+                    } else if (e.event == "timeUpdate") {
                         WidgetMedia.audio.currentTime = e.data.currentTime;
                         WidgetMedia.audio.duration = e.data.duration;
 						WidgetMedia.audio.maxRange = Math.floor(e.data.duration);
                         $scope.$apply();
                     } else if (e.event == "audioEnded") {
-                        WidgetMedia.audio.playing = false;
+                        $rootScope.audioPlayerPlaying = false;
                         $scope.$apply();
                     } else if (e.event == "pause") {
-                        WidgetMedia.audio.playing = false;
+                        $rootScope.audioPlayerPlaying = false;
                         $scope.$apply();
                     }
                 });
@@ -382,14 +449,6 @@
                 WidgetMedia.playAudio = function () {
                     Buildfire.history.push('Now Playing', {});
                     Location.goTo('#/nowplaying');
-
-                    /* WidgetMedia.audio.playing = true;
-                     if (WidgetMedia.audio.paused) {
-                     audioPlayer.play();
-                     }
-                     else if (WidgetMedia.audio.track) {
-                     audioPlayer.play({url: WidgetMedia.audio.track});
-                     }*/
                 };
 
 
@@ -398,7 +457,6 @@
                  * will be called when you click pause button
                  */
                 WidgetMedia.pause = function () {
-                    WidgetMedia.audio.paused = true;
                     audioPlayer.pause();
                 };
 
@@ -521,6 +579,7 @@
                  * will called when controller scope has been destroyed.
                  */
                 $scope.$on("$destroy", function () {
+                    $rootScope.onVideoStateChange('pause');
                     DataStore.clearListener();
                     onRefresh.clear();
                     Buildfire.datastore.onRefresh(function () {

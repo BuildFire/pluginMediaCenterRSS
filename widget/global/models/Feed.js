@@ -35,6 +35,7 @@ class RssAdvancedSettings {
         if (!settings.searchEngineItemConfig) {
             settings.searchEngineItemConfig = {};
         }
+        this.enableFeedAnalytics = typeof settings.enableFeedAnalytics === 'boolean' ? settings.enableFeedAnalytics : false;
         this.enableSearchEngineConfig = typeof settings.enableSearchEngineConfig === 'boolean' ? settings.enableSearchEngineConfig : false;
         this.searchEngineItemConfig = {
             uniqueKey: typeof settings.searchEngineItemConfig.uniqueKey !== 'undefined' ? settings.searchEngineItemConfig.uniqueKey : "guid",

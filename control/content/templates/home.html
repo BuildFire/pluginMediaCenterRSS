@@ -46,8 +46,28 @@
   
       <div class="form-group margin-bottom-twenty">
         <div class="row">
-          <div class="col-sm-6">
-            <label class="tooltip-container">Advanced Settings
+          <div class="col-sm-7">
+            <label class="tooltip-container">Advanced Analytics
+              <span class="btn-info-icon btn-primary">
+              <span class="cp-tooltip">
+                Enable additional analytics for every item in this feed.
+              </span>
+              </span>
+            </label>
+          </div>
+          <div class="col-sm-5">
+            <div class="button-switch" style="float: right;">
+              <input type="checkbox" id="enableFeedAnalytics">
+              <label for="enableFeedAnalytics" class="label-success"></label>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group margin-bottom-twenty">
+        <div class="row">
+          <div class="col-sm-7">
+            <label class="tooltip-container">Search Indexing Settings
               <span class="btn-info-icon btn-primary">
               <span class="cp-tooltip bottom-cp-tooltip">
                 Advanced settings is used only to configure Search Engine Indexing. Adjust the feed's key parameters to enable searchability of feed items in the global search located in the app's side menu.
@@ -55,7 +75,7 @@
               </span>
             </label>
           </div>
-          <div class="col-sm-6">
+          <div class="col-sm-5">
             <div class="button-switch" style="float: right;">
               <input type="checkbox" id="enableSearchEngineConfig">
               <label for="enableSearchEngineConfig" class="label-success"></label>
