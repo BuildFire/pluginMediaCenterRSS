@@ -304,7 +304,9 @@
               // map throw items to get items type
               let indexedFeedItems = hits.map(_item => {
                 const proxyItem = result.data.items.find(_proxyItem => _proxyItem.guid === _item._source.data.id);
+                if (!proxyItem) return null;
 
+                _item._source.data.title = proxyItem.title;
                 let enclosureData = sharedUtils.checkEnclosuresTag(proxyItem, MEDIUM_TYPES);
                 let mediaTagData = sharedUtils.checkMediaTag(proxyItem, MEDIUM_TYPES);
 
@@ -318,6 +320,7 @@
                 return _item;
               });
 
+              indexedFeedItems = indexedFeedItems.filter(_item => _item !== null);
               callback(null, indexedFeedItems);
             }).catch((err) => {
               callback(err);
@@ -749,13 +752,13 @@
               updateMasterItem(_defaultData);
               ContentHome.data = angular.copy(_defaultData);
             } else {
-              if (!ContentHome.data.analyticsRegistered) {
+              if (!ContentHome.data.isAnalyticsRegistered) {
                 AnalyticsManager.init((err) => {
                   if (err) console.error(err);
 
-                  ContentHome.data.analyticsRegistered = true;
+                  ContentHome.data.isAnalyticsRegistered = true;
                   ContentHome.data.default = false;
-                  saveDataWithDelay({...ContentHome.data, default: false, analyticsRegistered: true});
+                  saveDataWithDelay({...ContentHome.data, default: false, isAnalyticsRegistered: true});
                 });
               } else if (ContentHome.data.content.feeds && ContentHome.data.content.feeds.length) {
                 const feeds = angular.copy(ContentHome.data.content.feeds);

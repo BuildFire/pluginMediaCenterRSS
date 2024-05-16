@@ -173,6 +173,7 @@
           imageUrl: item.imageSrcUrl,
         };
         const eventKey = `${item.guid}_secondsWatch`;
+        const commonAnalyticsKey = (itemType === 'video') ? 'videoWatchDuration' : 'audioWatchDuration';
         if (state === 'play') {
           trackPlayedItem({ item, itemType });
           if (currentTime) {
@@ -184,6 +185,7 @@
               lastAnalyticsTime += 5;
               metaData._buildfire = { aggregationValue: 5 }; // 5 seconds
               AnalyticsManager.trackEvent(eventKey, metaData);
+              AnalyticsManager.trackEvent(commonAnalyticsKey, metaData);
             }, 5 * 1000);
           }
         } else if (state === 'pause') {
@@ -196,6 +198,7 @@
             if (currentTime > 0 && extraTime > 0 && extraTime <= 5) {
               metaData._buildfire = { aggregationValue: extraTime };
               AnalyticsManager.trackEvent(eventKey, metaData);
+              AnalyticsManager.trackEvent(commonAnalyticsKey, metaData);
             }
           }
         } else if (state === 'buffer' && currentTime) {
