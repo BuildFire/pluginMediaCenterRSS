@@ -72,9 +72,18 @@ class AnalyticsManager {
         key: 'audioPlaysCount',
         description: 'Track total audios plays count in the app, offering insights into overall engagement and popularity.',
       },
+      {
+        title: `Total Audio Watch Duration`,
+        key: 'audioWatchDuration',
+        description: 'Track audios total watch time in the app, offering insights into overall engagement and popularity.',
+      },
+      {
+        title: `Total Video Watch Duration`,
+        key: 'videoWatchDuration',
+        description: 'Track videos total watch time in the app, offering insights into overall engagement and popularity.',
+      },
     ];
 
-    // bulkRegister is a new method will be added to the sdk
     buildfire.analytics.bulkRegisterEvents(registeringArray, { silentNotification: true }, callback);
   }
 }
