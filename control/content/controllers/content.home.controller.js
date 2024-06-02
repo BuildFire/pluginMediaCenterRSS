@@ -237,7 +237,7 @@
                   if (isConfirmed) {
                     // unregister analytics
                     ContentHome.deletingFeed = options.item;
-                    if (ContentHome.deletingFeed.id !== 'default' && ContentHome.deletingFeed.advancedConfig.enableFeedAnalytics) {
+                    if (ContentHome.deletingFeed.type === 'rss' && ContentHome.deletingFeed.id !== 'default' && ContentHome.deletingFeed.advancedConfig.enableFeedAnalytics) {
                       ContentHome.handleLoaderDialog("Deleting Analytics", "Deleting analytics, this may take a while please wait...", true);
                       ContentHome.getIndexedFeedItems(`rss_feed_${options.item.id}`, options.item.url, (err, indexedFeedItems) => {
                         if(err) {
@@ -357,7 +357,7 @@
                 } else {
                   ContentHome.data.content.feeds.push(feed);
                 }
-                ContentHome.sortableList.remove('default');
+                ContentHome.sortableList.clear();
                 ContentHome.sortableList.append(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
               } else {
                 ContentHome.data.content.feeds[index] = feed;
@@ -368,6 +368,7 @@
               if (!ContentHome.data.content.feeds) ContentHome.data.content.feeds = [feed];
               else ContentHome.data.content.feeds.push(feed);
               ContentHome.subPages[type].close();
+              ContentHome.sortableList.clear();
               ContentHome.sortableList.append(ContentHome.prepareFeeds(ContentHome.data.content.feeds));
             }
             ContentHome.data.content.rssUrl = ContentHome.rssFeedUrl;
