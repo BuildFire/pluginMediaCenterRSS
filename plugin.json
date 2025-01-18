@@ -1,7 +1,7 @@
 {
   "author": "Buildfire",
   "pluginName": "Media Center RSS Feed",
-  "pluginDescription": "Sync your RSS feeds to give your users interactive, educational, content. Import your feed once and your new posts will automatically pulled in. Keywords: MP4, stream, music, podcast, radio",
+  "pluginDescription": "Sync your RSS feeds to deliver interactive, educational content to your users. Import your feed once, and new posts—such as MP4, music, podcasts, and radio—are automatically pulled in.",
   "pluginKeywords": "news,pod cast,podcast",
   "supportEmail": "support@buildfire.com",
   "supportSite": "https://learn.appdocumentation.com/en/articles/805555-media-center-rss-feed-feature-tutorial",
