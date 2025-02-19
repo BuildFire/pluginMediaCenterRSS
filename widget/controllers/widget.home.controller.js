@@ -3,7 +3,7 @@
 (function (angular) {
     angular
         .module('mediaCenterRSSPluginWidget')
-        .controller('WidgetHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope', 'FEED_IMAGES', 'trackAnalyticsActions', 'utils', 
+        .controller('WidgetHomeCtrl', ['$scope', 'DataStore', 'Buildfire', 'FeedParseService', 'TAG_NAMES', 'ItemDetailsService', 'Location', '$filter', 'Underscore', '$rootScope', 'FEED_IMAGES', 'trackAnalyticsActions', 'utils',
             function ($scope, DataStore, Buildfire, FeedParseService, TAG_NAMES, ItemDetailsService, Location, $filter, Underscore, $rootScope, FEED_IMAGES, trackAnalyticsActions, utils) {
 
                 if (window.device) {
@@ -37,7 +37,7 @@
                 function extractItemFromFeeds(feeds = {}, itemId) {
                     if (!feeds || typeof feeds !== 'object' || !itemId) return null;
                     let itemData = null;
-                    
+
                     Object.keys(feeds).forEach(key => {
                         if (feeds[key].items && feeds[key].items.length) {
                             let feedItem = feeds[key].items.find(el => el.guid == itemId);
@@ -49,7 +49,7 @@
                     });
                     return itemData;
                 }
-                
+
                 $scope.deeplinkData = null;
                 $scope.isDeeplinkItemOpened = false;
                 $scope.first = true;
@@ -69,7 +69,7 @@
                                 ...data.feed,
                                 guid: data.link,
                                 imageSrcUrl: data.feed.image_url ,
-                                pubDate: data.feed.publish_date 
+                                pubDate: data.feed.publish_date
                             };
                             WidgetHome.proceedToItem(-1, item, pushToHistory);
                         } else if (data.link) {
@@ -112,12 +112,12 @@
                     }
                 }
 
-                /** 
+                /**
                  * Private variables
                  *
                  * @name _items used to hold RSS feed items and helps in lazy loading.
-                 * @type {object} 
-                 * @private 
+                 * @type {object}
+                 * @private
                  *
                  * @name limit used to load a number of items in list on scroll
                  * @type {number}
@@ -178,12 +178,16 @@
                 };
 
                 // show the deeplink skeleton if the deeplink is present
-                buildfire.deeplink.getData(function (data) {
-                    if (!data) return;
+                try {
+                    buildfire.deeplink.getData(function (data) {
+                        if (!data) return;
 
-                    $scope.deeplinkData = data;
-                    toggleDeeplinkSkeleton(true);
-                });
+                        $scope.deeplinkData = utils.decodeObject(data);
+                        toggleDeeplinkSkeleton(true);
+                    });
+                } catch (e) {
+                    console.error('Error getting deeplink data', e);
+                }
                 buildfire.deeplink.onUpdate(function (data) {
                     if (!data) return;
 
@@ -194,7 +198,7 @@
                     }
                 });
 
-                /** 
+                /**
                  * @name WidgetHome.data is used to hold user's data object which used throughout the app.
                  * @type {object}
                  */
@@ -210,7 +214,7 @@
                  */
                 WidgetHome.items = [];
 
-                /** 
+                /**
                  * @name WidgetHome.busy is used to disable ng-infinite scroll when more data not available to show.
                  * @type {boolean}
                  */
@@ -287,13 +291,13 @@
                     isInit = false;
 
                     function checkFeedEquality(currentItems, fetchedItems) {
-                        
+
                         if (!currentItems[0] || !currentItems[0].guid) return false;
 
                         var sameLength = currentItems.length === fetchedItems.length;
                         var firstItemUnchanged = currentItems[0].guid === fetchedItems[0].guid;
                         var lastItemUnchanged = currentItems[currentItems.length - 1].guid === fetchedItems[fetchedItems.length - 1].guid;
-    
+
                         return sameLength && firstItemUnchanged && lastItemUnchanged;
                     }
                 };
@@ -452,7 +456,7 @@
                         WidgetHome.loading = true;
                         if (!$scope.$$phase) $scope.$digest();
                     }
-                    
+
                     WidgetHome.fetchFeedResults(feed).then((result) => {
                         let isChanged = !WidgetHome.checkFeedEquality(WidgetHome.feedsCache[feed.id].items ?? [], result.data.items);
                         WidgetHome.feedsCache[feed.id] = {
@@ -466,7 +470,7 @@
 
                         if (isChanged) WidgetHome.renderFeedItems();
                         WidgetHome.loading = false;
-                       
+
                         if (Object.keys(WidgetHome.feedsData).length === WidgetHome.data.content.feeds.length) WidgetHome.dataTotallyLoaded = true;
 
                         if (!$scope.$$phase) $scope.$digest();
@@ -548,7 +552,7 @@
                                 if (WidgetHome.isItems) {
                                     WidgetHome.loading = false;
                                 }
-                                
+
                                 WidgetHome.handleInitialParsing();
                             }).catch((err) => {
                                 console.error(err)
