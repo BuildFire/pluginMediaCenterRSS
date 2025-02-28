@@ -179,7 +179,7 @@
           if (currentTime) {
             lastAnalyticsTime = currentTime;
           }
-          
+
           if (!analyticsTrackingInterval) {
             analyticsTrackingInterval = setInterval(() => {
               lastAnalyticsTime += 5;
@@ -251,7 +251,37 @@
         }
       }
 
-      return { getImageUrl }
+      function decodeObject(obj) {
+        if (typeof obj === 'string') return decodeURIComponent(obj);
+        // If the input is not an object or is null, return it as is
+        if (typeof obj !== 'object' || obj === null) {
+            return obj;
+        }
+
+        // If the input is an array, iterate over its elements
+        if (Array.isArray(obj)) {
+            return obj.map(item => decodeObject(item));
+        }
+
+        // If the input is an object, iterate over its properties
+        const decodedObj = {};
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                const value = obj[key];
+
+                // If the value is a string, decode it
+                if (typeof value === 'string') {
+                    decodedObj[key] = decodeURIComponent(value);
+                } else {
+                    // If the value is an object or array, recursively decode it
+                    decodedObj[key] = decodeObject(value);
+                }
+            }
+        }
+        return decodedObj;
+      }
+
+      return { getImageUrl, decodeObject };
     }])
 
     /**
@@ -274,11 +304,11 @@
           link.title = item.title;
           link.description = item.title + ", by " + item.author;
           link.imageUrl = item.image && item.image.url ? item.image.url : null;
-          
+
           link.data = {
             link: item.guid,
           };
-          
+
           buildfire.deeplink.generateUrl(link, (err, result) => {
             if (err) {
               console.error(err);
