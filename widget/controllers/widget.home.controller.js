@@ -676,14 +676,24 @@
                                         return console.error(err);
                                     }
                                     if (user) {
-                                        $rootScope.showFeed = false;
+                                        if (!WidgetHome.data.preferLinkPage){
+                                            $rootScope.showFeed = false;
+                                        }
+										else if (!item.link){
+											$rootScope.showFeed = false;
+										}
                                         WidgetHome.proceedToItem(index, item, pushToHistory);
                                     }
                                 });
                             }
                         });
                     } else {
-                        $rootScope.showFeed = false;
+                        if (!WidgetHome.data.preferLinkPage){
+                            $rootScope.showFeed = false;
+                        }
+						else if (!item.link){
+                            $rootScope.showFeed = false;
+						}
                         WidgetHome.proceedToItem(index, item, pushToHistory);
                     }
                 };
@@ -693,6 +703,10 @@
                             viewedItems.markViewed($scope, item.guid);
                         }, 500);
                         WidgetHome.items[index].index = index;
+                    }
+                    if (WidgetHome.data.preferLinkPage && item.link) {
+                        Buildfire.navigation.openWindow(item.link, '_system');
+                        return;
                     }
                     toggleDeeplinkSkeleton();
                     ItemDetailsService.setData(item);

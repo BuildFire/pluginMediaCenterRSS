@@ -29,15 +29,20 @@ window.onload = () => {
         if (!Object.keys(settings).length) {
             settings = _defaultData;
         }
-        
+
         readRequiresLogin.disabled = false;
+		preferLinkPage.disabled = false;
         if (settings?.readRequiresLogin) {
             readRequiresLogin.checked = true;
+        }
+        if (settings?.preferLinkPage) {
+			preferLinkPage.checked = true;
         }
     });
 }
 
 const saveSettings = () => {
     settings.readRequiresLogin = readRequiresLogin.checked;
+    settings.preferLinkPage = preferLinkPage.checked;
     buildfire.datastore.save(settings, "RssFeedInfo", () => { });
 }
