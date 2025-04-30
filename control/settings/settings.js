@@ -31,12 +31,12 @@ window.onload = () => {
         }
 
         readRequiresLogin.disabled = false;
-		preferLinkPage.disabled = false;
+	preferLinkPage.disabled = false;
         if (settings?.readRequiresLogin) {
             readRequiresLogin.checked = true;
         }
         if (settings?.preferLinkPage) {
-			preferLinkPage.checked = true;
+            preferLinkPage.checked = true;
         }
     });
 }
