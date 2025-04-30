@@ -679,9 +679,9 @@
                                         if (!WidgetHome.data.preferLinkPage){
                                             $rootScope.showFeed = false;
                                         }
-										else if (!item.link){
-											$rootScope.showFeed = false;
-										}
+                                        else if (!item.link){
+                                            $rootScope.showFeed = false;
+                                        }
                                         WidgetHome.proceedToItem(index, item, pushToHistory);
                                     }
                                 });
@@ -691,9 +691,9 @@
                         if (!WidgetHome.data.preferLinkPage){
                             $rootScope.showFeed = false;
                         }
-						else if (!item.link){
+                        else if (!item.link){
                             $rootScope.showFeed = false;
-						}
+                        }
                         WidgetHome.proceedToItem(index, item, pushToHistory);
                     }
                 };
