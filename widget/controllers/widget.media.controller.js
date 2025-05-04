@@ -495,12 +495,12 @@
                 };
 
                 WidgetMedia.openLink = function (link) {
-					if (Buildfire.getContext().device.platform === 'web'){
-						window.open(link, '_blank')
-					}
-					else {
-						Buildfire.navigation.openWindow(link, '_system');
-					}
+                    if (Buildfire.getContext().device.platform === 'web'){
+                        window.open(link, '_blank')
+                    }
+                    else {
+                        Buildfire.navigation.openWindow(link, '_system');
+                    }
                 };
 
                 WidgetMedia.videoLoaded = function () {
