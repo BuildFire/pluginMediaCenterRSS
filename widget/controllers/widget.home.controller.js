@@ -661,12 +661,8 @@
                  */
                 WidgetHome.goToItem = function (index, item, pushToHistory = true) {
                     $rootScope.preventResetDefaults = true;
-                    if (!WidgetHome.data.preferLinkPage){
-                        $rootScope.showFeedList = false;
-                    }
-                    else if (!item.link){
-                        $rootScope.showFeedList = false;
-                    }
+					if (!WidgetHome.data.preferLinkPage || !item.link) $rootScope.showFeedList = false;
+
                     if(WidgetHome.data.readRequiresLogin) {
                         buildfire.auth.getCurrentUser(function (err, user) {
                             if (err) {
