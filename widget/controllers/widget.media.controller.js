@@ -3,7 +3,7 @@
 (function (angular) {
     angular
         .module('mediaCenterRSSPluginWidget')
-        .controller('WidgetMediaCtrl', ['$scope', '$sce', 'DataStore', 'Buildfire', 'TAG_NAMES', 'ItemDetailsService', '$filter', 'Location', 'MEDIUM_TYPES', '$rootScope', 'trackAnalyticsActions', 'utils', 
+        .controller('WidgetMediaCtrl', ['$scope', '$sce', 'DataStore', 'Buildfire', 'TAG_NAMES', 'ItemDetailsService', '$filter', 'Location', 'MEDIUM_TYPES', '$rootScope', 'trackAnalyticsActions', 'utils',
             function ($scope, $sce, DataStore, Buildfire, TAG_NAMES, ItemDetailsService, $filter, Location, MEDIUM_TYPES, $rootScope, trackAnalyticsActions, utils) {
 
                 $rootScope.deviceHeight = window.innerHeight;
@@ -61,12 +61,12 @@
                  */
                 WidgetMedia.item = ItemDetailsService.getData();
                 var regex = /(style=".+?")/gm;
-                
+
                 if (!WidgetMedia.item) {
                     return Location.goTo('#/');
                 }
                 WidgetMedia.item.description = (WidgetMedia && WidgetMedia.item && WidgetMedia.item.description) ? WidgetMedia.item.description.replace(regex, '') : "";
-                
+
                 $rootScope.preventResetDefaults = false;
 
                 /*
@@ -219,7 +219,7 @@
                     }
                     if (WidgetMedia.data && WidgetMedia.data.design && WidgetMedia.data.design.itemDetailsLayout === 'Feed_Layout_3') {
                         WidgetMedia.scrollableContainer = document.querySelectorAll('.slide')[1];
-                        WidgetMedia.scrollHandler = function() {       
+                        WidgetMedia.scrollHandler = function() {
                             if ((window.innerHeight - WidgetMedia.scrollableContainer.scrollTop) >= 0 ) {
                                 document.getElementById('fullscreenImageDiv').style.opacity = (window.innerHeight - WidgetMedia.scrollableContainer.scrollTop) / window.innerHeight;
                             }
@@ -245,7 +245,7 @@
                             if ($rootScope.data.design.itemDetailsLayout == WidgetMedia.data.design.itemDetailsLayout) {
                                 resetDefaults();
                                 currentRssUrl = WidgetMedia.data.content.rssUrl;
-                                $rootScope.showFeed = true;
+                                $rootScope.showFeedList = true;
                                 Buildfire.history.pop();
                                 Location.goTo('#/');
                             } else {
@@ -263,7 +263,7 @@
                     WidgetMedia.data = $rootScope.data;
                     $scope.hideandshow = true;
                     currentRssUrl = $rootScope.data.currentRssUrl;
-                    $rootScope.showFeed = false;
+                    $rootScope.showFeedList = false;
                     initScrollHandler();
                     if (WidgetMedia.data && WidgetMedia.data.design && WidgetMedia.data.design.itemDetailsLayout === 'Feed_Layout_3') {
                         Buildfire.spinner.show();
@@ -312,7 +312,7 @@
                     // check if a audio is playing
                     audioPlayer.isPaused((err, isPaused) => {
                         if (err) return console.err(err);
-                      
+
                         if (isPaused) {
                             $rootScope.audioPlayerPlaying = false;
                         } else {
@@ -495,7 +495,12 @@
                 };
 
                 WidgetMedia.openLink = function (link) {
-                    Buildfire.navigation.openWindow(link, '_system');
+					if (Buildfire.getContext().device.platform === 'web'){
+						window.open(link, '_blank')
+					}
+					else {
+						Buildfire.navigation.openWindow(link, '_system');
+					}
                 };
 
                 WidgetMedia.videoLoaded = function () {

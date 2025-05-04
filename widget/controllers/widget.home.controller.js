@@ -226,7 +226,7 @@
                  */
                 WidgetHome.isItems = true;
 
-                $rootScope.showFeed = true;
+                $rootScope.showFeedList = true;
 
                 /**
                  * @name resetDefaults()
@@ -661,6 +661,12 @@
                  */
                 WidgetHome.goToItem = function (index, item, pushToHistory = true) {
                     $rootScope.preventResetDefaults = true;
+					if (!WidgetHome.data.preferLinkPage){
+						$rootScope.showFeedList = false;
+					}
+					else if (!item.link){
+						$rootScope.showFeedList = false;
+					}
                     if(WidgetHome.data.readRequiresLogin) {
                         buildfire.auth.getCurrentUser(function (err, user) {
                             if (err) {
@@ -676,24 +682,12 @@
                                         return console.error(err);
                                     }
                                     if (user) {
-                                        if (!WidgetHome.data.preferLinkPage){
-                                            $rootScope.showFeed = false;
-                                        }
-                                        else if (!item.link){
-                                            $rootScope.showFeed = false;
-                                        }
                                         WidgetHome.proceedToItem(index, item, pushToHistory);
                                     }
                                 });
                             }
                         });
                     } else {
-                        if (!WidgetHome.data.preferLinkPage){
-                            $rootScope.showFeed = false;
-                        }
-                        else if (!item.link){
-                            $rootScope.showFeed = false;
-                        }
                         WidgetHome.proceedToItem(index, item, pushToHistory);
                     }
                 };
