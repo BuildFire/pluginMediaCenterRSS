@@ -661,12 +661,12 @@
                  */
                 WidgetHome.goToItem = function (index, item, pushToHistory = true) {
                     $rootScope.preventResetDefaults = true;
-					if (!WidgetHome.data.preferLinkPage){
-						$rootScope.showFeedList = false;
-					}
-					else if (!item.link){
-						$rootScope.showFeedList = false;
-					}
+                    if (!WidgetHome.data.preferLinkPage){
+                        $rootScope.showFeedList = false;
+                    }
+                    else if (!item.link){
+                        $rootScope.showFeedList = false;
+                    }
                     if(WidgetHome.data.readRequiresLogin) {
                         buildfire.auth.getCurrentUser(function (err, user) {
                             if (err) {
@@ -699,12 +699,12 @@
                         WidgetHome.items[index].index = index;
                     }
                     if (WidgetHome.data.preferLinkPage && item.link) {
-						if (Buildfire.getContext().device.platform === 'web'){
+                        if (Buildfire.getContext().device.platform === 'web'){
                             window.open(item.link, '_blank')
-						}
-						else {
+                        }
+                        else {
                             Buildfire.navigation.openWindow(item.link, '_system');
-						}
+                        }
                         return;
                     }
                     toggleDeeplinkSkeleton();
