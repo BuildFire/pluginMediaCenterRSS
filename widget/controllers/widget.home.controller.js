@@ -705,7 +705,12 @@
                         WidgetHome.items[index].index = index;
                     }
                     if (WidgetHome.data.preferLinkPage && item.link) {
-                        Buildfire.navigation.openWindow(item.link, '_system');
+						if (Buildfire.getContext().device.platform === 'web'){
+                            window.open(item.link, '_blank')
+						}
+						else {
+                            Buildfire.navigation.openWindow(item.link, '_system');
+						}
                         return;
                     }
                     toggleDeeplinkSkeleton();
