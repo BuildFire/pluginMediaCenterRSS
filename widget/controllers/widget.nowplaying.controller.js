@@ -11,7 +11,7 @@
 		function ($scope, Buildfire, $rootScope, $timeout, Location, ItemDetailsService, Modals, trackAnalyticsActions) {
 			console.log('----------------------------Now Playing controller loaded-------------------');
 			//$rootScope.blackBackground = true;
-			$rootScope.showFeed = false;
+			$rootScope.showFeedList = false;
 
 			var NowPlaying = this;
 			NowPlaying.playing = false;

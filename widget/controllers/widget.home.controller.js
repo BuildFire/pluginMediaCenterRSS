@@ -226,7 +226,7 @@
                  */
                 WidgetHome.isItems = true;
 
-                $rootScope.showFeed = true;
+                $rootScope.showFeedList = true;
 
                 /**
                  * @name resetDefaults()
@@ -661,6 +661,8 @@
                  */
                 WidgetHome.goToItem = function (index, item, pushToHistory = true) {
                     $rootScope.preventResetDefaults = true;
+                    if (!WidgetHome.data.preferLinkPage || !item.link) $rootScope.showFeedList = false;
+
                     if(WidgetHome.data.readRequiresLogin) {
                         buildfire.auth.getCurrentUser(function (err, user) {
                             if (err) {
@@ -676,14 +678,12 @@
                                         return console.error(err);
                                     }
                                     if (user) {
-                                        $rootScope.showFeed = false;
                                         WidgetHome.proceedToItem(index, item, pushToHistory);
                                     }
                                 });
                             }
                         });
                     } else {
-                        $rootScope.showFeed = false;
                         WidgetHome.proceedToItem(index, item, pushToHistory);
                     }
                 };
@@ -693,6 +693,15 @@
                             viewedItems.markViewed($scope, item.guid);
                         }, 500);
                         WidgetHome.items[index].index = index;
+                    }
+                    if (WidgetHome.data.preferLinkPage && item.link) {
+                        if (Buildfire.getContext().device.platform === 'web'){
+                            window.open(item.link, '_blank')
+                        }
+                        else {
+                            Buildfire.navigation.openWindow(item.link, '_system');
+                        }
+                        return;
                     }
                     toggleDeeplinkSkeleton();
                     ItemDetailsService.setData(item);
