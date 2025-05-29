@@ -733,12 +733,12 @@
 
                 var initAuthUpdate = function () {
                     Buildfire.auth.onLogin(function () {
-                        init();
-                    });
+                        WidgetHome.initializePlugin();
+                    }, true);
 
                     Buildfire.auth.onLogout(function () {
-                        init();
-                    });
+                        WidgetHome.initializePlugin();
+                    }, true);
                 };
 
                 /**

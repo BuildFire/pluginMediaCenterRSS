@@ -349,10 +349,6 @@
 			 */
 			var onRefresh = Buildfire.datastore.onRefresh(function () {});
 
-			buildfire.auth.onLogin(function () {});
-
-			buildfire.auth.onLogout(function () {});
-
 			/**
 			 * Unbind the onRefresh
 			 */
