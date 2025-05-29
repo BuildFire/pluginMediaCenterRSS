@@ -207,6 +207,8 @@
                 WidgetHome.feedsCache = {};
                 WidgetHome.feedsData = {};
                 WidgetHome.currentFeed = null;
+                WidgetHome.tabBar = null;
+                WidgetHome.activeTab = 0;
 
                 /**
                  * @name WidgetHome.items is used to listing items.
@@ -394,12 +396,15 @@
 
                 WidgetHome.initializeTabs = () => {
                     setTimeout(() => {
+                        if (WidgetHome.tabBar) {
+                            return;
+                        }
                         WidgetHome.activeTab = 0;
                         let tabs = document.querySelector('.mdc-tab-bar');
                         if (!tabs) return;
                         tabs.classList.remove('hidden');
-                        const tabBar = new mdc.tabBar.MDCTabBar(tabs);
-                        tabBar.listen('MDCTabBar:activated', (event) => {
+                        WidgetHome.tabBar = new mdc.tabBar.MDCTabBar(tabs);
+                        WidgetHome.tabBar.listen('MDCTabBar:activated', (event) => {
                             WidgetHome.activeTab = event.detail.index;
                             WidgetHome.parseFeed(WidgetHome.data.content.feeds[WidgetHome.activeTab]);
                             WidgetHome.currentFeed = WidgetHome.data.content.feeds[event.detail.index];
@@ -540,7 +545,7 @@
                             });
                             WidgetHome.initializeTabs();
 
-                            WidgetHome.currentFeed = settings.data.content?.feeds[0];
+                            WidgetHome.currentFeed = settings.data.content?.feeds[WidgetHome.activeTab];
                             if (!WidgetHome.currentFeed) return;
                             Promise.all(cachePromises).then(results => {
                                 results.forEach((el) => {
