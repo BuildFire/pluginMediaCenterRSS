@@ -11,14 +11,14 @@
 
                 Buildfire.auth.onLogin(function () {
                     bookmarks.sync($scope);
-                });
+                }, true);
 
                 Buildfire.auth.onLogout(function () {
                     bookmarks.sync($scope);
                     if (WidgetMedia.data.readRequiresLogin) {
                         Location.goToHome();
                     }
-                });
+                }, true);
                 /*
                  * Private variables
                  *
