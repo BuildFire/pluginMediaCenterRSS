@@ -704,7 +704,7 @@
                             window.open(item.link, '_blank')
                         }
                         else {
-                            Buildfire.navigation.openWindow(item.link, '_system');
+                            Buildfire.navigation.openWindow(item.link, WidgetHome.data.launchIn || '_system');
                         }
                         return;
                     }

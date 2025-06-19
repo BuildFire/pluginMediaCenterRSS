@@ -58,11 +58,32 @@
             </div>
             <div class="col-sm-6">
                 <div class="button-switch" style="float: right;">
-                    <input type="checkbox" id="preferLinkPage" onchange="saveSettings()" disabled>
+                    <input type="checkbox" id="preferLinkPage" disabled>
                     <label for="preferLinkPage" class="label-success"></label>
                 </div>
             </div>
         </div>
+
+        <div id="launchContainer" class="hidden row padding-top-twenty flex">
+            <div class="col-md-4">
+                <label>Launch In</label>
+            </div>
+            <div class="col-md-8 text-left padding-zero">
+                <div class="col-md-12 margin-bottom-fifteen">
+                    <div class="row">
+                        <div class="col-md-6 margin-top-zero radio radio-primary">
+                            <input type="radio" name="launchIn" id="launchInPopup" value="_blank" checked />
+                            <label for="launchInPopup">Popup Window</label>
+                        </div>
+                        <div class="col-md-6 margin-top-zero radio radio-primary">
+                            <input type="radio" name="launchIn" id="launchInBrowser" value="_system" />
+                            <label for="launchInBrowser">Native Browser</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </body>
