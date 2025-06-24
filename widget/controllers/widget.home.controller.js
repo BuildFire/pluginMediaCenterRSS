@@ -366,6 +366,9 @@
                         if (!WidgetHome.data.design.showImages) {
                             WidgetHome.data.design.showImages = FEED_IMAGES.YES;
                         }
+                        if (!WidgetHome.data.launchIn) {
+                            WidgetHome.data.launchIn = '_system';
+                        }
                     $scope.hideandshow = true;
                 }
 
@@ -704,7 +707,7 @@
                             window.open(item.link, '_blank')
                         }
                         else {
-                            Buildfire.navigation.openWindow(item.link, '_system');
+                            Buildfire.navigation.openWindow(item.link, WidgetHome.data.launchIn);
                         }
                         return;
                     }

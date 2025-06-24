@@ -31,18 +31,43 @@ window.onload = () => {
         }
 
         readRequiresLogin.disabled = false;
-	preferLinkPage.disabled = false;
+        preferLinkPage.disabled = false;
         if (settings?.readRequiresLogin) {
             readRequiresLogin.checked = true;
         }
         if (settings?.preferLinkPage) {
             preferLinkPage.checked = true;
         }
+        
+        const launchContainer = document.getElementById('launchContainer');
+        if (!settings.preferLinkPage) {
+            launchContainer.classList.add('hidden');
+        } else {
+            launchContainer.classList.remove('hidden');
+        }
+        
+        preferLinkPage.addEventListener('change', () => {
+            settings.preferLinkPage = preferLinkPage.checked;
+            saveSettings();
+            
+            if (!settings.preferLinkPage) {
+                launchContainer.classList.add('hidden');
+            } else {
+                launchContainer.classList.remove('hidden');
+            }
+        });
+        
+        const launchInRadios = document.querySelectorAll('input[name="launchIn"]');
+        launchInRadios.forEach(radio => {
+            radio.addEventListener('change', (event) => {
+                settings.launchIn = event.target.value;
+                saveSettings();
+            });
+        });
     });
-}
+};
 
 const saveSettings = () => {
     settings.readRequiresLogin = readRequiresLogin.checked;
-    settings.preferLinkPage = preferLinkPage.checked;
     buildfire.datastore.save(settings, "RssFeedInfo", () => { });
 }
