@@ -369,10 +369,6 @@
 			 */
 			var onRefresh = Buildfire.datastore.onRefresh(function () {});
 
-			buildfire.auth.onLogin(function () {});
-
-			buildfire.auth.onLogout(function () {});
-
 			function getItemLastSavedPosition() {
 				// get item from localstorage
 				let item = buildfire.localStorage.getItem(`audio-item-${NowPlaying.currentTrack.id}`);
