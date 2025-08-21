@@ -52,14 +52,14 @@
                 var reg1 = /^\/nowplaying/;
                 if (reg.test($location.path())) {
                     $timeout(function () {
-                        $rootScope.showFeed = true;
+                        $rootScope.showFeedList = true;
                     }, 200);
                     Location.goTo('#/');
                 } else if (reg1.test($location.path())) {
                     if ($rootScope.playlist) {
                         $rootScope.playlist = false;
                     } else {
-                        $rootScope.showFeed = false;
+                        $rootScope.showFeedList = false;
                         Location.goTo('#/item');
                     }
                 }

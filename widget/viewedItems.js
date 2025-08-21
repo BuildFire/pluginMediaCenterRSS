@@ -33,7 +33,7 @@ var viewedItems = {
 
 			_this.id = user ? user._id : 'guest';
 
-			var ls_viewedItems = localStorage.getItem('viewedItems');
+			var ls_viewedItems = buildfire.localStorage.getItem('viewedItems');
 			var viewedItems = ls_viewedItems ? JSON.parse(ls_viewedItems) : null;
 
 			var storageInitialized = viewedItems && (typeof viewedItems === 'undefined' ? 'undefined' : _typeof(viewedItems)) === 'object' ? true : false;
@@ -46,7 +46,7 @@ var viewedItems = {
 				viewedItems = _defineProperty({}, _this.id, []);
 			}
 
-			localStorage.setItem('viewedItems', JSON.stringify(viewedItems));
+			buildfire.localStorage.setItem('viewedItems', JSON.stringify(viewedItems));
 		});
 	},
 
@@ -56,7 +56,7 @@ var viewedItems = {
 	 */
 	get: function get() {
 		try {
-			var ls_viewedItems = localStorage.getItem('viewedItems');
+			var ls_viewedItems = buildfire.localStorage.getItem('viewedItems');
 			if (!ls_viewedItems) return [];
 			const item = JSON.parse(ls_viewedItems)[this.id];
 			if (item) return item;
@@ -73,11 +73,11 @@ var viewedItems = {
 	 */
 	_set: function _set(items) {
 		try {
-			var ls_viewedItems = localStorage.getItem('viewedItems');
+			var ls_viewedItems = buildfire.localStorage.getItem('viewedItems');
 			if (!ls_viewedItems) return [];
 			var _viewedItems2 = JSON.parse(ls_viewedItems);
 			_viewedItems2[this.id] = items;
-			localStorage.setItem('viewedItems', JSON.stringify(_viewedItems2));
+			buildfire.localStorage.setItem('viewedItems', JSON.stringify(_viewedItems2));
 		} catch (e) {
 			console.warn(e);
 			return [];

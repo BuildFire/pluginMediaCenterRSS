@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../../../../styles/control/siteIcons-control.css">
     <link rel="stylesheet" href="../../../../styles/helper.css">
     <script src="../../../../scripts/buildfire.min.js"></script>
-    
+
     <!-- build:bundleCSSFiles -->
     <link rel="stylesheet" href="../content/assets/css/base.css">
     <!-- endbuild -->
@@ -28,6 +28,7 @@
 
 <body>
     <div class="settings-container">
+        <h1 class="section-title">Settings</h1>
         <div class="row">
             <div class="col-sm-6">
                 <label class="tooltip-container">Restrict Access
@@ -45,6 +46,44 @@
                 </div>
             </div>
         </div>
+         <div class="row padding-top-twenty">
+            <div class="col-sm-6">
+                <label class="tooltip-container">Launch External URL
+                    <span class="btn-info-icon btn-primary">
+                        <span class="cp-tooltip top-cp-tooltip">
+                            Opens the full web page in the browser, including site menus and ads. When off, users see a simplified RSS version inside the app with just the main content.
+                        </span>
+                    </span>
+                  </label>
+            </div>
+            <div class="col-sm-6">
+                <div class="button-switch" style="float: right;">
+                    <input type="checkbox" id="preferLinkPage" disabled>
+                    <label for="preferLinkPage" class="label-success"></label>
+                </div>
+            </div>
+        </div>
+
+        <div id="launchContainer" class="hidden row padding-top-twenty flex">
+            <div class="col-md-4">
+                <label>Launch In</label>
+            </div>
+            <div class="col-md-8 text-left padding-zero">
+                <div class="col-md-12 margin-bottom-fifteen">
+                    <div class="row">
+                        <div class="col-md-6 margin-top-zero radio radio-primary">
+                            <input type="radio" name="launchIn" id="launchInPopup" value="_blank" />
+                            <label for="launchInPopup">Popup Window</label>
+                        </div>
+                        <div class="col-md-6 margin-top-zero radio radio-primary">
+                            <input type="radio" name="launchIn" id="launchInBrowser" value="_system" checked />
+                            <label for="launchInBrowser">Native Browser</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </body>

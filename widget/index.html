@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="buildfire" content="enablePluginJsonLoad, disableBootstrap">
 
-  
+
   <!-- CSS -->
   <!-- build:bundleCSSFiles -->
   <link rel="stylesheet" href="assets/css/style.css">
@@ -55,7 +55,7 @@
   <script src="./global/models/Feed.js"></script>
   <script src="./global/AnalyticsManager.js"></script>
   <!-- endbuild -->
-  
+
   <!-- build:bundleJSFiles  -->
   <script src="assets/js/youtubePlayer.min.js"></script>
   <script src="assets/js/vimeoPlayer.min.js"></script>
@@ -82,14 +82,14 @@
 </head>
 <body class="body-scroll">
 <div class="main_view">
-  <div ng-show="showFeed" data-back-img="{{backgroundImage}}" class="slide content infinite-scroll-parent">
+  <div ng-show="showFeedList" data-back-img="{{backgroundImage}}" class="slide content infinite-scroll-parent">
     <div ng-controller="WidgetHomeCtrl as WidgetHome">
       <div ng-if="WidgetHome.data.design.itemListLayout"
            ng-include="'templates/' + WidgetHome.data.design.itemListLayout+ '.html'">
       </div>
     </div>
   </div>
-  <div data-back-img="{{backgroundImageItem}}" ng-view="" class="slide content" ng-hide="showFeed"></div>
+  <div data-back-img="{{backgroundImageItem}}" ng-view="" class="slide content" ng-hide="showFeedList"></div>
   <!-- Deeplink Skeleton -->
   <div id="deeplinkSkeleton" class="hidden deeplink-item-skeleton"></div>
 </div>

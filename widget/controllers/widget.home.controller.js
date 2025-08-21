@@ -207,6 +207,8 @@
                 WidgetHome.feedsCache = {};
                 WidgetHome.feedsData = {};
                 WidgetHome.currentFeed = null;
+                WidgetHome.tabBar = null;
+                WidgetHome.activeTab = 0;
 
                 /**
                  * @name WidgetHome.items is used to listing items.
@@ -226,7 +228,7 @@
                  */
                 WidgetHome.isItems = true;
 
-                $rootScope.showFeed = true;
+                $rootScope.showFeedList = true;
 
                 /**
                  * @name resetDefaults()
@@ -364,6 +366,9 @@
                         if (!WidgetHome.data.design.showImages) {
                             WidgetHome.data.design.showImages = FEED_IMAGES.YES;
                         }
+                        if (!WidgetHome.data.launchIn) {
+                            WidgetHome.data.launchIn = '_system';
+                        }
                     $scope.hideandshow = true;
                 }
 
@@ -394,12 +399,15 @@
 
                 WidgetHome.initializeTabs = () => {
                     setTimeout(() => {
+                        if (WidgetHome.tabBar) {
+                            return;
+                        }
                         WidgetHome.activeTab = 0;
                         let tabs = document.querySelector('.mdc-tab-bar');
                         if (!tabs) return;
                         tabs.classList.remove('hidden');
-                        const tabBar = new mdc.tabBar.MDCTabBar(tabs);
-                        tabBar.listen('MDCTabBar:activated', (event) => {
+                        WidgetHome.tabBar = new mdc.tabBar.MDCTabBar(tabs);
+                        WidgetHome.tabBar.listen('MDCTabBar:activated', (event) => {
                             WidgetHome.activeTab = event.detail.index;
                             WidgetHome.parseFeed(WidgetHome.data.content.feeds[WidgetHome.activeTab]);
                             WidgetHome.currentFeed = WidgetHome.data.content.feeds[event.detail.index];
@@ -540,7 +548,7 @@
                             });
                             WidgetHome.initializeTabs();
 
-                            WidgetHome.currentFeed = settings.data.content?.feeds[0];
+                            WidgetHome.currentFeed = settings.data.content?.feeds[WidgetHome.activeTab];
                             if (!WidgetHome.currentFeed) return;
                             Promise.all(cachePromises).then(results => {
                                 results.forEach((el) => {
@@ -661,6 +669,8 @@
                  */
                 WidgetHome.goToItem = function (index, item, pushToHistory = true) {
                     $rootScope.preventResetDefaults = true;
+                    if (!WidgetHome.data.preferLinkPage || !item.link) $rootScope.showFeedList = false;
+
                     if(WidgetHome.data.readRequiresLogin) {
                         buildfire.auth.getCurrentUser(function (err, user) {
                             if (err) {
@@ -676,14 +686,12 @@
                                         return console.error(err);
                                     }
                                     if (user) {
-                                        $rootScope.showFeed = false;
                                         WidgetHome.proceedToItem(index, item, pushToHistory);
                                     }
                                 });
                             }
                         });
                     } else {
-                        $rootScope.showFeed = false;
                         WidgetHome.proceedToItem(index, item, pushToHistory);
                     }
                 };
@@ -693,6 +701,15 @@
                             viewedItems.markViewed($scope, item.guid);
                         }, 500);
                         WidgetHome.items[index].index = index;
+                    }
+                    if (WidgetHome.data.preferLinkPage && item.link) {
+                        if (Buildfire.getContext().device.platform === 'web'){
+                            window.open(item.link, '_blank')
+                        }
+                        else {
+                            Buildfire.navigation.openWindow(item.link, WidgetHome.data.launchIn);
+                        }
+                        return;
                     }
                     toggleDeeplinkSkeleton();
                     ItemDetailsService.setData(item);
@@ -724,12 +741,12 @@
 
                 var initAuthUpdate = function () {
                     Buildfire.auth.onLogin(function () {
-                        init();
-                    });
+                        WidgetHome.initializePlugin();
+                    }, true);
 
                     Buildfire.auth.onLogout(function () {
-                        init();
-                    });
+                        WidgetHome.initializePlugin();
+                    }, true);
                 };
 
                 /**
