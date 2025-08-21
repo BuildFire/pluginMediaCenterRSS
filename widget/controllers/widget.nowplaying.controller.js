@@ -16,6 +16,7 @@
 			var NowPlaying = this;
 			NowPlaying.playing = false;
 			NowPlaying.currentTime = 0;
+			buildfire.appearance.navbar.hide();
 			/**
 			 * NowPlaying.item used to hold item details object
 			 * @type {object}
@@ -45,7 +46,12 @@
 			 */
 
 			var first = true;
-			audioPlayer.onEvent(function (e) {
+			let lastUpdatedPosition = 0;
+			if ($rootScope.activePlayerEvents) {
+				// Prevent the repetition of events by clearing all previous occurrences, as repeated events tend to occur when the user plays multiple audio files.
+				$rootScope.activePlayerEvents.clear();
+			}
+			$rootScope.activePlayerEvents = audioPlayer.onEvent(function (e) {
 				switch (e.event) {
 					case 'play':
 					case 'resume':
@@ -70,11 +76,15 @@
 						NowPlaying.currentTime = e.data.currentTime;
 						NowPlaying.duration = e.data.duration;
 						NowPlaying.maxRange = Math.floor(e.data.duration);
+						if (NowPlaying.settings.autoJumpToLastPosition && NowPlaying.currentTime && Math.abs(NowPlaying.currentTime - lastUpdatedPosition) > 5) {
+							updateAudioLastPosition(NowPlaying.currentTime);
+						}
 						break;
 					case 'audioEnded':
 						$rootScope.audioPlayerPlaying = false;
 						NowPlaying.playing = false;
 						NowPlaying.paused = false;
+						updateAudioLastPosition(0);
 						break;
 					case 'pause':
 						$rootScope.audioPlayerPlaying = false;
@@ -104,13 +114,11 @@
 			NowPlaying.playTrack = function () {
 				if (NowPlaying.settings) {
 					NowPlaying.settings.isPlayingCurrentTrack = true;
-					NowPlaying.settings.autoJumpToLastPosition = true;
 					audioPlayer.settings.set(NowPlaying.settings);
 				} else {
 					audioPlayer.settings.get(function (err, setting) {
 						NowPlaying.settings = setting;
 						NowPlaying.settings.isPlayingCurrentTrack = true;
-						NowPlaying.settings.autoJumpToLastPosition = true;
 						audioPlayer.settings.set(NowPlaying.settings);
 					});
 				}
@@ -118,6 +126,13 @@
 				if (NowPlaying.paused) {
 					audioPlayer.play();
 				} else {
+					if (NowPlaying.settings.autoJumpToLastPosition) {
+						const trackLastPosition = getItemLastSavedPosition();
+						if (trackLastPosition) {
+							NowPlaying.currentTrack.startAt = trackLastPosition;
+							lastUpdatedPosition = trackLastPosition;
+						}
+					}
 					audioPlayer.play(NowPlaying.currentTrack);
 				}
 			};
@@ -227,6 +242,10 @@
 			NowPlaying.setSettings = function (settings) {
 				var newSettings = new AudioSettings(settings);
 				audioPlayer.settings.set(newSettings);
+
+				if (NowPlaying.currentTime) {
+					updateAudioLastPosition(NowPlaying.currentTime);
+				}
 			};
 			NowPlaying.addEvents = function (e, i, toggle) {
 				toggle ? (NowPlaying.swiped[i] = true) : (NowPlaying.swiped[i] = false);
@@ -318,6 +337,7 @@
 				this.artist = track && track.author;
 				this.startAt = 0; // where to begin playing
 				this.lastPosition = 0; // last played to
+				this.id = track && track.guid ? track.guid : this.url; // unique id for the track
 			}
 
 			/**
@@ -353,10 +373,30 @@
 
 			buildfire.auth.onLogout(function () {});
 
+			function getItemLastSavedPosition() {
+				// get item from localstorage
+				let item = buildfire.localStorage.getItem(`audio-item-${NowPlaying.currentTrack.id}`);
+				if (!item) return 0;
+				item = JSON.parse(item);
+				if (!item || !item.lastPosition) return 0;
+				return item.lastPosition;
+			}
+
+			function updateAudioLastPosition(trackLastPosition) {
+				if (!NowPlaying.item || !NowPlaying.currentTrack.id) return;
+
+				let item = {
+					lastPosition: trackLastPosition,
+				};
+
+				buildfire.localStorage.setItem(`audio-item-${NowPlaying.currentTrack.id}`, JSON.stringify(item));
+			}
+
 			/**
 			 * Unbind the onRefresh
 			 */
 			$scope.$on('$destroy', function () {
+				buildfire.appearance.navbar.show();
 				$rootScope.blackBackground = false;
 				onRefresh.clear();
 				Buildfire.datastore.onRefresh(function () {});
