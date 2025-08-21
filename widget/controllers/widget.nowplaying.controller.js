@@ -370,6 +370,8 @@
 			var onRefresh = Buildfire.datastore.onRefresh(function () {});
 
 			function getItemLastSavedPosition() {
+				if (!NowPlaying.currentTrack || !NowPlaying.currentTrack.id) return 0;
+
 				// get item from localstorage
 				let item = buildfire.localStorage.getItem(`audio-item-${NowPlaying.currentTrack.id}`);
 				if (!item) return 0;
@@ -379,7 +381,7 @@
 			}
 
 			function updateAudioLastPosition(trackLastPosition) {
-				if (!NowPlaying.item || !NowPlaying.currentTrack.id) return;
+				if (!NowPlaying.currentTrack || !NowPlaying.currentTrack.id) return;
 
 				let item = {
 					lastPosition: trackLastPosition,
