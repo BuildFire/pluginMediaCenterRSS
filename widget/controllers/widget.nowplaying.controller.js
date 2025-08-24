@@ -127,10 +127,9 @@
 					audioPlayer.play();
 				} else {
 					if (NowPlaying.settings.autoJumpToLastPosition) {
-						const trackLastPosition = getItemLastSavedPosition();
-						if (trackLastPosition) {
-							NowPlaying.currentTrack.startAt = trackLastPosition;
-							lastUpdatedPosition = trackLastPosition;
+						lastUpdatedPosition = getItemLastSavedPosition() || 0;
+						if (lastUpdatedPosition) {
+							NowPlaying.currentTrack.startAt = lastUpdatedPosition;
 						}
 					}
 					audioPlayer.play(NowPlaying.currentTrack);
@@ -243,7 +242,7 @@
 				var newSettings = new AudioSettings(settings);
 				audioPlayer.settings.set(newSettings);
 
-				if (NowPlaying.currentTime) {
+				if (NowPlaying.currentTime && NowPlaying.settings.autoJumpToLastPosition) {
 					updateAudioLastPosition(NowPlaying.currentTime);
 				}
 			};
@@ -375,9 +374,14 @@
 				// get item from localstorage
 				let item = buildfire.localStorage.getItem(`audio-item-${NowPlaying.currentTrack.id}`);
 				if (!item) return 0;
-				item = JSON.parse(item);
-				if (!item || !item.lastPosition) return 0;
-				return item.lastPosition;
+				try {
+					item = JSON.parse(item);
+					if (!item || !item.lastPosition) return 0;
+					return item.lastPosition;
+				} catch (err) {
+					console.error('Error parsing item from localStorage', err);
+					return 0;
+				}
 			}
 
 			function updateAudioLastPosition(trackLastPosition) {
