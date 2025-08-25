@@ -128,7 +128,7 @@
 				} else {
 					if (NowPlaying.settings.autoJumpToLastPosition) {
 						lastUpdatedPosition = getItemLastSavedPosition() || 0;
-						if (lastUpdatedPosition) {
+						if (typeof lastUpdatedPosition === 'number') {
 							NowPlaying.currentTrack.startAt = lastUpdatedPosition;
 						}
 					}
