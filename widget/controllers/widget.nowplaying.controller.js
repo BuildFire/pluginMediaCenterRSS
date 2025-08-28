@@ -13,10 +13,10 @@
 			//$rootScope.blackBackground = true;
 			$rootScope.showFeedList = false;
 
-			var NowPlaying = this;
-			NowPlaying.playing = false;
-			NowPlaying.currentTime = 0;
-			buildfire.appearance.navbar.hide();
+                        var NowPlaying = this;
+                        NowPlaying.playing = false;
+                        NowPlaying.currentTime = 0;
+                        buildfire.appearance.navbar.hide();
 			/**
 			 * NowPlaying.item used to hold item details object
 			 * @type {object}
@@ -122,19 +122,23 @@
 						audioPlayer.settings.set(NowPlaying.settings);
 					});
 				}
-				NowPlaying.playing = true;
-				if (NowPlaying.paused) {
-					audioPlayer.play();
-				} else {
-					if (NowPlaying.settings.autoJumpToLastPosition) {
-						lastUpdatedPosition = getItemLastSavedPosition() || 0;
-						if (typeof lastUpdatedPosition === 'number') {
-							NowPlaying.currentTrack.startAt = lastUpdatedPosition;
-						}
-					}
-					audioPlayer.play(NowPlaying.currentTrack);
-				}
-			};
+                                NowPlaying.playing = true;
+                                if (NowPlaying.paused) {
+                                        audioPlayer.play();
+                                } else {
+                                        if (NowPlaying.settings.autoJumpToLastPosition) {
+                                                getItemLastSavedPosition().then(function (pos) {
+                                                        lastUpdatedPosition = pos || 0;
+                                                        if (typeof pos === 'number') {
+                                                                NowPlaying.currentTrack.startAt = pos;
+                                                        }
+                                                        audioPlayer.play(NowPlaying.currentTrack);
+                                                });
+                                        } else {
+                                                audioPlayer.play(NowPlaying.currentTrack);
+                                        }
+                                }
+                        };
 			NowPlaying.playlistPlay = function (track) {
 				if (NowPlaying.settings) {
 					NowPlaying.settings.isPlayingCurrentTrack = true;
@@ -368,31 +372,24 @@
 			 */
 			var onRefresh = Buildfire.datastore.onRefresh(function () {});
 
-			function getItemLastSavedPosition() {
-				if (!NowPlaying.currentTrack || !NowPlaying.currentTrack.id) return 0;
+                        function getItemLastSavedPosition(callback) {
+                                if (!NowPlaying.currentTrack || !NowPlaying.currentTrack.id) {
+                                        return callback ? Promise.resolve(callback(0)) : Promise.resolve(0);
+                                }
+                                const key = `audio-item-${NowPlaying.currentTrack.id}`;
+                                return storageUtil.migrateToFS(key).then(function () {
+                                        return storageUtil.read(key).then(function (item) {
+                                                if (!item || !item.lastPosition) return callback ? callback(0) : 0;
+                                                return callback ? callback(item.lastPosition) : item.lastPosition;
+                                        });
+                                });
+                        }
 
-				// get item from localstorage
-				let item = buildfire.localStorage.getItem(`audio-item-${NowPlaying.currentTrack.id}`);
-				if (!item) return 0;
-				try {
-					item = JSON.parse(item);
-					if (!item || !item.lastPosition) return 0;
-					return item.lastPosition;
-				} catch (err) {
-					console.error('Error parsing item from localStorage', err);
-					return 0;
-				}
-			}
-
-			function updateAudioLastPosition(trackLastPosition) {
-				if (!NowPlaying.currentTrack || !NowPlaying.currentTrack.id) return;
-
-				let item = {
-					lastPosition: trackLastPosition,
-				};
-
-				buildfire.localStorage.setItem(`audio-item-${NowPlaying.currentTrack.id}`, JSON.stringify(item));
-			}
+                        function updateAudioLastPosition(trackLastPosition) {
+                                if (!NowPlaying.currentTrack || !NowPlaying.currentTrack.id) return;
+                                lastUpdatedPosition = trackLastPosition;
+                                storageUtil.write(`audio-item-${NowPlaying.currentTrack.id}`, { lastPosition: trackLastPosition });
+                        }
 
 			/**
 			 * Unbind the onRefresh
