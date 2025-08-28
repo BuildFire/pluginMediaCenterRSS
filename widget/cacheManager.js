@@ -2,6 +2,9 @@ let cacheManager = {
     platform: buildfire.getContext().device.platform,
     instanceId: buildfire.getContext().instanceId.replace("-", ""),
     indexDb: null,
+    fsFileName: 'userItemsData.txt',
+	writeInProgress: false,
+    storedData: {},
     setItem: function (key, data, callback) {
         key = String(key).replace(/\W/g, "");
         if (this.platform === "web") {
@@ -200,5 +203,110 @@ let cacheManager = {
         };
 
         buildfire.services.fileSystem.fileManager.deleteFile(options, callback);
+    },
+    migrateToFS: function (options) {
+        const {key, oldKey, path} = options;
+        return new Promise((resolve) => {
+            const item = buildfire.localStorage.getItem(oldKey ? oldKey : key);
+            if (!item) return resolve();
+
+            let parsed;
+            try {
+                parsed = JSON.parse(item);
+            } catch (e) {
+                console.warn(e);
+                buildfire.localStorage.removeItem(oldKey ? oldKey : key);
+                return resolve();
+            }
+
+            if (this.platform === 'web') {
+                if (oldKey) {
+                    buildfire.localStorage.removeItem(oldKey);
+                    return this.write(key, parsed).then(() => resolve());
+                }
+                return resolve();
+            }
+
+            this.write(key, parsed, path).then(() => {
+                buildfire.localStorage.removeItem(oldKey ? oldKey : key);
+                resolve();
+            });
+        });
+    },
+    read: function (key, path) {
+        return new Promise((resolve) => {
+            if (this.storedData[key]) return resolve(this.storedData[key]);
+
+            if (this.platform === 'web') {
+                let item = buildfire.localStorage.getItem(key);
+                if (!item) return resolve(null);
+                try {
+                    return resolve(JSON.parse(item));
+                } catch (e) {
+                    console.warn(e);
+                    return resolve(null);
+                }
+            } else {
+                const options = {
+                    path: path || '/data/pluginMediaCenterRss/',
+                    fileName: this.fsFileName
+                };
+                buildfire.services.fileSystem.fileManager.readFileAsText(options, function (err, data) {
+                    if (err || !data) return resolve(null);
+                    try {
+                        const parsed = JSON.parse(data);
+                        resolve(parsed && Object.prototype.hasOwnProperty.call(parsed, key) ? parsed[key] : null);
+                    } catch (e) {
+                        console.warn(e);
+                        resolve(null);
+                    }
+                });
+            }
+        });
+    },
+    write: function (key, data, path) {
+		const _this = this;
+        return new Promise((resolve) => {
+			if (_this.writeInProgress) return resolve();
+			_this.writeInProgress = true;
+
+            _this.storedData[key] = data;
+            if (_this.platform === 'web') {
+                const content = JSON.stringify(data);
+                buildfire.localStorage.setItem(key, content);
+
+				_this.writeInProgress = false;
+                return resolve();
+            }
+
+            const options = {
+                path: path || '/data/pluginMediaCenterRss/',
+                fileName: _this.fsFileName
+            };
+
+            buildfire.services.fileSystem.fileManager.readFileAsText(options, (err, fileData) => {
+                let stored = {};
+                if (!err && fileData) {
+                    try {
+                        stored = JSON.parse(fileData) || {};
+                    } catch (e) {
+                        console.warn(e);
+                    }
+                }
+
+                stored[key] = data;
+
+                const writeOptions = {
+                    path: options.path,
+                    fileName: options.fileName,
+                    content: JSON.stringify(stored)
+                };
+
+                buildfire.services.fileSystem.fileManager.writeFileAsText(writeOptions, function (err, res) {
+					_this.writeInProgress = false;
+                    resolve();
+                });
+            });
+        });
     },
 };

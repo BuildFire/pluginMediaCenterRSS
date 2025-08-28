@@ -12,6 +12,7 @@
 			console.log('----------------------------Now Playing controller loaded-------------------');
 			//$rootScope.blackBackground = true;
 			$rootScope.showFeedList = false;
+			const platform = buildfire.getContext().device.platform;
 
 			var NowPlaying = this;
 			NowPlaying.playing = false;
@@ -111,29 +112,39 @@
 			/**
 			 * Player related method and variables
 			 */
-			NowPlaying.playTrack = function () {
-				if (NowPlaying.settings) {
-					NowPlaying.settings.isPlayingCurrentTrack = true;
-					audioPlayer.settings.set(NowPlaying.settings);
-				} else {
-					audioPlayer.settings.get(function (err, setting) {
+			NowPlaying.getAudioPlayerSettings = (callback) => {
+				audioPlayer.settings.get(function (err, setting) {
+					if (setting) {
 						NowPlaying.settings = setting;
+					}
+					if (callback) callback();
+					$scope.$digest();
+				});
+			}
+			NowPlaying.playTrack = function () {
+				NowPlaying.getAudioPlayerSettings(() => {
+					if (NowPlaying.settings) {
 						NowPlaying.settings.isPlayingCurrentTrack = true;
 						audioPlayer.settings.set(NowPlaying.settings);
-					});
-				}
-				NowPlaying.playing = true;
-				if (NowPlaying.paused) {
-					audioPlayer.play();
-				} else {
-					if (NowPlaying.settings.autoJumpToLastPosition) {
-						lastUpdatedPosition = getItemLastSavedPosition() || 0;
-						if (typeof lastUpdatedPosition === 'number') {
-							NowPlaying.currentTrack.startAt = lastUpdatedPosition;
+					}
+
+					NowPlaying.playing = true;
+					if (NowPlaying.paused) {
+						audioPlayer.play();
+					} else {
+						if (NowPlaying.settings && NowPlaying.settings.autoJumpToLastPosition) {
+							getItemLastSavedPosition().then(function (pos) {
+								lastUpdatedPosition = pos || 0;
+								if (typeof pos === 'number') {
+									NowPlaying.currentTrack.startAt = pos;
+								}
+								audioPlayer.play(NowPlaying.currentTrack);
+							});
+						} else {
+							audioPlayer.play(NowPlaying.currentTrack);
 						}
 					}
-					audioPlayer.play(NowPlaying.currentTrack);
-				}
+				});
 			};
 			NowPlaying.playlistPlay = function (track) {
 				if (NowPlaying.settings) {
@@ -368,30 +379,113 @@
 			 */
 			var onRefresh = Buildfire.datastore.onRefresh(function () {});
 
-			function getItemLastSavedPosition() {
-				if (!NowPlaying.currentTrack || !NowPlaying.currentTrack.id) return 0;
+			function mergeAudios(oldKey, newKey) {
+				const oldData = buildfire.localStorage.getItem(oldKey);
+				const newData = buildfire.localStorage.getItem('audio-items');
 
-				// get item from localstorage
-				let item = buildfire.localStorage.getItem(`audio-item-${NowPlaying.currentTrack.id}`);
-				if (!item) return 0;
+				if (!oldData) return;
+
+				let oldParsed, newParsed;
 				try {
-					item = JSON.parse(item);
-					if (!item || !item.lastPosition) return 0;
-					return item.lastPosition;
-				} catch (err) {
-					console.error('Error parsing item from localStorage', err);
-					return 0;
+					oldParsed = JSON.parse(oldData);
+					newParsed = newData ? JSON.parse(newData) : {};
+				} catch (e) {
+					console.warn(e);
+					buildfire.localStorage.removeItem(oldKey);
+					return;
 				}
+
+				newParsed[newKey] = oldParsed;
+
+				buildfire.localStorage.setItem('audio-items', JSON.stringify(newParsed));
+				buildfire.localStorage.removeItem(oldKey);
 			}
 
+			function getItemLastSavedPosition() {
+				return new Promise((resolve) => {
+					if (!NowPlaying.currentTrack || !NowPlaying.currentTrack.id) return resolve(0);
+
+					const oldKey = `audio-item-${NowPlaying.currentTrack.id}`;
+					hashStr(oldKey).then(async (newKey) => {
+						if (platform === 'web') {
+							mergeAudios(oldKey, newKey);
+							const data = buildfire.localStorage.getItem('audio-items');
+							if (!data) return resolve(0);
+							let parsed;
+							try {
+								parsed = JSON.parse(data);
+							} catch (e) {
+								console.warn(e);
+								buildfire.localStorage.removeItem(oldKey);
+								return resolve(0);
+							}
+							if (!parsed || !parsed[newKey] || !parsed[newKey].lastPosition) return resolve(0);
+							return resolve(parsed[newKey].lastPosition);
+						} else {
+							return cacheManager.migrateToFS({
+								key: newKey,
+								oldKey: oldKey,
+							}).then(function () {
+								return cacheManager.read(newKey).then(function (item) {
+									if (!item || !item.lastPosition) return resolve(0);
+									return resolve(item.lastPosition);
+								});
+							});
+						}
+					  });
+				});
+			}
+
+			async function hashStr(str) {
+				const encoder = new TextEncoder();
+				const data = encoder.encode(str);
+				const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+				const hashArray = Array.from(new Uint8Array(hashBuffer));
+				const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+				return hashHex.slice(0, 10); // Your 10-char key
+			}
+
+			let savingTimer;
 			function updateAudioLastPosition(trackLastPosition) {
-				if (!NowPlaying.currentTrack || !NowPlaying.currentTrack.id) return;
+				clearTimeout(savingTimer);
+				savingTimer = setTimeout(() => {
+					if (!NowPlaying.currentTrack || !NowPlaying.currentTrack.id) return;
+					lastUpdatedPosition = trackLastPosition;
+					hashStr(`audio-item-${NowPlaying.currentTrack.id}`).then(async (newKey) => {
+						if (platform === 'web') {
+							const data = buildfire.localStorage.getItem('audio-items');
+							let parsed = {};
+							if (data) {
+								try {
+									parsed = JSON.parse(data);
+								} catch (e) {
+									console.warn(e);
+									buildfire.localStorage.removeItem('audio-items');
+								}
+							}
+							if (!parsed[newKey]) parsed[newKey] = {};
+							parsed[newKey].lastPosition = trackLastPosition;
+							parsed[newKey].lastAccess = new Date();
 
-				let item = {
-					lastPosition: trackLastPosition,
-				};
+							// delete the oldest accessed item if more than 50 items
+							if (Object.keys(parsed).length > 50) {
+								let oldestKey = null;
+								let oldestDate = new Date();
+								for (const key in parsed) {
+									if (parsed[key].lastAccess && new Date(parsed[key].lastAccess).getTime() < oldestDate.getTime()) {
+										oldestDate = new Date(parsed[key].lastAccess);
+										oldestKey = key;
+									}
+								}
+								if (oldestKey) delete parsed[oldestKey];
+							}
 
-				buildfire.localStorage.setItem(`audio-item-${NowPlaying.currentTrack.id}`, JSON.stringify(item));
+							buildfire.localStorage.setItem('audio-items', JSON.stringify(parsed));
+						} else {
+							cacheManager.write(newKey, { lastPosition: trackLastPosition, lastAccess: new Date() });
+						}
+					});
+				}, 500)
 			}
 
 			/**

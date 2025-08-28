@@ -347,8 +347,7 @@
                 }
 
                 WidgetHome.processDatastore = (result) => {
-                    viewedItems.init();
-
+                    viewedItems.init().then(() => {
                         if (Object.keys(result.data).length > 0) {
                             WidgetHome.data = result.data;
                             $rootScope.data = result.data;
@@ -369,7 +368,10 @@
                         if (!WidgetHome.data.launchIn) {
                             WidgetHome.data.launchIn = '_system';
                         }
-                    $scope.hideandshow = true;
+                        $scope.hideandshow = true;
+                        viewedItems.sync(WidgetHome.items);
+                        if (!$scope.$$phase) $scope.$digest();
+                    });
                 }
 
                 WidgetHome.fetchFeedResults = (feed) => {
