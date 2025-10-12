@@ -370,6 +370,11 @@
                         }
                         $scope.hideandshow = true;
                         viewedItems.sync(WidgetHome.items);
+
+                        if (WidgetHome.loading) {
+                            WidgetHome.handleInitialParsing();
+                        }
+
                         if (!$scope.$$phase) $scope.$digest();
                     });
                 }
@@ -563,7 +568,9 @@
                                     WidgetHome.loading = false;
                                 }
 
-                                WidgetHome.handleInitialParsing();
+                                if (WidgetHome.data) {
+                                    WidgetHome.handleInitialParsing();
+                                }
                             }).catch((err) => {
                                 console.error(err)
                             });
