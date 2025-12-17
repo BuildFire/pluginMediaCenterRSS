@@ -1,3 +1,12 @@
+html {
+	padding-top: var(--bf-safe-area-inset-top);
+	padding-bottom: var(--bf-safe-area-inset-bottom);
+
+}
+.slide {
+	position: relative !important;
+	overflow: scroll;
+}
 /* Plugin CSS */
 .plugin-slide img, .plugin-slide  {
 	max-height: none !important;
@@ -463,7 +472,7 @@ videogular vg-controls, [videogular] vg-controls
 	position:absolute;
 	width:30px;
 	height:26px;
-	color:#fff;	
+	color:#fff;
 	font-size:30px;
 	line-height:24px;
 	top:50%;
@@ -1024,7 +1033,7 @@ button.btn-icon.btn-lg{
 
 input[type=range] {
   height: 25px;
-  -webkit-appearance: none;  
+  -webkit-appearance: none;
   margin: 10px 0;
 	width: 100%;
 	background-color: transparent;
@@ -1385,7 +1394,7 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 .layout1 .share,
 .layout4 .bookmark,
 .layout4 .share {
-	color: #fff;	
+	color: #fff;
 }
 .layout1 .bookmark,
 .layout4 .bookmark {
@@ -1492,7 +1501,7 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 .layout3 .li-footer {
 	display: flex;
 	align-items: center;
-	justify-content: space-between; 
+	justify-content: space-between;
 	position: relative;
 }
 .layout3 .li-actions{
@@ -1527,7 +1536,7 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 }
 .layout1-detail .item-date,
 .layout2-detail .item-date{
-	font-size: .8em; 
+	font-size: .8em;
 	margin-bottom: 0;
 }
 .layout1-detail .li-actions,
@@ -1602,10 +1611,10 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	padding: 0 16px;
 }
 #downArrow {
-	position: absolute; 
-	bottom: 0; 
-	width: 100vw; 
-	height: calc(5rem + env(safe-area-inset-bottom)/3);  
+	position: absolute;
+	bottom: 0;
+	width: 100vw;
+	height: calc(5rem + env(safe-area-inset-bottom)/3);
 	background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
 }
 .hideAndShow {
