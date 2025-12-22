@@ -1,11 +1,9 @@
-html {
-	padding-top: var(--bf-safe-area-inset-top);
-	padding-bottom: var(--bf-safe-area-inset-bottom);
 
-}
 .slide {
 	position: relative !important;
-	overflow: scroll;
+}
+.infinite-scroll-parent {
+  padding-top: var(--bf-safe-area-inset-top) !important;
 }
 /* Plugin CSS */
 .plugin-slide img, .plugin-slide  {
