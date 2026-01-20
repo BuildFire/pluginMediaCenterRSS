@@ -757,7 +757,7 @@ html[browser="Firefox"] .layout3 .list-layout .list-item-media .list-media-holde
 .holder.now-playing .media-center-plugin{
 	position: relative;
 	height: 100%;
-	padding-bottom: calc(20px + env(safe-area-inset-bottom));
+	padding-bottom: calc(20px + var(--bf-safe-area-inset-top));
 	max-width: 660px;
 	margin: 0 auto;
 	display: flex;
@@ -1605,7 +1605,7 @@ input.volume-button[type=range]:focus::-ms-fill-upper {
 	position: absolute; 
 	bottom: 0; 
 	width: 100vw; 
-	height: calc(5rem + env(safe-area-inset-bottom)/3);  
+	height: calc(5rem + var(--bf-safe-area-inset-bottom)/3);  
 	background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
 }
 .hideAndShow {
