@@ -347,36 +347,39 @@
                 }
 
                 WidgetHome.processDatastore = (result) => {
-                    viewedItems.init().then(() => {
-                        if (Object.keys(result.data).length > 0) {
-                            WidgetHome.data = result.data;
-                            $rootScope.data = result.data;
-                        } else {
-                            WidgetHome.data = _data;
-                            $rootScope.data = _data;
-                        }
-                        if (WidgetHome.data.design) {
-                            $rootScope.backgroundImage = WidgetHome.data.design.itemListBgImage;
-                            $rootScope.backgroundImageItem = WidgetHome.data.design.itemDetailsBgImage;
-                        }
-                        if (!WidgetHome.data.design) {
-                            WidgetHome.data.design = {};
-                        }
-                        if (!WidgetHome.data.design.showImages) {
-                            WidgetHome.data.design.showImages = FEED_IMAGES.YES;
-                        }
-                        if (!WidgetHome.data.launchIn) {
-                            WidgetHome.data.launchIn = '_system';
-                        }
-                        $scope.hideandshow = true;
-                        viewedItems.sync(WidgetHome.items);
+                    return new Promise((resolve) => {
+                        viewedItems.init().then(() => {
+                            if (Object.keys(result.data).length > 0) {
+                                WidgetHome.data = result.data;
+                                $rootScope.data = result.data;
+                            } else {
+                                WidgetHome.data = _data;
+                                $rootScope.data = _data;
+                            }
+                            if (WidgetHome.data.design) {
+                                $rootScope.backgroundImage = WidgetHome.data.design.itemListBgImage;
+                                $rootScope.backgroundImageItem = WidgetHome.data.design.itemDetailsBgImage;
+                            }
+                            if (!WidgetHome.data.design) {
+                                WidgetHome.data.design = {};
+                            }
+                            if (!WidgetHome.data.design.showImages) {
+                                WidgetHome.data.design.showImages = FEED_IMAGES.YES;
+                            }
+                            if (!WidgetHome.data.launchIn) {
+                                WidgetHome.data.launchIn = '_system';
+                            }
+                            $scope.hideandshow = true;
+                            viewedItems.sync(WidgetHome.items);
 
-                        if (WidgetHome.loading) {
-                            WidgetHome.handleInitialParsing();
-                        }
+                            if (WidgetHome.loading) {
+                                WidgetHome.handleInitialParsing();
+                            }
 
-                        if (!$scope.$$phase) $scope.$digest();
-                    });
+                            if (!$scope.$$phase) $scope.$digest();
+                            resolve();
+                        });
+                    })
                 }
 
                 WidgetHome.fetchFeedResults = (feed) => {
@@ -521,8 +524,8 @@
                 }
 
                 WidgetHome.initializePlugin = function () {
-                    DataStore.get(TAG_NAMES.RSS_FEED_INFO).then((settings) => {
-                        WidgetHome.processDatastore(settings);
+                    DataStore.get(TAG_NAMES.RSS_FEED_INFO).then(async (settings) => {
+                        await WidgetHome.processDatastore(settings);
                         WidgetHome.loading = true;
                         if (!Object.keys(settings.data).length) {
                             settings.data = WidgetHome.data;
