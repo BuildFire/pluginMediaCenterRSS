@@ -757,7 +757,7 @@ html[browser="Firefox"] .layout3 .list-layout .list-item-media .list-media-holde
 .holder.now-playing .media-center-plugin{
 	position: relative;
 	height: 100%;
-	padding-bottom: calc(20px + var(--bf-safe-area-inset-top));
+	padding-bottom: calc(20px + var(--bf-safe-area-inset-bottom));
 	max-width: 660px;
 	margin: 0 auto;
 	display: flex;
