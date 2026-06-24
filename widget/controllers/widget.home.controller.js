@@ -320,17 +320,6 @@
                         window.location.reload();
                     }
                 };
-                buildfire.appearance.titlebar.isVisible(null, (err, isVisible) => {
-                    if (err) return console.error(err);
-                    WidgetHome.isTittlebarVisible = isVisible;
-                });
-
-                WidgetHome.isSafeArea = () => {
-                    if (!WidgetHome.isTittlebarVisible && WidgetHome.data.content && !(WidgetHome.data.content.description || WidgetHome.data.content.carouselImages.length)) {
-                        return true;
-                    }
-                    else return false;
-                }
 
                 WidgetHome.fetchFeed = (feed) => {
                     buildfire.appearance.ready();

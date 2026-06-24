@@ -82,7 +82,7 @@
 </head>
 <body class="body-scroll">
 <div class="main_view">
-  <div ng-show="showFeedList" data-back-img="{{backgroundImage}}" class="slide content infinite-scroll-parent">
+  <div ng-show="showFeedList" data-back-img="{{backgroundImage}}" class="slide content infinite-scroll-parent plugin-list-container">
     <div ng-controller="WidgetHomeCtrl as WidgetHome">
       <div ng-if="WidgetHome.data.design.itemListLayout"
            ng-include="'templates/' + WidgetHome.data.design.itemListLayout+ '.html'">
